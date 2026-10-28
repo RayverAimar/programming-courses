@@ -1,0 +1,1220 @@
+# Modern JavaScript, one entry per feature. Sessions place a box with <!-- legacy: key --> and a
+# row of MDN links with <!-- mdn: key key -->. This is the one place to update when JS changes:
+# no version numbers here, MDN carries the details. See docs/content.md.
+#
+# key:
+#   mdn: path after /docs/ on developer.mozilla.org (the build adds /es/ or /en-US/)
+#   session: the session that teaches it (for the "Moderno y antiguo" page)
+#   es / en:
+#     name: short label
+#     old:  the legacy form, as learners will meet it in older code (optional)
+#     new:  what we write today
+#     note: one or two sentences, Markdown
+
+let-const:
+  mdn: Web/JavaScript/Reference/Statements/const
+  session: 1
+  es:
+    name: const y let
+    old: |
+      var nombre = "Chasqui";
+      var bateria = 100;
+    new: |
+      const nombre = "Chasqui"; // no cambia
+      let bateria = 100;        // va a cambiar
+    note: |
+      `var` es la forma antigua. Vive en toda la función y no solo en su bloque, se puede usar antes de su línea (vale `undefined`, por el *hoisting*) y se puede redeclarar sin aviso. Usa `const` siempre que puedas y `let` cuando el valor cambie. El bug más famoso de `var` lo verás en la sesión 4.
+  en:
+    name: const and let
+    old: |
+      var name = "Chasqui";
+      var battery = 100;
+    new: |
+      const name = "Chasqui"; // won't change
+      let battery = 100;      // will change
+    note: |
+      `var` is the old way. It lives in the whole function, not just its block, it can be used before its line (it's `undefined` there, because of *hoisting*) and it can be redeclared silently. Use `const` whenever you can and `let` when the value changes. You'll meet the most famous `var` bug in session 4.
+
+let:
+  mdn: Web/JavaScript/Reference/Statements/let
+  session: 1
+  es: { name: let }
+  en: { name: let }
+
+var:
+  mdn: Web/JavaScript/Reference/Statements/var
+  session: 1
+  es: { name: var (antiguo) }
+  en: { name: var (legacy) }
+
+template-literals:
+  mdn: Web/JavaScript/Reference/Template_literals
+  session: 1
+  es:
+    name: Template literals
+    old: |
+      "Pedido " + numero + " para " + cliente
+    new: |
+      `Pedido ${numero} para ${cliente}`
+    note: |
+      Concatenar con `+` funciona, pero es fácil olvidar un espacio o mezclar números con textos. Con comillas invertidas el texto se lee tal como saldrá.
+  en:
+    name: Template literals
+    old: |
+      "Order " + number + " for " + customer
+    new: |
+      `Order ${number} for ${customer}`
+    note: |
+      Joining with `+` works, but it's easy to drop a space or mix numbers into strings. With backticks the text reads the way it will print.
+
+console-log:
+  mdn: Web/API/console/log_static
+  session: 1
+  es: { name: console.log }
+  en: { name: console.log }
+
+typeof:
+  mdn: Web/JavaScript/Reference/Operators/typeof
+  session: 1
+  es: { name: typeof }
+  en: { name: typeof }
+
+strict-equality:
+  mdn: Web/JavaScript/Reference/Operators/Strict_equality
+  session: 2
+  es:
+    name: === y !==
+    old: |
+      if (codigo == 0) { … }
+      if (respuesta != "") { … }
+    new: |
+      if (codigo === 0) { … }
+      if (respuesta !== "") { … }
+    note: |
+      `==` convierte los tipos antes de comparar, así que `"0" == 0` y `"" == 0` dan `true`. `===` compara valor y tipo, sin sorpresas. Úsalo siempre.
+  en:
+    name: === and !==
+    old: |
+      if (code == 0) { … }
+      if (answer != "") { … }
+    new: |
+      if (code === 0) { … }
+      if (answer !== "") { … }
+    note: |
+      `==` converts types before comparing, so `"0" == 0` and `"" == 0` are both `true`. `===` compares value and type, no surprises. Always use it.
+
+truthy:
+  mdn: Glossary/Truthy
+  session: 2
+  es: { name: Truthy y falsy }
+  en: { name: Truthy and falsy }
+
+null-undefined:
+  mdn: Web/JavaScript/Reference/Operators/null
+  session: 2
+  es: { name: null y undefined }
+  en: { name: null and undefined }
+
+nullish:
+  mdn: Web/JavaScript/Reference/Operators/Nullish_coalescing
+  session: 2
+  es:
+    name: "?? (valor por defecto)"
+    old: |
+      const temp = lectura.temperatura || 18;
+    new: |
+      const temp = lectura.temperatura ?? 18;
+    note: |
+      `||` cambia por el valor por defecto cualquier cosa *falsy*, incluidos `0` y `""`, que pueden ser lecturas válidas. `??` solo lo hace con `null` o `undefined`.
+  en:
+    name: "?? (default value)"
+    old: |
+      const temp = reading.temperature || 18;
+    new: |
+      const temp = reading.temperature ?? 18;
+    note: |
+      `||` swaps in the default for anything *falsy*, including `0` and `""`, which can be valid readings. `??` only does it for `null` or `undefined`.
+
+optional-chaining:
+  mdn: Web/JavaScript/Reference/Operators/Optional_chaining
+  session: 2
+  es:
+    name: "?. (encadenamiento opcional)"
+    old: |
+      const mov = lectura.camara && lectura.camara.movimiento;
+    new: |
+      const mov = lectura.camara?.movimiento;
+    note: |
+      Si `camara` es `null` o `undefined`, `?.` se detiene y devuelve `undefined` en vez de lanzar un error.
+  en:
+    name: "?. (optional chaining)"
+    old: |
+      const motion = reading.camera && reading.camera.motion;
+    new: |
+      const motion = reading.camera?.motion;
+    note: |
+      If `camera` is `null` or `undefined`, `?.` stops and gives `undefined` instead of throwing an error.
+
+if-else:
+  mdn: Web/JavaScript/Reference/Statements/if...else
+  session: 2
+  es: { name: if...else }
+  en: { name: if...else }
+
+for:
+  mdn: Web/JavaScript/Reference/Statements/for
+  session: 3
+  es: { name: for }
+  en: { name: for }
+
+while:
+  mdn: Web/JavaScript/Reference/Statements/while
+  session: 3
+  es: { name: while }
+  en: { name: while }
+
+arrays:
+  mdn: Web/JavaScript/Reference/Global_Objects/Array
+  session: 3
+  es: { name: Arrays }
+  en: { name: Arrays }
+
+for-of:
+  mdn: Web/JavaScript/Reference/Statements/for...of
+  session: 3
+  es:
+    name: for...of
+    old: |
+      for (var i in vetas) {
+        total += vetas[i];
+      }
+    new: |
+      for (const veta of vetas) {
+        total += veta;
+      }
+    note: |
+      `for...in` recorre los *nombres* de las propiedades (en un array, los índices como textos `"0"`, `"1"`…). Para recorrer los valores de un array, `for...of`. Si además necesitas el índice, el `for` clásico con `let`.
+  en:
+    name: for...of
+    old: |
+      for (var i in veins) {
+        total += veins[i];
+      }
+    new: |
+      for (const vein of veins) {
+        total += vein;
+      }
+    note: |
+      `for...in` walks the property *names* (in an array, the indexes as strings `"0"`, `"1"`…). To walk an array's values, use `for...of`. If you also need the index, the classic `for` with `let`.
+
+functions:
+  mdn: Web/JavaScript/Reference/Statements/function
+  session: 4
+  es: { name: function }
+  en: { name: function }
+
+arrow-functions:
+  mdn: Web/JavaScript/Reference/Functions/Arrow_functions
+  session: 4
+  es:
+    name: Funciones flecha
+    old: |
+      var doble = function (n) {
+        return n * 2;
+      };
+    new: |
+      const doble = (n) => n * 2;
+    note: |
+      Para funciones cortas que pasas de un lado a otro, la flecha. Para las funciones con nombre que forman tu programa, `function` sigue siendo moderno y claro.
+  en:
+    name: Arrow functions
+    old: |
+      var double = function (n) {
+        return n * 2;
+      };
+    new: |
+      const double = (n) => n * 2;
+    note: |
+      For short functions you pass around, use an arrow. For the named functions that make up your program, `function` is still modern and clear.
+
+default-parameters:
+  mdn: Web/JavaScript/Reference/Functions/Default_parameters
+  session: 4
+  es:
+    name: Parámetros por defecto
+    old: |
+      function cobrar(total, propina) {
+        propina = propina || 0;
+        return total + propina;
+      }
+    new: |
+      function cobrar(total, propina = 0) {
+        return total + propina;
+      }
+    note: |
+      El valor por defecto se usa cuando el argumento falta (o es `undefined`), y queda a la vista en la firma de la función.
+  en:
+    name: Default parameters
+    old: |
+      function charge(total, tip) {
+        tip = tip || 0;
+        return total + tip;
+      }
+    new: |
+      function charge(total, tip = 0) {
+        return total + tip;
+      }
+    note: |
+      The default is used when the argument is missing (or `undefined`), and it's visible right in the function's signature.
+
+destructuring:
+  mdn: Web/JavaScript/Reference/Operators/Destructuring_assignment
+  session: 4
+  es:
+    name: Desestructuración
+    old: |
+      var mesa = pedido.mesa;
+      var plato = pedido.plato;
+    new: |
+      const { mesa, plato } = pedido;
+    note: |
+      Saca varias propiedades de un objeto (o posiciones de un array) de una vez. Funciona también en los parámetros: `function atender({ mesa, plato })`.
+  en:
+    name: Destructuring
+    old: |
+      var table = order.table;
+      var dish = order.dish;
+    new: |
+      const { table, dish } = order;
+    note: |
+      Pulls several properties out of an object (or positions out of an array) at once. It also works in parameters: `function serveOrder({ table, dish })`.
+
+spread:
+  mdn: Web/JavaScript/Reference/Operators/Spread_syntax
+  session: 4
+  es:
+    name: Spread y rest (...)
+    old: |
+      var todos = barra.concat(salon);
+      Math.max.apply(null, precios);
+    new: |
+      const todos = [...barra, ...salon];
+      Math.max(...precios);
+    note: |
+      `...` reparte los elementos de un array donde van varios valores. En los parámetros (`function sumar(...nums)`) hace lo contrario: junta los argumentos en un array, y reemplaza al viejo `arguments`.
+  en:
+    name: Spread and rest (...)
+    old: |
+      var all = bar.concat(hall);
+      Math.max.apply(null, prices);
+    new: |
+      const all = [...bar, ...hall];
+      Math.max(...prices);
+    note: |
+      `...` spreads an array's elements where several values go. In parameters (`function sum(...nums)`) it does the opposite: gathers the arguments into an array, replacing the old `arguments`.
+
+var-loop-closure:
+  mdn: Web/JavaScript/Reference/Statements/let
+  session: 11
+  es:
+    name: El bug de var en los bucles
+    old: |
+      var avisos = [];
+      for (var i = 1; i <= 3; i++) {
+        avisos.push(function () { return "Mesa " + i; });
+      }
+      avisos[0](); // "Mesa 4"
+    new: |
+      const avisos = [];
+      for (let i = 1; i <= 3; i++) {
+        avisos.push(() => `Mesa ${i}`);
+      }
+      avisos[0](); // "Mesa 1"
+    note: |
+      Con `var` hay una sola `i` para todo el bucle, y cuando las funciones se ejecutan ya vale 4. Con `let` cada vuelta tiene su propia `i`. Antes se arreglaba envolviendo el cuerpo en una función que se llamaba a sí misma (IIFE); hoy basta `let`.
+  en:
+    name: The var-in-a-loop bug
+    old: |
+      var notices = [];
+      for (var i = 1; i <= 3; i++) {
+        notices.push(function () { return "Table " + i; });
+      }
+      notices[0](); // "Table 4"
+    new: |
+      const notices = [];
+      for (let i = 1; i <= 3; i++) {
+        notices.push(() => `Table ${i}`);
+      }
+      notices[0](); // "Table 1"
+    note: |
+      With `var` there is a single `i` for the whole loop, and by the time the functions run it's 4. With `let` each pass gets its own `i`. People used to fix it by wrapping the body in a function that called itself (an IIFE); today `let` is enough.
+
+modules:
+  mdn: Web/JavaScript/Guide/Modules
+  session: 4
+  es:
+    name: Módulos (import / export)
+    old: |
+      // CommonJS, todavía común en Node
+      const { atender } = require("./cocina");
+      module.exports = { atender };
+    new: |
+      // cocina.js
+      export function atender(pedido) { … }
+      // main.js
+      import { atender } from "./cocina.js";
+    note: |
+      Los módulos ES son el sistema estándar en navegadores y en Node. Verás `require` en mucho código de Node y en paquetes antiguos: se lee igual, un archivo pide lo que otro exporta. En el navegador, aún más atrás, todo iba en variables globales de varios `<script>`.
+  en:
+    name: Modules (import / export)
+    old: |
+      // CommonJS, still common in Node
+      const { serveOrder } = require("./kitchen");
+      module.exports = { serveOrder };
+    new: |
+      // kitchen.js
+      export function serveOrder(order) { … }
+      // main.js
+      import { serveOrder } from "./kitchen.js";
+    note: |
+      ES modules are the standard system in browsers and in Node. You'll see `require` in lots of Node code and older packages: it reads the same, one file asks for what another exports. In the browser, further back, everything lived in global variables across several `<script>` tags.
+
+array-push:
+  mdn: Web/JavaScript/Reference/Global_Objects/Array/push
+  session: 5
+  es: { name: push }
+  en: { name: push }
+
+array-pop:
+  mdn: Web/JavaScript/Reference/Global_Objects/Array/pop
+  session: 5
+  es: { name: pop }
+  en: { name: pop }
+
+array-indexof:
+  mdn: Web/JavaScript/Reference/Global_Objects/Array/indexOf
+  session: 5
+  es: { name: indexOf }
+  en: { name: indexOf }
+
+array-includes:
+  mdn: Web/JavaScript/Reference/Global_Objects/Array/includes
+  session: 5
+  es:
+    name: includes
+    old: |
+      if (stock.indexOf("polo") !== -1) { … }
+      if (~stock.indexOf("polo")) { … }
+    new: |
+      if (stock.includes("polo")) { … }
+    note: |
+      Antes había que preguntar la posición y compararla con `-1` (o usar el truco ilegible de `~`). `includes` responde directamente `true` o `false`, y además encuentra `NaN`, que `indexOf` no ve.
+  en:
+    name: includes
+    old: |
+      if (stock.indexOf("shirt") !== -1) { … }
+      if (~stock.indexOf("shirt")) { … }
+    new: |
+      if (stock.includes("shirt")) { … }
+    note: |
+      You used to ask for the position and compare it with `-1` (or use the unreadable `~` trick). `includes` answers `true` or `false` directly, and it also finds `NaN`, which `indexOf` can't see.
+
+array-copy:
+  mdn: Web/JavaScript/Reference/Operators/Spread_syntax#copying_an_array
+  session: 5
+  es:
+    name: Copiar un array
+    old: |
+      var copia = vitrina.slice();
+      var copia2 = [].concat(vitrina);
+    new: |
+      const copia = [...vitrina];
+    note: |
+      Las tres formas hacen un array nuevo con los mismos valores (una copia *superficial*: si dentro hay objetos, se comparten). Lo que nunca copia es `const copia = vitrina`, que solo le pone otro nombre al mismo array.
+  en:
+    name: Copying an array
+    old: |
+      var copy = display.slice();
+      var copy2 = [].concat(display);
+    new: |
+      const copy = [...display];
+    note: |
+      All three make a new array with the same values (a *shallow* copy: objects inside are shared). What never copies is `const copy = display`, which only gives the same array another name.
+
+strings:
+  mdn: Web/JavaScript/Reference/Global_Objects/String
+  session: 8
+  es: { name: Textos (String) }
+  en: { name: Strings }
+
+string-slice:
+  mdn: Web/JavaScript/Reference/Global_Objects/String/slice
+  session: 8
+  es:
+    name: slice
+    old: |
+      codigo.substr(3, 2);      // desde 3, dos caracteres
+      codigo.substring(3, 5);
+    new: |
+      codigo.slice(3, 5);       // desde 3 hasta antes de 5
+      codigo.slice(-2);         // los dos últimos
+    note: |
+      `substr` está obsoleto y `substring` trata raro los negativos (los vuelve 0). `slice` funciona igual que en los arrays y acepta negativos para contar desde atrás.
+  en:
+    name: slice
+    old: |
+      code.substr(3, 2);        // from 3, two characters
+      code.substring(3, 5);
+    new: |
+      code.slice(3, 5);         // from 3 up to before 5
+      code.slice(-2);           // the last two
+    note: |
+      `substr` is deprecated and `substring` handles negatives oddly (it turns them into 0). `slice` works just like it does on arrays and takes negatives to count from the end.
+
+string-includes:
+  mdn: Web/JavaScript/Reference/Global_Objects/String/includes
+  session: 8
+  es:
+    name: includes y startsWith
+    old: |
+      if (mensaje.indexOf("MAYDAY") !== -1) { … }
+      if (mensaje.indexOf("SOS") === 0) { … }
+    new: |
+      if (mensaje.includes("MAYDAY")) { … }
+      if (mensaje.startsWith("SOS")) { … }
+    note: |
+      `indexOf` devuelve la posición, o `-1` si no está, y hay que acordarse de compararlo. `includes`, `startsWith` y `endsWith` dicen directamente `true` o `false`.
+  en:
+    name: includes and startsWith
+    old: |
+      if (message.indexOf("MAYDAY") !== -1) { … }
+      if (message.indexOf("SOS") === 0) { … }
+    new: |
+      if (message.includes("MAYDAY")) { … }
+      if (message.startsWith("SOS")) { … }
+    note: |
+      `indexOf` returns the position, or `-1` when it's missing, and you have to remember to compare it. `includes`, `startsWith` and `endsWith` say `true` or `false` straight away.
+
+string-replaceall:
+  mdn: Web/JavaScript/Reference/Global_Objects/String/replaceAll
+  session: 8
+  es:
+    name: replaceAll
+    old: |
+      mensaje.replace(/~/g, "");
+      mensaje.split("~").join("");
+    new: |
+      mensaje.replaceAll("~", "");
+    note: |
+      `replace` con un texto cambia solo la primera aparición; para cambiarlas todas hacía falta una expresión regular con `g` o el truco de `split` y `join`. `replaceAll` lo dice tal cual.
+  en:
+    name: replaceAll
+    old: |
+      message.replace(/~/g, "");
+      message.split("~").join("");
+    new: |
+      message.replaceAll("~", "");
+    note: |
+      `replace` with a string changes only the first match; changing them all needed a regular expression with `g` or the `split`-and-`join` trick. `replaceAll` says it plainly.
+
+string-padstart:
+  mdn: Web/JavaScript/Reference/Global_Objects/String/padStart
+  session: 8
+  es:
+    name: padStart
+    old: |
+      const hh = ("0" + hora).slice(-2);
+      const hh2 = hora < 10 ? "0" + hora : "" + hora;
+    new: |
+      const hh = String(hora).padStart(2, "0");
+    note: |
+      Antes se pegaba un cero delante y se cortaba, o se preguntaba si era menor que 10. `padStart` (y `padEnd`) rellenan hasta el largo que pidas, con el carácter que pidas.
+  en:
+    name: padStart
+    old: |
+      const hh = ("0" + hour).slice(-2);
+      const hh2 = hour < 10 ? "0" + hour : "" + hour;
+    new: |
+      const hh = String(hour).padStart(2, "0");
+    note: |
+      People used to glue a zero in front and cut, or ask whether it was below 10. `padStart` (and `padEnd`) fill up to the length you ask for, with the character you ask for.
+
+regexp:
+  mdn: Web/JavaScript/Guide/Regular_expressions
+  session: 8
+  es: { name: Expresiones regulares }
+  en: { name: Regular expressions }
+
+grid-copy:
+  mdn: Web/API/Window/structuredClone
+  session: 9
+  es:
+    name: Copiar una cuadrícula
+    old: |
+      const copia = JSON.parse(JSON.stringify(plano));
+    new: |
+      const copia = structuredClone(plano);
+      const copia2 = plano.map((fila) => [...fila]);
+    note: |
+      `[...plano]` copia solo el array de afuera: las filas siguen siendo las mismas. Para copiar una cuadrícula entera hay que copiar cada fila, o usar `structuredClone`. El truco de `JSON` funciona con números y textos, pero pierde `undefined`, fechas, `Map` y `Set`.
+  en:
+    name: Copying a grid
+    old: |
+      const copy = JSON.parse(JSON.stringify(plan));
+    new: |
+      const copy = structuredClone(plan);
+      const copy2 = plan.map((row) => [...row]);
+    note: |
+      `[...plan]` copies only the outer array: the rows are still the same ones. To copy a whole grid, copy every row, or use `structuredClone`. The `JSON` trick works with numbers and strings but loses `undefined`, dates, `Map` and `Set`.
+
+set-vs-object:
+  mdn: Web/JavaScript/Reference/Global_Objects/Set
+  session: 10
+  es:
+    name: Set para lo ya visto
+    old: |
+      const vistos = {};
+      vistos["3,4"] = true;
+      if (vistos["3,4"]) { … }
+    new: |
+      const vistos = new Set();
+      vistos.add("3,4");
+      if (vistos.has("3,4")) { … }
+    note: |
+      Un objeto usado como lista de "ya visto" funciona, pero mezcla tus claves con las que el objeto ya trae (`vistos["constructor"]` existe). Un `Set` guarda valores sin repetir, tiene `size` y se recorre con `for...of`.
+  en:
+    name: Set for what you've seen
+    old: |
+      const seen = {};
+      seen["3,4"] = true;
+      if (seen["3,4"]) { … }
+    new: |
+      const seen = new Set();
+      seen.add("3,4");
+      if (seen.has("3,4")) { … }
+    note: |
+      An object used as a "seen" list works, but it mixes your keys with the ones the object already has (`seen["constructor"]` exists). A `Set` holds values without repeats, has `size` and loops with `for...of`.
+
+map-vs-object:
+  mdn: Web/JavaScript/Reference/Global_Objects/Map
+  session: 10
+  es:
+    name: Map para guardar por clave
+    old: |
+      const padre = {};
+      padre["3,4"] = "3,3";
+      if (padre.hasOwnProperty("3,4")) { … }
+    new: |
+      const padre = new Map();
+      padre.set("3,4", "3,3");
+      if (padre.has("3,4")) { … }
+    note: |
+      Un `Map` es un diccionario de verdad: cualquier valor sirve de clave, recuerda el orden en que entraron, tiene `size`, y `has`, `get` y `set` dicen lo que hacen.
+  en:
+    name: Map to store by key
+    old: |
+      const parent = {};
+      parent["3,4"] = "3,3";
+      if (parent.hasOwnProperty("3,4")) { … }
+    new: |
+      const parent = new Map();
+      parent.set("3,4", "3,3");
+      if (parent.has("3,4")) { … }
+    note: |
+      A `Map` is a real dictionary: any value can be a key, it remembers insertion order, it has `size`, and `has`, `get` and `set` say what they do.
+
+promises:
+  mdn: Web/JavaScript/Reference/Global_Objects/Promise
+  session: 14
+  es:
+    name: Promesas en vez de callbacks
+    old: |
+      pedirRuta(function (error, ruta) {
+        if (error) return avisar(error);
+        pedirEtiqueta(function (error, etiqueta) {
+          if (error) return avisar(error);
+          entregar(ruta, etiqueta);
+        });
+      });
+    new: |
+      const [ruta, etiqueta] = await Promise.all([
+        pedirRuta(),
+        pedirEtiqueta(),
+      ]);
+      entregar(ruta, etiqueta);
+    note: |
+      Antes, cada operación lenta recibía una función para llamar al terminar (un *callback*), y cada paso se anidaba dentro del anterior: la famosa "pirámide". Una promesa es un valor que llegará, y se puede guardar, combinar (`Promise.all`) y esperar. Verás callbacks en Node antiguo, en `setTimeout` y en eventos.
+  en:
+    name: Promises instead of callbacks
+    old: |
+      getRoute(function (error, route) {
+        if (error) return warn(error);
+        getLabel(function (error, label) {
+          if (error) return warn(error);
+          deliverParcel(route, label);
+        });
+      });
+    new: |
+      const [route, label] = await Promise.all([
+        getRoute(),
+        getLabel(),
+      ]);
+      deliverParcel(route, label);
+    note: |
+      Before, every slow operation took a function to call when it finished (a *callback*), and each step nested inside the previous one: the famous "pyramid". A promise is a value that will arrive, and it can be stored, combined (`Promise.all`) and awaited. You'll see callbacks in older Node code, in `setTimeout` and in events.
+
+async-await:
+  mdn: Web/JavaScript/Reference/Statements/async_function
+  session: 14
+  es:
+    name: async / await
+    old: |
+      taller.pedir("ruta")
+        .then((ruta) => {
+          robot.seguirRuta(ruta);
+          return taller.pedir("etiqueta");
+        })
+        .then((etiqueta) => robot.entregar(etiqueta))
+        .catch((error) => robot.decir("Sin señal"));
+    new: |
+      try {
+        const ruta = await taller.pedir("ruta");
+        robot.seguirRuta(ruta);
+        robot.entregar(await taller.pedir("etiqueta"));
+      } catch (error) {
+        robot.decir("Sin señal");
+      }
+    note: |
+      Las cadenas de `.then()` y `.catch()` hacen lo mismo y siguen siendo válidas (`.finally()` también), pero con `await` el código asíncrono se lee de arriba abajo y los errores se atrapan con el `try/catch` de siempre.
+  en:
+    name: async / await
+    old: |
+      workshop.request("route")
+        .then((route) => {
+          robot.followPath(route);
+          return workshop.request("label");
+        })
+        .then((label) => robot.deliver(label))
+        .catch((error) => robot.say("No signal"));
+    new: |
+      try {
+        const route = await workshop.request("route");
+        robot.followPath(route);
+        robot.deliver(await workshop.request("label"));
+      } catch (error) {
+        robot.say("No signal");
+      }
+    note: |
+      `.then()` and `.catch()` chains do the same and are still valid (so is `.finally()`), but with `await` asynchronous code reads top to bottom and errors are caught with the usual `try/catch`.
+
+await:
+  mdn: Web/JavaScript/Reference/Operators/await
+  session: 14
+  es: { name: await }
+  en: { name: await }
+
+promise-all:
+  mdn: Web/JavaScript/Reference/Global_Objects/Promise/all
+  session: 14
+  es: { name: Promise.all }
+  en: { name: Promise.all }
+
+set-timeout:
+  mdn: Web/API/Window/setTimeout
+  session: 14
+  es: { name: setTimeout }
+  en: { name: setTimeout }
+
+throw-error:
+  mdn: Web/JavaScript/Reference/Statements/throw
+  session: 15
+  es:
+    name: Lanzar un Error, no un texto
+    old: |
+      if (pasos < 1) {
+        throw "pasos inválidos";
+      }
+    new: |
+      if (pasos < 1) {
+        throw new RangeError(`Pasos inválidos: ${pasos}`, { cause: comando });
+      }
+    note: |
+      JavaScript deja lanzar cualquier cosa, y en código viejo verás textos sueltos. Un `Error` trae `name`, `message` y la pila de llamadas (`stack`) que dice dónde nació; un texto no trae nada de eso. La opción `cause` guarda el error o dato que lo provocó.
+  en:
+    name: Throw an Error, not a string
+    old: |
+      if (steps < 1) {
+        throw "invalid steps";
+      }
+    new: |
+      if (steps < 1) {
+        throw new RangeError(`Invalid steps: ${steps}`, { cause: command });
+      }
+    note: |
+      JavaScript lets you throw anything, and in old code you'll see bare strings. An `Error` carries `name`, `message` and the call stack (`stack`) that says where it was born; a string carries none of that. The `cause` option keeps the error or data that caused it.
+
+try-catch:
+  mdn: Web/JavaScript/Reference/Statements/try...catch
+  session: 15
+  es:
+    name: catch sin variable
+    old: |
+      try {
+        lectura = JSON.parse(texto);
+      } catch (e) {
+        lectura = null; // e no se usa
+      }
+    new: |
+      try {
+        lectura = JSON.parse(texto);
+      } catch {
+        lectura = null;
+      }
+    note: |
+      Si no vas a usar el error, hoy puedes escribir `catch {` sin paréntesis. Úsalo solo cuando de verdad sabes qué falló; un `catch` que ignora cualquier error esconde los bugs.
+  en:
+    name: catch without a variable
+    old: |
+      try {
+        reading = JSON.parse(text);
+      } catch (e) {
+        reading = null; // e is unused
+      }
+    new: |
+      try {
+        reading = JSON.parse(text);
+      } catch {
+        reading = null;
+      }
+    note: |
+      If you won't use the error, today you can write `catch {` with no parentheses. Use it only when you really know what failed; a `catch` that ignores any error hides bugs.
+
+custom-errors:
+  mdn: Web/JavaScript/Reference/Global_Objects/Error
+  session: 15
+  es:
+    name: Tus propios errores con class
+    old: |
+      function ErrorDeComando(mensaje) {
+        this.name = "ErrorDeComando";
+        this.message = mensaje;
+        this.stack = new Error().stack;
+      }
+      ErrorDeComando.prototype = Object.create(Error.prototype);
+    new: |
+      class ErrorDeComando extends Error {
+        constructor(mensaje, comando) {
+          super(mensaje);
+          this.name = "ErrorDeComando";
+          this.comando = comando;
+        }
+      }
+    note: |
+      Antes de `class`, un error propio se armaba a mano con prototipos y era fácil olvidar una pieza. Con `extends Error` hereda `message` y `stack`, y `instanceof` funciona para distinguirlo en un `catch`.
+  en:
+    name: Your own errors with class
+    old: |
+      function CommandError(message) {
+        this.name = "CommandError";
+        this.message = message;
+        this.stack = new Error().stack;
+      }
+      CommandError.prototype = Object.create(Error.prototype);
+    new: |
+      class CommandError extends Error {
+        constructor(message, command) {
+          super(message);
+          this.name = "CommandError";
+          this.command = command;
+        }
+      }
+    note: |
+      Before `class`, your own error was assembled by hand with prototypes and it was easy to forget a piece. With `extends Error` it inherits `message` and `stack`, and `instanceof` works to tell it apart in a `catch`.
+
+closures:
+  mdn: Web/JavaScript/Guide/Closures
+  session: 11
+  es:
+    name: Closures y el patrón módulo
+    old: |
+      var contador = (function () {
+        var cuenta = 0;
+        return { sumar: function () { return ++cuenta; } };
+      })();
+    new: |
+      function crearContador() {
+        let cuenta = 0;
+        return () => ++cuenta;
+      }
+      const contar = crearContador();
+    note: |
+      Antes de los módulos y las clases, el estado privado se escondía en una función que se llamaba a sí misma al instante (IIFE). Funciona igual, por closure. Hoy usas una fábrica con nombre cuando quieres varias copias, o un módulo o una clase con campos `#privados` cuando quieres organizar el código.
+  en:
+    name: Closures and the module pattern
+    old: |
+      var counter = (function () {
+        var count = 0;
+        return { add: function () { return ++count; } };
+      })();
+    new: |
+      function makeCounter() {
+        let count = 0;
+        return () => ++count;
+      }
+      const tally = makeCounter();
+    note: |
+      Before modules and classes, private state was hidden in a function that called itself on the spot (an IIFE). It works the same way, through a closure. Today you write a named factory when you want several copies, or a module or a class with `#private` fields when you want to organise the code.
+
+group-by:
+  mdn: Web/JavaScript/Reference/Global_Objects/Map/groupBy
+  session: 16
+  es:
+    name: Agrupar con Map.groupBy
+    old: |
+      const porRonda = jugadas.reduce((grupos, j) => {
+        (grupos[j.ronda] = grupos[j.ronda] || []).push(j);
+        return grupos;
+      }, {});
+    new: |
+      const porRonda = Map.groupBy(jugadas, (j) => j.ronda);
+      porRonda.get(1); // las jugadas de la ronda 1
+    note: |
+      Antes se agrupaba a mano, con `reduce` o un bucle, en un objeto (y las claves se volvían texto). `Map.groupBy` y `Object.groupBy` lo hacen en una línea. El bucle con `has` / `set` / `push` sigue siendo útil cuando además quieres contar o usar un `Set` por grupo.
+  en:
+    name: Grouping with Map.groupBy
+    old: |
+      const byRound = plays.reduce((groups, p) => {
+        (groups[p.round] = groups[p.round] || []).push(p);
+        return groups;
+      }, {});
+    new: |
+      const byRound = Map.groupBy(plays, (p) => p.round);
+      byRound.get(1); // the plays of round 1
+    note: |
+      People used to group by hand, with `reduce` or a loop, into an object (and the keys turned into strings). `Map.groupBy` and `Object.groupBy` do it in one line. The loop with `has` / `set` / `push` is still handy when you also want to count, or keep a `Set` per group.
+
+objects:
+  mdn: Web/JavaScript/Guide/Working_with_objects
+  session: 6
+  es: { name: Objetos }
+  en: { name: Objects }
+
+object-shorthand:
+  mdn: Web/JavaScript/Reference/Operators/Object_initializer
+  session: 6
+  es:
+    name: Propiedades en forma corta
+    old: |
+      var ficha = { codigo: codigo, tipo: tipo };
+      ficha["clave " + n] = valor;
+    new: |
+      const ficha = { codigo, tipo };
+      const otra = { [`clave ${n}`]: valor };
+    note: |
+      Si la variable se llama como la propiedad, basta su nombre. Y una clave calculada se puede poner entre corchetes directamente dentro de las llaves, en vez de agregarla después.
+  en:
+    name: Shorthand properties
+    old: |
+      var record = { code: code, kind: kind };
+      record["key " + n] = value;
+    new: |
+      const record = { code, kind };
+      const other = { [`key ${n}`]: value };
+    note: |
+      If the variable has the property's name, its name is enough. And a computed key can go in square brackets right inside the braces, instead of being added afterwards.
+
+object-entries:
+  mdn: Web/JavaScript/Reference/Global_Objects/Object/entries
+  session: 6
+  es:
+    name: Object.keys / Object.entries
+    old: |
+      for (var clave in conteo) {
+        if (conteo.hasOwnProperty(clave)) {
+          total += conteo[clave];
+        }
+      }
+    new: |
+      for (const [clave, cantidad] of Object.entries(conteo)) {
+        total += cantidad;
+      }
+    note: |
+      `for...in` también recorre propiedades heredadas, por eso el código viejo se llenaba de `hasOwnProperty`. `Object.keys`, `Object.values` y `Object.entries` dan solo las propias, como arrays que se recorren con `for...of`.
+  en:
+    name: Object.keys / Object.entries
+    old: |
+      for (var key in counts) {
+        if (counts.hasOwnProperty(key)) {
+          total += counts[key];
+        }
+      }
+    new: |
+      for (const [key, count] of Object.entries(counts)) {
+        total += count;
+      }
+    note: |
+      `for...in` also walks inherited properties, which is why old code was full of `hasOwnProperty`. `Object.keys`, `Object.values` and `Object.entries` give only the object's own, as arrays you walk with `for...of`.
+
+json:
+  mdn: Web/JavaScript/Reference/Global_Objects/JSON
+  session: 6
+  es:
+    name: JSON.parse / JSON.stringify
+    old: |
+      var objeto = eval("(" + respuesta + ")");
+    new: |
+      const objeto = JSON.parse(respuesta);
+      const texto = JSON.stringify(objeto);
+    note: |
+      Hace muchos años se convertía el texto con `eval`, que ejecuta cualquier código que venga dentro: un peligro. `JSON.parse` solo acepta datos, y lanza un error si el texto no es JSON válido.
+  en:
+    name: JSON.parse / JSON.stringify
+    old: |
+      var object = eval("(" + response + ")");
+    new: |
+      const object = JSON.parse(response);
+      const text = JSON.stringify(object);
+    note: |
+      Many years ago text was converted with `eval`, which runs any code that comes inside it: a hazard. `JSON.parse` only accepts data, and throws an error if the text isn't valid JSON.
+
+classes:
+  mdn: Web/JavaScript/Reference/Classes
+  session: 12
+  es:
+    name: Clases
+    old: |
+      function Robot(nombre) {
+        this.nombre = nombre;
+      }
+      Robot.prototype.saludar = function () {
+        return "Soy " + this.nombre;
+      };
+    new: |
+      class Robot {
+        constructor(nombre) {
+          this.nombre = nombre;
+        }
+        saludar() {
+          return `Soy ${this.nombre}`;
+        }
+      }
+    note: |
+      Antes de `class`, un molde era una función constructora y los métodos se colgaban de su `prototype`. Por dentro, `class` sigue funcionando con prototipos; solo es una forma más clara y segura de escribirlo (por ejemplo, olvidar `new` ahora es un error en vez de un bug silencioso). La herencia vieja se armaba con `Object.create` y `Robot.call(this, …)`; hoy es `extends` y `super`.
+  en:
+    name: Classes
+    old: |
+      function Robot(name) {
+        this.name = name;
+      }
+      Robot.prototype.greet = function () {
+        return "I am " + this.name;
+      };
+    new: |
+      class Robot {
+        constructor(name) {
+          this.name = name;
+        }
+        greet() {
+          return `I am ${this.name}`;
+        }
+      }
+    note: |
+      Before `class`, a mould was a constructor function and the methods hung from its `prototype`. Underneath, `class` still works with prototypes; it's just a clearer, safer way to write it (forgetting `new`, for instance, is now an error instead of a silent bug). Old inheritance was built with `Object.create` and `Robot.call(this, …)`; today it's `extends` and `super`.
+
+private-fields:
+  mdn: Web/JavaScript/Reference/Classes/Private_properties
+  session: 12
+  es:
+    name: Campos privados (#)
+    old: |
+      class Bateria {
+        constructor() {
+          this._carga = 100; // "privado", por favor no tocar
+        }
+      }
+    new: |
+      class Bateria {
+        #carga = 100; // privado de verdad
+      }
+    note: |
+      El guion bajo `_carga` era solo un acuerdo: cualquiera podía leerlo o cambiarlo desde afuera. Con `#carga`, el lenguaje lo impide, y un error de tipeo como `this.#crga` falla antes de correr. También verás closures usados para esconder datos, el patrón de la sesión 11.
+  en:
+    name: Private fields (#)
+    old: |
+      class Battery {
+        constructor() {
+          this._charge = 100; // "private", please don't touch
+        }
+      }
+    new: |
+      class Battery {
+        #charge = 100; // truly private
+      }
+    note: |
+      The underscore in `_charge` was only an agreement: anyone could read or change it from outside. With `#charge` the language enforces it, and a typo like `this.#chrge` fails before running. You'll also see closures used to hide data, the pattern from session 11.
+
+performance-now:
+  mdn: Web/API/Performance/now
+  session: 17
+  es:
+    name: Medir con performance.now()
+    old: |
+      const inicio = new Date().getTime(); // o Date.now()
+      decidir();
+      const tardo = new Date().getTime() - inicio;
+    new: |
+      const inicio = performance.now();
+      decidir();
+      const tardo = performance.now() - inicio;
+    note: |
+      `Date.now()` da la hora del reloj en milisegundos enteros, y ese reloj puede saltar si el sistema lo corrige. `performance.now()` cuenta desde que empezó la página, con decimales, y nunca retrocede: es el que se usa para medir cuánto tarda algo. Para medir a ojo también verás `console.time("x")` y `console.timeEnd("x")`.
+  en:
+    name: Measuring with performance.now()
+    old: |
+      const start = new Date().getTime(); // or Date.now()
+      decide();
+      const took = new Date().getTime() - start;
+    new: |
+      const start = performance.now();
+      decide();
+      const took = performance.now() - start;
+    note: |
+      `Date.now()` gives wall-clock time in whole milliseconds, and that clock can jump when the system corrects it. `performance.now()` counts from when the page started, with decimals, and never goes back: it's the one for measuring how long something takes. For a quick look you'll also see `console.time("x")` and `console.timeEnd("x")`.
+
+array-map:
+  mdn: Web/JavaScript/Reference/Global_Objects/Array/map
+  session: 7
+  es: { name: map }
+  en: { name: map }
+
+array-filter:
+  mdn: Web/JavaScript/Reference/Global_Objects/Array/filter
+  session: 7
+  es: { name: filter }
+  en: { name: filter }
+
+array-find:
+  mdn: Web/JavaScript/Reference/Global_Objects/Array/find
+  session: 7
+  es: { name: find }
+  en: { name: find }
+
+array-some:
+  mdn: Web/JavaScript/Reference/Global_Objects/Array/some
+  session: 7
+  es: { name: some / every }
+  en: { name: some / every }
+
+array-reduce:
+  mdn: Web/JavaScript/Reference/Global_Objects/Array/reduce
+  session: 7
+  es: { name: reduce }
+  en: { name: reduce }
+
+array-sort:
+  mdn: Web/JavaScript/Reference/Global_Objects/Array/sort
+  session: 7
+  es: { name: sort }
+  en: { name: sort }
+
+array-callbacks:
+  mdn: Web/JavaScript/Reference/Global_Objects/Array#iterative_methods
+  session: 7
+  es:
+    name: Métodos con función (map, filter…)
+    old: |
+      var llenos = [];
+      for (var i = 0; i < turnos.length; i++) {
+        if (turnos[i] > 0) {
+          llenos.push(turnos[i] / 5);
+        }
+      }
+    new: |
+      const llenos = turnos
+        .filter((b) => b > 0)
+        .map((b) => b / 5);
+    note: |
+      El bucle con un array vacío y `push` sigue funcionando, pero cada pregunta se escribe a mano. Con `filter`, `map`, `find` o `reduce` el nombre del método dice qué hace. También verás `function (b) { return b > 0; }` en vez de la flecha: es lo mismo, más largo.
+  en:
+    name: Methods that take a function (map, filter…)
+    old: |
+      var full = [];
+      for (var i = 0; i < shifts.length; i++) {
+        if (shifts[i] > 0) {
+          full.push(shifts[i] / 5);
+        }
+      }
+    new: |
+      const full = shifts
+        .filter((b) => b > 0)
+        .map((b) => b / 5);
+    note: |
+      The loop with an empty array and `push` still works, but every question is written by hand. With `filter`, `map`, `find` or `reduce` the method's name says what it does. You'll also see `function (b) { return b > 0; }` instead of the arrow: same thing, longer.
+
+to-sorted:
+  mdn: Web/JavaScript/Reference/Global_Objects/Array/toSorted
+  session: 7
+  es:
+    name: toSorted (ordenar sin modificar)
+    old: |
+      var ranking = linea.slice().sort(function (a, b) {
+        return b.botellas - a.botellas;
+      });
+    new: |
+      const ranking = linea.toSorted((a, b) => b.botellas - a.botellas);
+    note: |
+      `sort` ordena el mismo array, así que había que copiarlo antes con `slice()` para no perder el orden original. `toSorted` devuelve una copia ordenada; sus hermanos `toReversed` y `toSpliced` hacen lo mismo con `reverse` y `splice`.
+  en:
+    name: toSorted (sort without modifying)
+    old: |
+      var ranking = line.slice().sort(function (a, b) {
+        return b.bottles - a.bottles;
+      });
+    new: |
+      const ranking = line.toSorted((a, b) => b.bottles - a.bottles);
+    note: |
+      `sort` sorts the array itself, so you had to copy it first with `slice()` to keep the original order. `toSorted` returns a sorted copy; its siblings `toReversed` and `toSpliced` do the same for `reverse` and `splice`.
+
+recursion:
+  mdn: Glossary/Recursion
+  session: 13
+  es:
+    name: Recursión
+    old: |
+      var nidos = function (galeria) {
+        var total = galeria.nidos;
+        for (var i = 0; i < galeria.salidas.length; i++) {
+          total += arguments.callee(galeria.salidas[i]);
+        }
+        return total;
+      };
+    new: |
+      function nidos(galeria) {
+        let total = galeria.nidos;
+        for (const salida of galeria.salidas) {
+          total += nidos(salida);
+        }
+        return total;
+      }
+    note: |
+      En código muy viejo, una función anónima se llamaba a sí misma con `arguments.callee`. En modo estricto (el de las clases y los módulos) es un error. Dale nombre a la función y llámala por su nombre.
+  en:
+    name: Recursion
+    old: |
+      var nests = function (gallery) {
+        var total = gallery.nests;
+        for (var i = 0; i < gallery.exits.length; i++) {
+          total += arguments.callee(gallery.exits[i]);
+        }
+        return total;
+      };
+    new: |
+      function nests(gallery) {
+        let total = gallery.nests;
+        for (const exit of gallery.exits) {
+          total += nests(exit);
+        }
+        return total;
+      }
+    note: |
+      In very old code, an anonymous function called itself with `arguments.callee`. In strict mode (the mode of classes and modules) it's an error. Give the function a name and call it by name.

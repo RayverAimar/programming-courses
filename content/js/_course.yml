@@ -1,0 +1,11 @@
+# The course cover (Temario): what you can do at the end. One line each, concrete.
+es:
+  outcomes:
+    - Escribir programas en JavaScript moderno que resuelven un encargo de principio a fin
+    - Resolver problemas de juez con arrays, objetos, recursión y búsqueda
+    - Manejar asincronía, errores y datos sin que el programa se caiga
+en:
+  outcomes:
+    - Write modern JavaScript programs that solve a job from start to finish
+    - Solve judge problems with arrays, objects, recursion and search
+    - Handle async code, errors and data without the program falling over

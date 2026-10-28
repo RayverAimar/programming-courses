@@ -1,0 +1,1562 @@
+# Modern Python, one entry per feature. Sessions place a box with <!-- legacy: key --> and a
+# row of documentation links with <!-- mdn: key key -->. This is the one place to update when
+# Python changes: few version numbers here, the official docs carry the details. See
+# docs/content.md and docs/python.md.
+#
+# key:
+#   mdn: path after https://docs.python.org/3/ (the build links docs.python.org/3/ or
+#        docs.python.org/es/3/)
+#   session: the session that teaches it (for the "Moderno y antiguo" page)
+#   es / en:
+#     name: short label
+#     old:  the legacy form, as learners will meet it in older code (optional)
+#     new:  what we write today
+#     note: one or two sentences, Markdown
+
+fstrings:
+  mdn: tutorial/inputoutput.html#formatted-string-literals
+  session: 1
+  es:
+    name: f-strings
+    old: |
+      print("%s tiene %d%% de batería" % (nombre, bateria))
+      print("{} tiene {}% de batería".format(nombre, bateria))
+    new: |
+      print(f"{nombre} tiene {bateria}% de batería")
+    note: |
+      `%` y `.format` todavía funcionan y los verás en código viejo, pero obligan a mirar dos sitios a la vez: el texto y la lista de valores. Con una f-string cada valor está donde se imprime.
+  en:
+    name: f-strings
+    old: |
+      print("%s has %d%% battery" % (name, battery))
+      print("{} has {}% battery".format(name, battery))
+    new: |
+      print(f"{name} has {battery}% battery")
+    note: |
+      `%` and `.format` still work and you'll meet them in older code, but they make you look in two places: the text and the list of values. In an f-string each value sits where it prints.
+
+print-function:
+  mdn: library/functions.html#print
+  session: 1
+  es:
+    name: print()
+    old: |
+      print "Hola, soy Quilla"
+      print "Total:", total,
+    new: |
+      print("Hola, soy Quilla")
+      print("Total:", total, end=" ")
+    note: |
+      En Python 2 `print` era una instrucción, sin paréntesis. En Python 3 es una función, con `sep` y `end` para controlar separadores y saltos de línea.
+  en:
+    name: print()
+    old: |
+      print "Hi, I'm Quilla"
+      print "Total:", total,
+    new: |
+      print("Hi, I'm Quilla")
+      print("Total:", total, end=" ")
+    note: |
+      In Python 2 `print` was a statement, with no parentheses. In Python 3 it's a function, with `sep` and `end` to control separators and line breaks.
+
+int-division:
+  mdn: tutorial/introduction.html#numbers
+  session: 1
+  es:
+    name: "/ y //"
+    old: |
+      7 / 2      # Python 2: da 3
+      7.0 / 2    # 3.5, había que forzar un float
+    new: |
+      7 / 2      # 3.5, siempre un float
+      7 // 2     # 3, división entera
+      7 % 2      # 1, el resto
+    note: |
+      En Python 2 `/` entre enteros cortaba los decimales sin avisar. Hoy `/` siempre da la división exacta y `//` es la división entera, cuando de verdad la quieres.
+  en:
+    name: "/ and //"
+    old: |
+      7 / 2      # Python 2: gives 3
+      7.0 / 2    # 3.5, you had to force a float
+    new: |
+      7 / 2      # 3.5, always a float
+      7 // 2     # 3, floor division
+      7 % 2      # 1, the remainder
+    note: |
+      In Python 2 `/` between integers silently dropped the decimals. Today `/` always gives the true quotient and `//` is floor division, for when you really want it.
+
+type-conversion:
+  mdn: library/functions.html#int
+  session: 1
+  es:
+    name: int(), float(), str()
+    new: |
+      cantidad = int("3")
+      precio = float("4.50")
+      texto = str(cantidad) + " kilos"
+    note: |
+      Python no pega un número a un texto: `"3" + 2` es un `TypeError`. Convierte tú con `int()`, `float()` o `str()`.
+  en:
+    name: int(), float(), str()
+    new: |
+      amount = int("3")
+      price = float("4.50")
+      text = str(amount) + " kilos"
+    note: |
+      Python won't glue a number to a string: `"3" + 2` is a `TypeError`. Convert it yourself with `int()`, `float()` or `str()`.
+
+conditional-expression:
+  mdn: reference/expressions.html#conditional-expressions
+  session: 2
+  es:
+    name: a if c else b
+    old: |
+      estado = abierta and "abierta" or "cerrada"
+    new: |
+      estado = "abierta" if abierta else "cerrada"
+    note: |
+      Antes de la expresión condicional se usaba el truco `c and a or b`, que falla si `a` es *falsy* (`0`, `""`). `a if c else b` hace lo que dice.
+  en:
+    name: a if c else b
+    old: |
+      status = is_open and "open" or "closed"
+    new: |
+      status = "open" if is_open else "closed"
+    note: |
+      Before the conditional expression people used the `c and a or b` trick, which breaks when `a` is *falsy* (`0`, `""`). `a if c else b` does what it says.
+
+is-none:
+  mdn: reference/expressions.html#identity-comparisons
+  session: 2
+  es:
+    name: is None
+    old: |
+      if lectura == None:
+          print("sin lectura")
+    new: |
+      if lectura is None:
+          print("sin lectura")
+    note: |
+      `None` es un único objeto, así que se compara con `is`. `==` le pregunta al objeto si se considera igual, y una clase puede responder lo que quiera.
+  en:
+    name: is None
+    old: |
+      if reading == None:
+          print("no reading")
+    new: |
+      if reading is None:
+          print("no reading")
+    note: |
+      There is only one `None`, so you compare with `is`. `==` asks the object whether it considers itself equal, and a class can answer whatever it likes.
+
+chained-comparison:
+  mdn: reference/expressions.html#comparisons
+  session: 2
+  es:
+    name: Comparaciones encadenadas
+    old: |
+      if edad >= 12 and edad < 18:
+          tarifa = 10
+    new: |
+      if 12 <= edad < 18:
+          tarifa = 10
+    note: |
+      Python encadena comparaciones como en matemáticas: `12 <= edad < 18` significa `12 <= edad and edad < 18`, y evalúa `edad` una sola vez.
+  en:
+    name: Chained comparisons
+    old: |
+      if age >= 12 and age < 18:
+          fare = 10
+    new: |
+      if 12 <= age < 18:
+          fare = 10
+    note: |
+      Python chains comparisons the way maths does: `12 <= age < 18` means `12 <= age and age < 18`, and evaluates `age` only once.
+
+for-range:
+  mdn: tutorial/controlflow.html#the-range-function
+  session: 3
+  es:
+    name: for directo sobre la lista
+    old: |
+      for i in range(len(vagonetas)):
+          total += vagonetas[i]
+    new: |
+      for vagoneta in vagonetas:
+          total += vagoneta
+    note: |
+      `range(len(...))` con índice es la costumbre de otros lenguajes. En Python el `for` recorre los valores directamente; deja `range` para cuando de verdad cuentas números.
+  en:
+    name: for straight over the list
+    old: |
+      for i in range(len(carts)):
+          total += carts[i]
+    new: |
+      for cart in carts:
+          total += cart
+    note: |
+      `range(len(...))` with an index is a habit from other languages. In Python `for` walks the values directly; keep `range` for when you really are counting numbers.
+
+for-else:
+  mdn: tutorial/controlflow.html#else-clauses-on-loops
+  session: 3
+  es:
+    name: for … else
+    new: |
+      for veta in vetas:
+          if veta == "oro":
+              print("¡Oro!")
+              break
+      else:
+          print("Nada esta vez")
+    note: |
+      El `else` de un bucle corre solo si el bucle terminó sin `break`. Sirve para "busqué y no encontré" sin una variable bandera.
+  en:
+    name: for … else
+    new: |
+      for vein in veins:
+          if vein == "gold":
+              print("Gold!")
+              break
+      else:
+          print("Nothing this time")
+    note: |
+      A loop's `else` runs only if the loop finished without a `break`. It says "I searched and didn't find it" without a flag variable.
+
+keyword-args:
+  mdn: tutorial/controlflow.html#keyword-arguments
+  session: 4
+  es:
+    name: Argumentos con nombre
+    new: |
+      def servir(plato, mesa, picante=False):
+          ...
+
+      servir("ceviche", mesa=4, picante=True)
+    note: |
+      Nombrar los argumentos al llamar hace que la llamada se lea sola y evita confundir el orden. Los valores por defecto los vuelven opcionales.
+  en:
+    name: Keyword arguments
+    new: |
+      def serve(dish, table, spicy=False):
+          ...
+
+      serve("ceviche", table=4, spicy=True)
+    note: |
+      Naming arguments in the call makes it read on its own and stops order mix-ups. Default values make them optional.
+
+mutable-default:
+  mdn: tutorial/controlflow.html#default-argument-values
+  session: 4
+  es:
+    name: Valor por defecto mutable
+    old: |
+      def agregar_plato(plato, pedido=[]):
+          pedido.append(plato)
+          return pedido
+    new: |
+      def agregar_plato(plato, pedido=None):
+          if pedido is None:
+              pedido = []
+          pedido.append(plato)
+          return pedido
+    note: |
+      El valor por defecto se crea una sola vez, al definir la función, así que esa lista se comparte entre todas las llamadas. Usa `None` y crea la lista dentro.
+  en:
+    name: Mutable default value
+    old: |
+      def add_dish(dish, order=[]):
+          order.append(dish)
+          return order
+    new: |
+      def add_dish(dish, order=None):
+          if order is None:
+              order = []
+          order.append(dish)
+          return order
+    note: |
+      The default is created once, when the function is defined, so that list is shared by every call. Use `None` and create the list inside.
+
+args-kwargs:
+  mdn: tutorial/controlflow.html#arbitrary-argument-lists
+  session: 4
+  es:
+    name: "*args y **kwargs"
+    new: |
+      def anotar(mesa, *platos, **extras):
+          print(mesa, platos, extras)
+
+      anotar(3, "lomo saltado", "causa", sin_aji=True)
+    note: |
+      `*platos` recoge los argumentos sueltos que sobran en una tupla y `**extras` los que vienen con nombre en un diccionario.
+  en:
+    name: "*args and **kwargs"
+    new: |
+      def note_order(table, *dishes, **extras):
+          print(table, dishes, extras)
+
+      note_order(3, "lomo saltado", "causa", no_chili=True)
+    note: |
+      `*dishes` collects the extra positional arguments into a tuple and `**extras` the named ones into a dictionary.
+
+list-copy:
+  mdn: tutorial/datastructures.html#more-on-lists
+  session: 5
+  es:
+    name: list.copy()
+    old: |
+      respaldo = precios[:]
+      respaldo = list(precios)
+    new: |
+      respaldo = precios.copy()
+    note: |
+      `respaldo = precios` no copia: son dos nombres para la misma lista. `[:]` y `list()` sí copian, pero `.copy()` dice lo que hace. Las tres son copias superficiales.
+  en:
+    name: list.copy()
+    old: |
+      backup = prices[:]
+      backup = list(prices)
+    new: |
+      backup = prices.copy()
+    note: |
+      `backup = prices` doesn't copy: it's two names for the same list. `[:]` and `list()` do copy, but `.copy()` says what it does. All three are shallow copies.
+
+unpacking-star:
+  mdn: reference/simple_stmts.html#assignment-statements
+  session: 5
+  es:
+    name: Desempaquetar con *
+    old: |
+      primero = pesos[0]
+      resto = pesos[1:]
+    new: |
+      primero, *resto = pesos
+      a, b = b, a
+    note: |
+      El desempaquetado reparte una secuencia en varios nombres, y `*resto` se lleva lo que sobra en una lista. Intercambiar dos variables no necesita una auxiliar.
+  en:
+    name: Unpacking with *
+    old: |
+      first = weights[0]
+      rest = weights[1:]
+    new: |
+      first, *rest = weights
+      a, b = b, a
+    note: |
+      Unpacking spreads a sequence across several names, and `*rest` takes whatever is left as a list. Swapping two variables needs no temporary.
+
+sorted:
+  mdn: howto/sorting.html
+  session: 5
+  es:
+    name: sorted() y key
+    old: |
+      ordenados = list(precios)
+      ordenados.sort(lambda a, b: cmp(a[1], b[1]))
+    new: |
+      ordenados = sorted(precios, key=lambda par: par[1])
+    note: |
+      En Python 2 se ordenaba con una función de comparación (`cmp`), que ya no existe. Hoy `key` dice *por qué* ordenar; `sorted()` devuelve una lista nueva y `.sort()` cambia la original.
+  en:
+    name: sorted() and key
+    old: |
+      ordered = list(prices)
+      ordered.sort(lambda a, b: cmp(a[1], b[1]))
+    new: |
+      ordered = sorted(prices, key=lambda pair: pair[1])
+    note: |
+      In Python 2 you sorted with a comparison function (`cmp`), which is gone. Today `key` says *what* to sort by; `sorted()` returns a new list and `.sort()` changes the original.
+
+dict-get:
+  mdn: library/stdtypes.html#dict.get
+  session: 6
+  es:
+    name: dict.get()
+    old: |
+      if sala in visitas:
+          visitas[sala] = visitas[sala] + 1
+      else:
+          visitas[sala] = 1
+    new: |
+      visitas[sala] = visitas.get(sala, 0) + 1
+    note: |
+      `.get(clave, por_defecto)` devuelve el valor si la clave existe y el por defecto si no, sin `KeyError`. Para contar, una sola línea.
+  en:
+    name: dict.get()
+    old: |
+      if room in visits:
+          visits[room] = visits[room] + 1
+      else:
+          visits[room] = 1
+    new: |
+      visits[room] = visits.get(room, 0) + 1
+    note: |
+      `.get(key, default)` gives the value if the key exists and the default if not, with no `KeyError`. Counting fits in one line.
+
+dict-has-key:
+  mdn: library/stdtypes.html#typesmapping
+  session: 6
+  es:
+    name: in en un diccionario
+    old: |
+      if salas.has_key("Sala Oro"):
+          print("existe")
+    new: |
+      if "Sala Oro" in salas:
+          print("existe")
+    note: |
+      `has_key` era de Python 2 y ya no existe. `in` pregunta por las claves de un diccionario, igual que pregunta por los elementos de una lista.
+  en:
+    name: in on a dictionary
+    old: |
+      if rooms.has_key("Gold Room"):
+          print("exists")
+    new: |
+      if "Gold Room" in rooms:
+          print("exists")
+    note: |
+      `has_key` was Python 2 and is gone. `in` asks about a dictionary's keys, the same way it asks about a list's items.
+
+dict-merge:
+  mdn: library/stdtypes.html#dict
+  session: 6
+  es:
+    name: Unir diccionarios con |
+    old: |
+      horario = dict(base)
+      horario.update(feriado)
+      horario = {**base, **feriado}
+    new: |
+      horario = base | feriado
+      base |= feriado
+    note: |
+      `a | b` crea un diccionario nuevo con las claves de los dos; si una se repite, gana la de `b`. `|=` actualiza el de la izquierda.
+  en:
+    name: Merging dicts with |
+    old: |
+      hours = dict(regular)
+      hours.update(holiday)
+      hours = {**regular, **holiday}
+    new: |
+      hours = regular | holiday
+      regular |= holiday
+    note: |
+      `a | b` builds a new dictionary with the keys of both; if one repeats, `b` wins. `|=` updates the one on the left.
+
+set-literal:
+  mdn: tutorial/datastructures.html#sets
+  session: 6
+  es:
+    name: Sets con llaves
+    old: |
+      vistos = set(["Sala Oro", "Sala Erótica"])
+    new: |
+      vistos = {"Sala Oro", "Sala Erótica"}
+      vacio = set()
+    note: |
+      Un set se escribe con llaves, como en matemáticas. Ojo: `{}` vacío es un diccionario; el set vacío es `set()`.
+  en:
+    name: Set literals
+    old: |
+      seen = set(["Gold Room", "Textile Room"])
+    new: |
+      seen = {"Gold Room", "Textile Room"}
+      none_yet = set()
+    note: |
+      A set is written with braces, as in maths. Careful: empty `{}` is a dictionary; the empty set is `set()`.
+
+format-spec:
+  mdn: library/string.html#format-specification-mini-language
+  session: 7
+  es:
+    name: Formato en f-strings
+    old: |
+      "%-10s%8.2f" % (plato, precio)
+      "{:<10}{:>8.2f}".format(plato, precio)
+    new: |
+      f"{plato:<10}{precio:>8.2f}"
+      f"{total:,}  {codigo:05d}"
+    note: |
+      Después de `:` va el formato: alineación (`<`, `>`, `^`) y ancho, decimales (`.2f`), separador de miles (`,`) o ceros a la izquierda (`05d`).
+  en:
+    name: Formatting in f-strings
+    old: |
+      "%-10s%8.2f" % (dish, price)
+      "{:<10}{:>8.2f}".format(dish, price)
+    new: |
+      f"{dish:<10}{price:>8.2f}"
+      f"{total:,}  {code:05d}"
+    note: |
+      After `:` comes the format: alignment (`<`, `>`, `^`) and width, decimals (`.2f`), a thousands separator (`,`) or leading zeros (`05d`).
+
+str-methods:
+  mdn: library/stdtypes.html#string-methods
+  session: 7
+  es:
+    name: Métodos de str
+    new: |
+      etiqueta = "  Alfajores de Penca  ".strip().lower()
+      partes = "Rímac,Callao,Barranco".split(",")
+      nuevo = etiqueta.replace("penca", "maicena")
+    note: |
+      Los textos no cambian: cada método devuelve un texto nuevo. Si no guardas el resultado, se pierde.
+  en:
+    name: str methods
+    new: |
+      label = "  Alfajores de Penca  ".strip().lower()
+      parts = "Rímac,Callao,Barranco".split(",")
+      new_label = label.replace("penca", "maicena")
+    note: |
+      Strings never change: every method returns a new string. If you don't keep the result, it's gone.
+
+removeprefix:
+  mdn: library/stdtypes.html#str.removeprefix
+  session: 7
+  es:
+    name: removeprefix() y removesuffix()
+    old: |
+      if codigo.startswith("PED-"):
+          codigo = codigo[len("PED-"):]
+    new: |
+      codigo = codigo.removeprefix("PED-")
+      archivo = archivo.removesuffix(".txt")
+    note: |
+      Quitan el prefijo o el sufijo solo si está, en una llamada. No confundir con `strip("PED-")`, que quita *caracteres* sueltos de ese conjunto.
+  en:
+    name: removeprefix() and removesuffix()
+    old: |
+      if code.startswith("ORD-"):
+          code = code[len("ORD-"):]
+    new: |
+      code = code.removeprefix("ORD-")
+      filename = filename.removesuffix(".txt")
+    note: |
+      They drop the prefix or suffix only if it's there, in one call. Don't confuse them with `strip("ORD-")`, which removes any of those *characters*.
+
+comprehensions:
+  mdn: tutorial/datastructures.html#list-comprehensions
+  session: 8
+  es:
+    name: Comprensiones
+    old: |
+      caros = []
+      for precio in precios:
+          if precio > 20:
+              caros.append(precio * 1.18)
+      caros = map(lambda p: p * 1.18, filter(lambda p: p > 20, precios))
+    new: |
+      caros = [precio * 1.18 for precio in precios if precio > 20]
+    note: |
+      Una comprensión dice en una línea qué lista quieres, en vez de cómo armarla. Suele leerse mejor que `map` con `filter`, que en Python 3 además devuelven iteradores, no listas.
+  en:
+    name: Comprehensions
+    old: |
+      pricey = []
+      for price in prices:
+          if price > 20:
+              pricey.append(price * 1.18)
+      pricey = map(lambda p: p * 1.18, filter(lambda p: p > 20, prices))
+    new: |
+      pricey = [price * 1.18 for price in prices if price > 20]
+    note: |
+      A comprehension says in one line which list you want instead of how to build it. It usually reads better than `map` with `filter`, which in Python 3 also return iterators, not lists.
+
+enumerate:
+  mdn: library/functions.html#enumerate
+  session: 8
+  es:
+    name: enumerate()
+    old: |
+      for i in range(len(platos)):
+          print(i + 1, platos[i])
+    new: |
+      for i, plato in enumerate(platos, start=1):
+          print(i, plato)
+    note: |
+      `enumerate` te da el número y el valor juntos, sin indexar a mano. `start=1` empieza a contar desde uno.
+  en:
+    name: enumerate()
+    old: |
+      for i in range(len(dishes)):
+          print(i + 1, dishes[i])
+    new: |
+      for i, dish in enumerate(dishes, start=1):
+          print(i, dish)
+    note: |
+      `enumerate` gives you the number and the value together, no manual indexing. `start=1` counts from one.
+
+zip:
+  mdn: library/functions.html#zip
+  session: 8
+  es:
+    name: zip()
+    old: |
+      for i in range(len(platos)):
+          print(platos[i], precios[i])
+    new: |
+      for plato, precio in zip(platos, precios, strict=True):
+          print(plato, precio)
+    note: |
+      `zip` recorre varias listas a la vez. Se detiene en la más corta; con `strict=True` lanza un error si no miden lo mismo.
+  en:
+    name: zip()
+    old: |
+      for i in range(len(dishes)):
+          print(dishes[i], prices[i])
+    new: |
+      for dish, price in zip(dishes, prices, strict=True):
+          print(dish, price)
+    note: |
+      `zip` walks several lists at once. It stops at the shortest; with `strict=True` it raises an error if their lengths differ.
+
+lambda:
+  mdn: tutorial/controlflow.html#lambda-expressions
+  session: 8
+  es:
+    name: lambda
+    new: |
+      mas_barato = min(platos, key=lambda plato: plato["precio"])
+    note: |
+      Una `lambda` es una función pequeña sin nombre, de una sola expresión. Úsala para `key=`; si necesita nombre o varias líneas, escribe un `def`.
+  en:
+    name: lambda
+    new: |
+      cheapest = min(dishes, key=lambda dish: dish["price"])
+    note: |
+      A `lambda` is a small nameless function of a single expression. Use it for `key=`; if it needs a name or several lines, write a `def`.
+
+nested-lists:
+  mdn: faq/programming.html#how-do-i-create-a-multidimensional-list
+  session: 9
+  es:
+    name: Listas de listas
+    new: |
+      grilla = [[0] * columnas for _ in range(filas)]
+      grilla[fila][columna] = 1
+    note: |
+      `[[0] * m] * n` repite *la misma* fila `n` veces, y cambiar una casilla las cambia todas. Crea cada fila por separado con una comprensión.
+  en:
+    name: Lists of lists
+    new: |
+      grid = [[0] * columns for _ in range(rows)]
+      grid[row][column] = 1
+    note: |
+      `[[0] * m] * n` repeats *the same* row `n` times, so changing one tile changes them all. Build each row separately with a comprehension.
+
+deque:
+  mdn: library/collections.html#collections.deque
+  session: 10
+  es:
+    name: collections.deque
+    old: |
+      cola = [inicio]
+      casilla = cola.pop(0)
+    new: |
+      from collections import deque
+      cola = deque([inicio])
+      casilla = cola.popleft()
+    note: |
+      `list.pop(0)` mueve todos los elementos un lugar, y en una cola larga se nota. `deque` saca por los dos extremos en tiempo constante: es la cola de BFS.
+  en:
+    name: collections.deque
+    old: |
+      queue = [start]
+      tile = queue.pop(0)
+    new: |
+      from collections import deque
+      queue = deque([start])
+      tile = queue.popleft()
+    note: |
+      `list.pop(0)` shifts every element one place, and on a long queue you feel it. `deque` takes from both ends in constant time: it's the BFS queue.
+
+bisect:
+  mdn: library/bisect.html
+  session: 10
+  es:
+    name: bisect
+    new: |
+      from bisect import bisect_left
+      posicion = bisect_left(alturas, 120)
+    note: |
+      `bisect` hace búsqueda binaria sobre una lista ordenada: devuelve dónde iría el valor, en tiempo logarítmico.
+  en:
+    name: bisect
+    new: |
+      from bisect import bisect_left
+      position = bisect_left(heights, 120)
+    note: |
+      `bisect` runs a binary search on a sorted list: it tells you where the value would go, in logarithmic time.
+
+nonlocal:
+  mdn: reference/simple_stmts.html#the-nonlocal-statement
+  session: 11
+  es:
+    name: nonlocal
+    old: |
+      def crear_contador():
+          cuenta = [0]
+          def sumar():
+              cuenta[0] += 1
+          return sumar
+    new: |
+      def crear_contador():
+          cuenta = 0
+          def sumar():
+              nonlocal cuenta
+              cuenta += 1
+          return sumar
+    note: |
+      Python 2 no dejaba reasignar una variable de la función de afuera, así que se escondía en una lista. `nonlocal` dice que el nombre es el de la función que la rodea.
+  en:
+    name: nonlocal
+    old: |
+      def make_counter():
+          count = [0]
+          def add():
+              count[0] += 1
+          return add
+    new: |
+      def make_counter():
+          count = 0
+          def add():
+              nonlocal count
+              count += 1
+          return add
+    note: |
+      Python 2 wouldn't let you reassign the outer function's variable, so it was hidden in a list. `nonlocal` says the name belongs to the enclosing function.
+
+functools-wraps:
+  mdn: library/functools.html#functools.wraps
+  session: 11
+  es:
+    name: functools.wraps
+    old: |
+      def registrar(funcion):
+          def envoltura(*args, **kwargs):
+              return funcion(*args, **kwargs)
+          return envoltura
+    new: |
+      def registrar(funcion):
+          @functools.wraps(funcion)
+          def envoltura(*args, **kwargs):
+              return funcion(*args, **kwargs)
+          return envoltura
+    note: |
+      Sin `wraps`, la función decorada pierde su nombre y su docstring: todas se llaman `envoltura`. `@functools.wraps` los copia de la original.
+  en:
+    name: functools.wraps
+    old: |
+      def logged(func):
+          def wrapper(*args, **kwargs):
+              return func(*args, **kwargs)
+          return wrapper
+    new: |
+      def logged(func):
+          @functools.wraps(func)
+          def wrapper(*args, **kwargs):
+              return func(*args, **kwargs)
+          return wrapper
+    note: |
+      Without `wraps`, the decorated function loses its name and docstring: they're all called `wrapper`. `@functools.wraps` copies them from the original.
+
+functools-cache:
+  mdn: library/functools.html#functools.cache
+  session: 11
+  es:
+    name: functools.cache
+    old: |
+      memo = {}
+      def caminos(n):
+          if n not in memo:
+              memo[n] = 1 if n < 2 else caminos(n - 1) + caminos(n - 2)
+          return memo[n]
+    new: |
+      @functools.cache
+      def caminos(n):
+          return 1 if n < 2 else caminos(n - 1) + caminos(n - 2)
+    note: |
+      `@cache` guarda cada resultado según sus argumentos y no vuelve a calcularlo. Reemplaza el diccionario a mano y el antiguo `@lru_cache(maxsize=None)`.
+  en:
+    name: functools.cache
+    old: |
+      memo = {}
+      def paths(n):
+          if n not in memo:
+              memo[n] = 1 if n < 2 else paths(n - 1) + paths(n - 2)
+          return memo[n]
+    new: |
+      @functools.cache
+      def paths(n):
+          return 1 if n < 2 else paths(n - 1) + paths(n - 2)
+    note: |
+      `@cache` stores each result by its arguments and never computes it twice. It replaces the hand-made dictionary and the older `@lru_cache(maxsize=None)`.
+
+dataclass:
+  mdn: library/dataclasses.html
+  session: 12
+  es:
+    name: "@dataclass"
+    old: |
+      class Plato:
+          def __init__(self, nombre, precio):
+              self.nombre = nombre
+              self.precio = precio
+          def __repr__(self):
+              return "Plato(%r, %r)" % (self.nombre, self.precio)
+    new: |
+      @dataclass
+      class Plato:
+          nombre: str
+          precio: float
+          extras: list[str] = field(default_factory=list)
+    note: |
+      `@dataclass` escribe por ti `__init__`, `__repr__` y `__eq__` a partir de los campos. Para una lista por defecto usa `field(default_factory=list)`.
+  en:
+    name: "@dataclass"
+    old: |
+      class Dish:
+          def __init__(self, name, price):
+              self.name = name
+              self.price = price
+          def __repr__(self):
+              return "Dish(%r, %r)" % (self.name, self.price)
+    new: |
+      @dataclass
+      class Dish:
+          name: str
+          price: float
+          extras: list[str] = field(default_factory=list)
+    note: |
+      `@dataclass` writes `__init__`, `__repr__` and `__eq__` for you from the fields. For a default list use `field(default_factory=list)`.
+
+property:
+  mdn: library/functions.html#property
+  session: 12
+  es:
+    name: "@property"
+    old: |
+      def get_precio(self):
+          return self._precio
+      def set_precio(self, valor):
+          self._precio = valor
+    new: |
+      @property
+      def precio(self):
+          return self._precio
+      @precio.setter
+      def precio(self, valor):
+          self._precio = valor
+    note: |
+      Los `get_`/`set_` son costumbre de otros lenguajes. Con `@property` se sigue escribiendo `plato.precio = 12`, y el setter puede validar el valor.
+  en:
+    name: "@property"
+    old: |
+      def get_price(self):
+          return self._price
+      def set_price(self, value):
+          self._price = value
+    new: |
+      @property
+      def price(self):
+          return self._price
+      @price.setter
+      def price(self, value):
+          self._price = value
+    note: |
+      `get_`/`set_` methods are a habit from other languages. With `@property` you still write `dish.price = 12`, and the setter can validate the value.
+
+super-noargs:
+  mdn: library/functions.html#super
+  session: 12
+  es:
+    name: super() sin argumentos
+    old: |
+      class Postre(Plato):
+          def __init__(self, nombre, precio):
+              super(Postre, self).__init__(nombre, precio)
+    new: |
+      class Postre(Plato):
+          def __init__(self, nombre, precio):
+              super().__init__(nombre, precio)
+    note: |
+      En Python 2 había que repetir la clase y `self`. En Python 3 `super()` ya sabe en qué clase y con qué objeto está.
+  en:
+    name: super() without arguments
+    old: |
+      class Dessert(Dish):
+          def __init__(self, name, price):
+              super(Dessert, self).__init__(name, price)
+    new: |
+      class Dessert(Dish):
+          def __init__(self, name, price):
+              super().__init__(name, price)
+    note: |
+      In Python 2 you had to repeat the class and `self`. In Python 3 `super()` already knows which class and object it's in.
+
+total-ordering:
+  mdn: library/functools.html#functools.total_ordering
+  session: 13
+  es:
+    name: functools.total_ordering
+    old: |
+      class Pieza:
+          def __cmp__(self, otra):
+              return cmp(self.antiguedad, otra.antiguedad)
+    new: |
+      @functools.total_ordering
+      class Pieza:
+          def __eq__(self, otra): return self.antiguedad == otra.antiguedad
+          def __lt__(self, otra): return self.antiguedad < otra.antiguedad
+    note: |
+      Python 3 ya no usa `__cmp__`. Defines `__eq__` y `__lt__`, y `total_ordering` completa `<=`, `>` y `>=`.
+  en:
+    name: functools.total_ordering
+    old: |
+      class Piece:
+          def __cmp__(self, other):
+              return cmp(self.age, other.age)
+    new: |
+      @functools.total_ordering
+      class Piece:
+          def __eq__(self, other): return self.age == other.age
+          def __lt__(self, other): return self.age < other.age
+    note: |
+      Python 3 no longer uses `__cmp__`. You define `__eq__` and `__lt__`, and `total_ordering` fills in `<=`, `>` and `>=`.
+
+contextmanager:
+  mdn: library/contextlib.html#contextlib.contextmanager
+  session: 13
+  es:
+    name: contextlib.contextmanager
+    old: |
+      class Vitrina:
+          def __enter__(self):
+              print("abro"); return self
+          def __exit__(self, tipo, valor, traza):
+              print("cierro")
+    new: |
+      @contextmanager
+      def vitrina():
+          print("abro")
+          try: yield
+          finally: print("cierro")
+    note: |
+      Una clase con `__enter__` y `__exit__` sigue siendo válida. Para casos simples, un generador con `@contextmanager` dice lo mismo: lo de antes del `yield` abre y el `finally` cierra.
+  en:
+    name: contextlib.contextmanager
+    old: |
+      class Showcase:
+          def __enter__(self):
+              print("open"); return self
+          def __exit__(self, kind, value, trace):
+              print("close")
+    new: |
+      @contextmanager
+      def showcase():
+          print("open")
+          try: yield
+          finally: print("close")
+    note: |
+      A class with `__enter__` and `__exit__` is still fine. For simple cases, a generator with `@contextmanager` says the same thing: what comes before `yield` opens and the `finally` closes.
+
+protocol:
+  mdn: library/typing.html#typing.Protocol
+  session: 13
+  es:
+    name: typing.Protocol
+    old: |
+      class Medible(ABC):
+          @abstractmethod
+          def __len__(self): ...
+
+      class Vitrina(Medible): ...
+    new: |
+      class Medible(Protocol):
+          def __len__(self) -> int: ...
+
+      class Vitrina: ...  # sin heredar
+    note: |
+      Con una clase abstracta cada clase tiene que heredar de ella. Un `Protocol` describe la forma: cualquier clase con esos métodos encaja, como en el *duck typing*.
+  en:
+    name: typing.Protocol
+    old: |
+      class Sized(ABC):
+          @abstractmethod
+          def __len__(self): ...
+
+      class Showcase(Sized): ...
+    new: |
+      class Sized(Protocol):
+          def __len__(self) -> int: ...
+
+      class Showcase: ...  # no inheritance
+    note: |
+      With an abstract class every class has to inherit from it. A `Protocol` describes a shape: any class with those methods fits, just like *duck typing*.
+
+yield-from:
+  mdn: reference/expressions.html#yield-expressions
+  session: 14
+  es:
+    name: yield from
+    new: |
+      def todas_las_vetas(galerias):
+          for galeria in galerias:
+              yield from galeria
+    note: |
+      `yield from` entrega uno por uno los valores de otro iterable o generador, sin escribir un `for` con `yield` dentro.
+  en:
+    name: yield from
+    new: |
+      def all_veins(tunnels):
+          for tunnel in tunnels:
+              yield from tunnel
+    note: |
+      `yield from` hands out the values of another iterable or generator one by one, without a `for` with a `yield` inside.
+
+itertools:
+  mdn: library/itertools.html
+  session: 14
+  es:
+    name: itertools
+    new: |
+      from itertools import accumulate, batched, islice, pairwise
+      acumulado = list(accumulate(toneladas))
+      tramos = list(pairwise(estaciones))
+      primeras = list(islice(lecturas(), 5))
+    note: |
+      `itertools` trae piezas perezosas para armar recorridos: contar, encadenar, agrupar, cortar trozos o mirar de dos en dos, sin escribir el bucle.
+  en:
+    name: itertools
+    new: |
+      from itertools import accumulate, batched, islice, pairwise
+      running = list(accumulate(tonnes))
+      stretches = list(pairwise(stations))
+      first_five = list(islice(readings(), 5))
+    note: |
+      `itertools` brings lazy pieces to build iterations: count, chain, group, slice or look two at a time, without writing the loop.
+
+recursion-limit:
+  mdn: library/sys.html#sys.setrecursionlimit
+  session: 15
+  es:
+    name: RecursionError
+    new: |
+      def profundidad(galeria):
+          if not galeria:
+              return 0
+          return 1 + profundidad(galeria[1:])
+    note: |
+      Python limita la pila de llamadas (unas mil) y lanza `RecursionError` si la pasas. Subir el límite con `sys.setrecursionlimit` rara vez es la solución: mejor un bucle o una pila propia.
+  en:
+    name: RecursionError
+    new: |
+      def depth(tunnel):
+          if not tunnel:
+              return 0
+          return 1 + depth(tunnel[1:])
+    note: |
+      Python caps the call stack (around a thousand) and raises `RecursionError` past it. Raising the cap with `sys.setrecursionlimit` is rarely the fix: use a loop or your own stack.
+
+raise-from:
+  mdn: tutorial/errors.html#exception-chaining
+  session: 16
+  es:
+    name: raise … from
+    old: |
+      except KeyError:
+          raise ErrorPedido("plato desconocido")
+    new: |
+      except KeyError as error:
+          raise ErrorPedido("plato desconocido") from error
+    note: |
+      `from` deja anotada la causa original, y el traceback muestra las dos. `from None` la oculta cuando de verdad no aporta.
+  en:
+    name: raise … from
+    old: |
+      except KeyError:
+          raise OrderError("unknown dish")
+    new: |
+      except KeyError as error:
+          raise OrderError("unknown dish") from error
+    note: |
+      `from` records the original cause, and the traceback shows both. `from None` hides it when it really adds nothing.
+
+except-star:
+  mdn: tutorial/errors.html#raising-and-handling-multiple-unrelated-exceptions
+  session: 16
+  es:
+    name: ExceptionGroup y except*
+    new: |
+      try:
+          revisar_todo()
+      except* ValueError as grupo:
+          print("valores malos:", len(grupo.exceptions))
+      except* KeyError:
+          print("faltan claves")
+    note: |
+      Un `ExceptionGroup` lleva varios errores a la vez, por ejemplo de tareas en paralelo. Cada `except*` atiende los de su tipo y deja pasar el resto.
+  en:
+    name: ExceptionGroup and except*
+    new: |
+      try:
+          check_everything()
+      except* ValueError as group:
+          print("bad values:", len(group.exceptions))
+      except* KeyError:
+          print("missing keys")
+    note: |
+      An `ExceptionGroup` carries several errors at once, for instance from parallel tasks. Each `except*` handles its own type and lets the rest through.
+
+exception-as:
+  mdn: tutorial/errors.html#handling-exceptions
+  session: 16
+  es:
+    name: except … as
+    old: |
+      try:
+          precio = float(texto)
+      except ValueError, error:
+          print error
+    new: |
+      try:
+          precio = float(texto)
+      except ValueError as error:
+          print(error)
+    note: |
+      Python 2 aceptaba `except Tipo, nombre`, que se confundía con capturar dos tipos. Hoy es `as`, y varios tipos van en una tupla: `except (ValueError, KeyError)`.
+  en:
+    name: except … as
+    old: |
+      try:
+          price = float(text)
+      except ValueError, error:
+          print error
+    new: |
+      try:
+          price = float(text)
+      except ValueError as error:
+          print(error)
+    note: |
+      Python 2 accepted `except Type, name`, easy to mistake for catching two types. Today it's `as`, and several types go in a tuple: `except (ValueError, KeyError)`.
+
+builtin-generics:
+  mdn: library/stdtypes.html#types-genericalias
+  session: 17
+  es:
+    name: list[int], dict[str, float]
+    old: |
+      from typing import Dict, List
+      def promedio(notas: List[int]) -> float: ...
+      precios: Dict[str, float] = {}
+    new: |
+      def promedio(notas: list[int]) -> float: ...
+      precios: dict[str, float] = {}
+    note: |
+      Los tipos de siempre ya aceptan corchetes, así que `typing.List` y `typing.Dict` sobran.
+  en:
+    name: list[int], dict[str, float]
+    old: |
+      from typing import Dict, List
+      def average(grades: List[int]) -> float: ...
+      prices: Dict[str, float] = {}
+    new: |
+      def average(grades: list[int]) -> float: ...
+      prices: dict[str, float] = {}
+    note: |
+      The everyday types take brackets now, so `typing.List` and `typing.Dict` aren't needed.
+
+union-pipe:
+  mdn: library/stdtypes.html#types-union
+  session: 17
+  es:
+    name: X | None
+    old: |
+      from typing import Optional, Union
+      def buscar(codigo: Union[int, str]) -> Optional[str]: ...
+    new: |
+      def buscar(codigo: int | str) -> str | None: ...
+    note: |
+      `|` une tipos: `int | str` es "uno u otro" y `str | None` es lo que antes se escribía `Optional[str]`.
+  en:
+    name: X | None
+    old: |
+      from typing import Optional, Union
+      def find(code: Union[int, str]) -> Optional[str]: ...
+    new: |
+      def find(code: int | str) -> str | None: ...
+    note: |
+      `|` joins types: `int | str` means "one or the other" and `str | None` is what used to be written `Optional[str]`.
+
+match:
+  mdn: tutorial/controlflow.html#match-statements
+  session: 17
+  es:
+    name: match
+    old: |
+      if comando[0] == "ir" and len(comando) == 2:
+          ir_a(comando[1])
+      elif comando == ["parar"]:
+          parar()
+    new: |
+      match comando:
+          case ["ir", destino]:
+              ir_a(destino)
+          case ["parar"]:
+              parar()
+    note: |
+      Desde Python 3.10, `match` compara la *forma* de un valor (listas, diccionarios, clases) y saca sus partes a variables en el mismo paso. Donde una cadena de `if`/`elif` desarma datos a mano, `match` se lee mejor.
+  en:
+    name: match
+    old: |
+      if command[0] == "go" and len(command) == 2:
+          go_to(command[1])
+      elif command == ["stop"]:
+          stop()
+    new: |
+      match command:
+          case ["go", target]:
+              go_to(target)
+          case ["stop"]:
+              stop()
+    note: |
+      Since Python 3.10, `match` compares the *shape* of a value (lists, dictionaries, classes) and pulls its parts into variables in the same step. Where an `if`/`elif` chain takes data apart by hand, `match` reads better.
+
+enum:
+  mdn: howto/enum.html
+  session: 17
+  es:
+    name: enum.Enum
+    new: |
+      class Estado(Enum):
+          ABIERTA = "abierta"
+          CERRADA = "cerrada"
+
+      puerta = Estado.ABIERTA
+    note: |
+      Un `Enum` reúne un conjunto fijo de valores con nombre. Un error de tipeo da `AttributeError` en vez de pasar como un texto más.
+  en:
+    name: enum.Enum
+    new: |
+      class Status(Enum):
+          OPEN = "open"
+          CLOSED = "closed"
+
+      door = Status.OPEN
+    note: |
+      An `Enum` groups a fixed set of named values. A typo gives an `AttributeError` instead of slipping through as one more string.
+
+type-params:
+  mdn: reference/compound_stmts.html#type-params
+  session: 17
+  es:
+    name: Genéricos con [T]
+    old: |
+      from typing import TypeVar
+      T = TypeVar("T")
+      def primero(elementos: list[T]) -> T: ...
+    new: |
+      def primero[T](elementos: list[T]) -> T: ...
+    note: |
+      El parámetro de tipo se declara entre corchetes junto al nombre de la función o la clase, sin `TypeVar` aparte.
+  en:
+    name: Generics with [T]
+    old: |
+      from typing import TypeVar
+      T = TypeVar("T")
+      def first(items: list[T]) -> T: ...
+    new: |
+      def first[T](items: list[T]) -> T: ...
+    note: |
+      The type parameter is declared in brackets next to the function or class name, with no separate `TypeVar`.
+
+async-await:
+  mdn: library/asyncio-task.html#coroutines
+  session: 18
+  es:
+    name: async def y await
+    old: |
+      @asyncio.coroutine
+      def traer_precio(producto):
+          respuesta = yield from taller.pedir(producto)
+          return respuesta
+    new: |
+      async def traer_precio(producto):
+          respuesta = await taller.pedir(producto)
+          return respuesta
+    note: |
+      Las primeras corrutinas de asyncio eran generadores decorados que usaban `yield from`. `async def` y `await` las volvieron parte del lenguaje, y el decorador ya no existe.
+  en:
+    name: async def and await
+    old: |
+      @asyncio.coroutine
+      def fetch_price(product):
+          response = yield from workshop.request(product)
+          return response
+    new: |
+      async def fetch_price(product):
+          response = await workshop.request(product)
+          return response
+    note: |
+      The first asyncio coroutines were decorated generators using `yield from`. `async def` and `await` made them part of the language, and the decorator is gone.
+
+asyncio-run:
+  mdn: library/asyncio-runner.html#asyncio.run
+  session: 18
+  es:
+    name: asyncio.run()
+    old: |
+      bucle = asyncio.get_event_loop()
+      bucle.run_until_complete(principal())
+      bucle.close()
+    new: |
+      asyncio.run(principal())
+    note: |
+      `asyncio.run` crea el bucle de eventos, corre la corrutina y lo cierra. Ya no hace falta manejar el bucle a mano.
+  en:
+    name: asyncio.run()
+    old: |
+      loop = asyncio.get_event_loop()
+      loop.run_until_complete(main())
+      loop.close()
+    new: |
+      asyncio.run(main())
+    note: |
+      `asyncio.run` creates the event loop, runs the coroutine and closes it. No more handling the loop by hand.
+
+taskgroup:
+  mdn: library/asyncio-task.html#task-groups
+  session: 18
+  es:
+    name: asyncio.TaskGroup
+    old: |
+      tareas = [asyncio.ensure_future(traer(p)) for p in productos]
+      resultados = await asyncio.gather(*tareas)
+    new: |
+      async with asyncio.TaskGroup() as grupo:
+          tareas = [grupo.create_task(traer(p)) for p in productos]
+      resultados = [tarea.result() for tarea in tareas]
+    note: |
+      Con `gather`, si una tarea falla las otras siguen corriendo. Un `TaskGroup` espera a todas al salir del bloque y, si una falla, cancela el resto y junta los errores en un `ExceptionGroup`.
+  en:
+    name: asyncio.TaskGroup
+    old: |
+      tasks = [asyncio.ensure_future(fetch(p)) for p in products]
+      results = await asyncio.gather(*tasks)
+    new: |
+      async with asyncio.TaskGroup() as group:
+          tasks = [group.create_task(fetch(p)) for p in products]
+      results = [task.result() for task in tasks]
+    note: |
+      With `gather`, if one task fails the others keep running. A `TaskGroup` waits for all of them when the block ends and, if one fails, cancels the rest and collects the errors in an `ExceptionGroup`.
+
+asyncio-timeout:
+  mdn: library/asyncio-task.html#asyncio.timeout
+  session: 18
+  es:
+    name: asyncio.timeout
+    old: |
+      respuesta = await asyncio.wait_for(taller.pedir("menu"), timeout=2)
+    new: |
+      async with asyncio.timeout(2):
+          respuesta = await taller.pedir("menu")
+    note: |
+      `asyncio.timeout` pone un límite de segundos a todo un bloque, no a una sola llamada. Al vencer lanza `TimeoutError`.
+  en:
+    name: asyncio.timeout
+    old: |
+      response = await asyncio.wait_for(workshop.request("menu"), timeout=2)
+    new: |
+      async with asyncio.timeout(2):
+          response = await workshop.request("menu")
+    note: |
+      `asyncio.timeout` puts a time limit in seconds on a whole block, not just one call. When it runs out it raises `TimeoutError`.
+
+pathlib:
+  mdn: library/pathlib.html
+  session: 19
+  es:
+    name: pathlib.Path
+    old: |
+      ruta = os.path.join(carpeta, "ventas.csv")
+      if os.path.exists(ruta):
+          extension = os.path.splitext(ruta)[1]
+    new: |
+      ruta = Path(carpeta) / "ventas.csv"
+      if ruta.exists():
+          extension = ruta.suffix
+    note: |
+      `os.path` trata las rutas como textos; `Path` es un objeto con métodos, y `/` une partes de la ruta. También lee y escribe: `ruta.read_text()`.
+  en:
+    name: pathlib.Path
+    old: |
+      path = os.path.join(folder, "sales.csv")
+      if os.path.exists(path):
+          extension = os.path.splitext(path)[1]
+    new: |
+      path = Path(folder) / "sales.csv"
+      if path.exists():
+          extension = path.suffix
+    note: |
+      `os.path` treats paths as strings; `Path` is an object with methods, and `/` joins path parts. It reads and writes too: `path.read_text()`.
+
+with-open:
+  mdn: tutorial/inputoutput.html#reading-and-writing-files
+  session: 19
+  es:
+    name: with open(...)
+    old: |
+      archivo = open("ventas.csv")
+      contenido = archivo.read()
+      archivo.close()
+    new: |
+      with open("ventas.csv", encoding="utf-8") as archivo:
+          contenido = archivo.read()
+    note: |
+      `with` cierra el archivo al salir del bloque, aunque haya un error en medio. Indica siempre `encoding`, para que las tildes y la ñ se lean igual en cualquier computadora.
+  en:
+    name: with open(...)
+    old: |
+      file = open("sales.csv")
+      contents = file.read()
+      file.close()
+    new: |
+      with open("sales.csv", encoding="utf-8") as file:
+          contents = file.read()
+    note: |
+      `with` closes the file when the block ends, even if an error happens in between. Always give `encoding`, so accents and ñ read the same on every computer.
+
+csv-dictreader:
+  mdn: library/csv.html#csv.DictReader
+  session: 19
+  es:
+    name: csv.DictReader
+    new: |
+      with open("ventas.csv", encoding="utf-8", newline="") as archivo:
+          for venta in csv.DictReader(archivo):
+              print(venta["plato"], float(venta["precio"]))
+    note: |
+      `DictReader` usa la primera fila como encabezado y te da cada fila como diccionario. Los valores llegan como textos: conviértelos tú.
+  en:
+    name: csv.DictReader
+    new: |
+      with open("sales.csv", encoding="utf-8", newline="") as file:
+          for sale in csv.DictReader(file):
+              print(sale["dish"], float(sale["price"]))
+    note: |
+      `DictReader` takes the first row as the header and gives you each row as a dictionary. Values arrive as strings: convert them yourself.
+
+json:
+  mdn: library/json.html
+  session: 19
+  es:
+    name: json
+    new: |
+      carta = json.loads(Path("carta.json").read_text(encoding="utf-8"))
+      texto = json.dumps(carta, ensure_ascii=False, indent=2)
+    note: |
+      `json.loads` convierte texto JSON en diccionarios y listas, y `json.dumps` hace lo contrario. `ensure_ascii=False` deja las tildes como están.
+  en:
+    name: json
+    new: |
+      menu = json.loads(Path("menu.json").read_text(encoding="utf-8"))
+      text = json.dumps(menu, ensure_ascii=False, indent=2)
+    note: |
+      `json.loads` turns JSON text into dictionaries and lists, and `json.dumps` does the reverse. `ensure_ascii=False` keeps accents as they are.
+
+main-guard:
+  mdn: library/__main__.html
+  session: 19
+  es:
+    name: if __name__ == "__main__"
+    new: |
+      def principal():
+          print("Informe del día")
+
+      if __name__ == "__main__":
+          principal()
+    note: |
+      El bloque corre solo cuando ejecutas el archivo directamente, no cuando otro lo importa. Así un módulo puede ofrecer funciones y también funcionar como programa.
+  en:
+    name: if __name__ == "__main__"
+    new: |
+      def main():
+          print("Daily report")
+
+      if __name__ == "__main__":
+          main()
+    note: |
+      The block runs only when you run the file directly, not when another file imports it. That way a module can offer functions and also work as a program.
+
+heapq:
+  mdn: library/heapq.html
+  session: 20
+  es:
+    name: heapq
+    new: |
+      import heapq
+      tres_mejores = heapq.nlargest(3, ventas)
+      heapq.heappush(pendientes, (distancia, casilla))
+      distancia, casilla = heapq.heappop(pendientes)
+    note: |
+      Un *heap* da siempre el menor elemento en tiempo logarítmico, sin ordenar toda la lista. Sirve para los *k* mejores y para colas de prioridad como en Dijkstra.
+  en:
+    name: heapq
+    new: |
+      import heapq
+      top_three = heapq.nlargest(3, sales)
+      heapq.heappush(pending, (distance, tile))
+      distance, tile = heapq.heappop(pending)
+    note: |
+      A *heap* always gives you the smallest item in logarithmic time, without sorting the whole list. Use it for the top *k* and for priority queues like Dijkstra's.
+
+perf-counter:
+  mdn: library/time.html#time.perf_counter
+  session: 20
+  es:
+    name: time.perf_counter()
+    old: |
+      inicio = time.time()
+      buscar_ruta(mapa)
+      print(time.time() - inicio)
+    new: |
+      inicio = time.perf_counter()
+      buscar_ruta(mapa)
+      print(time.perf_counter() - inicio)
+    note: |
+      `time.time()` es la hora del reloj, que puede saltar si el sistema la ajusta, y tiene poca resolución. `perf_counter()` está hecho para medir duraciones cortas.
+  en:
+    name: time.perf_counter()
+    old: |
+      start = time.time()
+      find_route(grid)
+      print(time.time() - start)
+    new: |
+      start = time.perf_counter()
+      find_route(grid)
+      print(time.perf_counter() - start)
+    note: |
+      `time.time()` is the wall clock, which can jump if the system adjusts it, and has low resolution. `perf_counter()` is made for timing short stretches.
+
+str-join:
+  mdn: library/stdtypes.html#str.join
+  session: 20
+  es:
+    name: '"".join()'
+    old: |
+      informe = ""
+      for linea in lineas:
+          informe += linea + "\n"
+    new: |
+      informe = "\n".join(lineas)
+    note: |
+      Cada `+=` sobre un texto puede crear uno nuevo y copiar todo lo anterior, y con miles de líneas se nota. `join` arma el texto final de una vez.
+  en:
+    name: '"".join()'
+    old: |
+      report = ""
+      for line in lines:
+          report += line + "\n"
+    new: |
+      report = "\n".join(lines)
+    note: |
+      Each `+=` on a string may build a new one and copy everything before it, and with thousands of lines you feel it. `join` builds the final string in one go.

@@ -1,0 +1,11 @@
+# The course cover (Temario): what you can do at the end. One line each, concrete.
+es:
+  outcomes:
+    - Escribir Python idiomático, de listas y diccionarios a clases y generadores
+    - Resolver problemas de juez eligiendo la estructura de datos que los hace rápidos
+    - Usar el modelo de datos, los tipos, asyncio y los archivos como en un proyecto real
+en:
+  outcomes:
+    - Write idiomatic Python, from lists and dicts to classes and generators
+    - Solve judge problems by choosing the data structure that makes them fast
+    - Use the data model, types, asyncio and files as in a real project
