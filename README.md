@@ -25,7 +25,7 @@
 
 | | |
 |:--|:--|
-| <img src="docs/screenshots/loop-sql-join-animation.webp" alt="A JOIN drawn step by step, pairing rows of two tables"> | <img src="docs/screenshots/loop-sql-case.webp" alt="A SQL case: the story, the case scene and a query with its result"> |
+| <img src="docs/screenshots/loop-sql-join-animation.webp" alt="A JOIN drawn step by step, pairing rows of two tables"> | <img src="docs/screenshots/loop-sql-case.webp" alt="A SQL case: the witness card, a query over the reports table and its result"> |
 | **Concepts are drawn.** Here a `JOIN` pairs rows one by one; step through it or press play. | **SQL cases.** Query Lima's case files to follow a trail of reports, phones and payments. |
 | <img src="docs/screenshots/loop-judge-verdict.webp" alt="The judge rejecting a solution and showing input, expected output and the program's output"> | <img src="docs/screenshots/loop-home-es-dark.webp" alt="The home screen in Spanish, dark theme"> |
 | **The judge** grades in competitive-programming style and shows the first failing case. | **Spanish and English**, light and dark. The home lists the courses and what is next. |
