@@ -1,0 +1,504 @@
+# The case files. Each case has its place (a scene), the clues pinned on it, the people on its board
+# and the clues that fill in as the learner solves exercises. `by` names the exercise whose success
+# reveals it; an id that doesn't exist yet stays pending. Text is { es, en }; everything else is shared.
+# A session joins a case with a ```session block: `case: surquillo`. Format: docs/sql.md.
+
+surquillo:
+  title: { es: "Expediente SUR-0314 · El giroscopio de Wayra", en: "Case file SUR-0314 · Wayra's gyroscope" }
+  place: mercado
+  marks:
+    - at: stall47
+      by: sql1-caso-denuncia
+      label: { es: "Puesto 47: el giroscopio de Wayra deja de responder a las 22:41.", en: "Stall 47: Wayra's gyroscope stops responding at 22:41." }
+    - at: gate3
+      by: sql1-mision-salidas
+      label: { es: "Puerta 3: cinco salidas entre las 22:41 y las 23:30.", en: "Gate 3: five exits between 22:41 and 23:30." }
+    - at: car3
+      by: sql2-caso-entrevista
+      label: { es: "Jr. Narciso de la Colina: un auto blanco esperaba afuera.", en: "Jr. Narciso de la Colina: a white car was waiting outside." }
+    - at: cam3
+      by: sql3-caso-camara
+      label: { es: "CAM-SUR-03 lee la placa b7r415 a las 22:48, hora de Lima.", en: "CAM-SUR-03 reads plate b7r415 at 22:48, Lima time." }
+    - at: cam1
+      by: sql3-mision-camara
+      label: { es: "Los autos de Lucía y Julio pasan después de las 23:10.", en: "Lucía's and Julio's cars pass after 23:10." }
+    - at: street
+      by: sql4-caso-llamadas
+      label: { es: "22:52, ya afuera: Renzo llama a Tito Vílchez, comerciante de La Victoria.", en: "22:52, already outside: Renzo calls Tito Vílchez, a La Victoria trader." }
+    - at: [124, 86]
+      by: sql4-mision-culpable
+      label: { es: "Rumbo a Gamarra: Tito le paga a Renzo S/ 1350 por el giroscopio.", en: "Off to Gamarra: Tito pays Renzo S/ 1350 for the gyroscope." }
+  witnesses:
+    - name: Carmen Ríos Llanos
+      traits: { style: bun, shirt: "#3f7cc4", glasses: true }
+      role: { es: "Técnica de Loop, puesto 47", en: "Loop technician, stall 47" }
+    - name: Marleny Quispe Apaza
+      traits: { style: cap, capColor: "#2f3a4a", shirt: "#2f3a4a" }
+      role: { es: "Vigilante de noche", en: "Night guard" }
+      appears_by: sql1-caso-denuncia
+    - name: Wayra
+      kind: robot
+      traits: { broken: true }
+      role: { es: "Robot de reparto, sin giroscopio", en: "Delivery robot, gyroscope missing" }
+  suspects:
+    - name: Renzo Huamaní Cárdenas
+      traits: { style: short, shirt: "#5b6b7a", tool: true }
+      role: { es: "Proveedor de repuestos electrónicos", en: "Electronic spare-parts supplier" }
+      alibi: { es: "«Salí como a las once y diez y me fui directo a mi casa.»", en: "“I left at about ten past eleven and went straight home.”" }
+      appears_by: sql1-mision-salidas
+      culprit: true
+      reveal_by: sql4-mision-culpable
+    - name: Lucía Paredes Soto
+      traits: { style: long, shirt: "#e07a5f" }
+      role: { es: "Dueña de la juguería, puesto 12", en: "Juice bar owner, stall 12" }
+      alibi: { es: "«Me quedé haciendo inventario y salí pasadas las once.»", en: "“I stayed doing the stocktake and left a bit after eleven.”" }
+      appears_by: sql1-mision-salidas
+      cleared_by: sql3-mision-camara
+    - name: Óscar Ticona Mamani
+      traits: { style: cap, capColor: "#4f9a6a", shirt: "#4f9a6a" }
+      role: { es: "Limpieza", en: "Cleaner" }
+      alibi: { es: "«Yo no tengo auto: el carro es la combi.»", en: "“I don't have a car: my ride is the minibus.”" }
+      appears_by: sql1-mision-salidas
+      cleared_by: sql2-mision-autos
+    - name: Fiorella Campos Rojas
+      traits: { style: bun, shirt: "#c4553f" }
+      role: { es: "Proveedora de flores", en: "Flower supplier" }
+      alibi: { es: "«Mi carro es rojo, pregúntele a cualquiera.»", en: "“My car is red, ask anyone.”" }
+      appears_by: sql1-mision-salidas
+      cleared_by: sql2-mision-autos
+    - name: Julio Ccahuana Ríos
+      traits: { style: curly, shirt: "#c49a3f", beard: true }
+      role: { es: "Proveedor de fruta", en: "Fruit supplier" }
+      alibi: { es: "«Salí cerca de las once y media, para Ate.»", en: "“I left at nearly half past eleven, for Ate.”" }
+      appears_by: sql1-mision-salidas
+      cleared_by: sql3-mision-camara
+    - name: Tito Vílchez Arias
+      traits: { style: short, hair: "#3a2a20", shirt: "#7a4f9a", glasses: true }
+      role: { es: "Comerciante de Gamarra, La Victoria", en: "Gamarra trader, La Victoria" }
+      alibi: { es: "No declaró: aparece en las llamadas de Renzo.", en: "No statement: he turns up in Renzo's calls." }
+      appears_by: sql4-caso-llamadas
+  clues:
+    - by: sql1-caso-denuncia
+      where: { es: "Sesión 1, el caso", en: "Session 1, the case" }
+      text: { es: "La denuncia: el giroscopio dejó de responder a las 22:41 y la vigilante Marleny Quispe vio salir a alguien apurado por la Puerta 3.", en: "The report: the gyroscope stopped at 22:41 and the guard, Marleny Quispe, saw someone hurry out through Gate 3." }
+    - by: sql1-mision-salidas
+      where: { es: "Sesión 1, la misión", en: "Session 1, the mission" }
+      text: { es: "Cinco personas salieron por la Puerta 3 entre las 22:41 y las 23:30.", en: "Five people went out through Gate 3 between 22:41 and 23:30." }
+      links: [Renzo Huamaní Cárdenas, Lucía Paredes Soto, Óscar Ticona Mamani, Fiorella Campos Rojas, Julio Ccahuana Ríos]
+    - by: sql2-caso-entrevista
+      where: { es: "Sesión 2, el caso", en: "Session 2, the case" }
+      text: { es: "Marleny: capucha, caja de herramientas, y se subió a un auto blanco.", en: "Marleny: a hood, a toolbox, and they got into a white car." }
+    - by: sql2-mision-autos
+      where: { es: "Sesión 2, la misión", en: "Session 2, the mission" }
+      text: { es: "Siguen en pie tres: Renzo y Lucía tienen auto blanco; el de Julio no tiene color registrado (NULL), así que no se puede descartar.", en: "Three are still standing: Renzo and Lucía have white cars; Julio's has no colour on record (NULL), so he can't be ruled out." }
+      links: [Renzo Huamaní Cárdenas, Lucía Paredes Soto, Julio Ccahuana Ríos]
+    - by: sql3-caso-camara
+      where: { es: "Sesión 3, el caso", en: "Session 3, the case" }
+      text: { es: "CAM-SUR-03 guarda la hora en UTC: b7r415 pasó a las 22:48 de Lima, dos minutos después de que Renzo saliera.", en: "CAM-SUR-03 stores UTC: b7r415 passed at 22:48 Lima time, two minutes after Renzo went out." }
+      links: [Renzo Huamaní Cárdenas]
+    - by: sql3-mision-camara
+      where: { es: "Sesión 3, la misión", en: "Session 3, the mission" }
+      text: { es: "Lucía pasó a las 23:14 y Julio a las 23:23, después de lo que vio Marleny. Renzo dijo que salió a las 23:10: mintió.", en: "Lucía passed at 23:14 and Julio at 23:23, after what Marleny saw. Renzo said he left at 23:10: he lied." }
+      links: [Renzo Huamaní Cárdenas]
+    - by: sql4-caso-llamadas
+      where: { es: "Sesión 4, el caso", en: "Session 4, the case" }
+      text: { es: "Renzo y Tito Vílchez, comerciante de La Victoria, hablaron cuatro veces entre el jueves y el sábado; una, a las 22:52 del viernes.", en: "Renzo and Tito Vílchez, a La Victoria trader, spoke four times between Thursday and Saturday; once at 22:52 on Friday." }
+      links: [Renzo Huamaní Cárdenas, Tito Vílchez Arias]
+    - by: sql4-mision-culpable
+      where: { es: "Sesión 4, la misión", en: "Session 4, the mission" }
+      text: { es: "Tito le pagó a Renzo S/ 1350 en tres transferencias: el precio de un giroscopio.", en: "Tito paid Renzo S/ 1350 in three transfers: the price of a gyroscope." }
+      links: [Renzo Huamaní Cárdenas, Tito Vílchez Arias]
+
+sensores:
+  title: { es: "Expediente SEN-0327 · El sabotaje de la sala de sensores", en: "Case file SEN-0327 · The sensor room sabotage" }
+  place: sensores
+  marks:
+    - at: pad1
+      by: sql9-caso-primera
+      label: { es: "Pads 1 y 2: Tika y Kusi se descalibran en la calibración de las 03:00 del martes 24.", en: "Pads 1 and 2: Tika and Kusi go out of calibration at the 03:00 calibration on Tuesday 24." }
+    - at: pad3
+      by: sql9-caso-primera
+      label: { es: "Pad 3: Pituco, dos noches después, a las 03:00 del jueves 26.", en: "Pad 3: Pituco, two nights later, at 03:00 on Thursday 26." }
+    - at: door
+      by: sql9-mision-ultimo
+      label: { es: "Puerta: la tarjeta T-0412 entra a la 01:38 del 24 y a la 01:52 del 26.", en: "Door: card T-0412 goes in at 01:38 on the 24th and at 01:52 on the 26th." }
+    - at: rack1
+      by: sql10-mision-silencio
+      label: { es: "Racks: los tres robots dejan de reportar 40 minutos mientras la T-0412 está adentro.", en: "Racks: the three robots stop reporting for 40 minutes while T-0412 is inside." }
+    - at: monitor
+      by: sql11-caso-version
+      label: { es: "Monitor: los tres corren el firmware 2.6.0, una versión que nadie publicó.", en: "Monitor: all three run firmware 2.6.0, a version nobody released." }
+  witnesses:
+    - name: Carmen Ríos Llanos
+      traits: { style: bun, shirt: "#3f7cc4", glasses: true }
+      role: { es: "Dueña de Loop", en: "Owner of Loop" }
+    - name: Tika
+      kind: robot
+      traits: { broken: true }
+      role: { es: "Robot de vigilancia nocturna, choca con las paredes", en: "Night-watch robot, bumps into walls" }
+    - name: Kusi
+      kind: robot
+      traits: { broken: true }
+      role: { es: "Robot de cocina, se recalienta", en: "Kitchen robot, overheats" }
+    - name: Pituco
+      kind: robot
+      traits: { broken: true }
+      role: { es: "Robot de reparto en Barranco, se va de lado", en: "Delivery robot in Barranco, leans to one side" }
+      appears_by: sql9-caso-primera
+  suspects:
+    - name: Wilmer Zevallos Benavides
+      traits: { style: cap, capColor: "#33507a", shirt: "#33507a" }
+      role: { es: "Vigilante de noche de la galería", en: "The arcade's night guard" }
+      alibi: { es: "«Hago dos rondas, a medianoche y a las cuatro. A las dos estoy en la caseta.»", en: "“I do two rounds, at midnight and at four. At two I'm in the booth.”" }
+      cleared_by: sql10-mision-silencio
+    - name: Yesenia Choque Ugarte
+      traits: { style: long, shirt: "#c4553f", earrings: true }
+      role: { es: "Practicante de Loop", en: "Loop's intern" }
+      alibi: { es: "«El viernes 20 actualicé los robots a la versión oficial. De noche nunca he entrado.»", en: "“On Friday 20 I updated the robots to the official version. I've never been in at night.”" }
+      cleared_by: sql11-caso-version
+    - name: Kiara Montes Alvarado
+      traits: { style: bun, shirt: "#3fa7a7", glasses: true }
+      role: { es: "Técnica de Andina Robótica", en: "Andina Robótica technician" }
+      alibi: { es: "«Voy los miércoles en la tarde a calibrar a Illa. No toco los robots de Loop.»", en: "“I go on Wednesday afternoons to calibrate Illa. I don't touch Loop's robots.”" }
+      cleared_by: sql9-mision-ultimo
+    - name: Gonzalo Pumacayo Tello
+      traits: { style: short, shirt: "#6b4fa0", glasses: true, hood: "#3a3550" }
+      role: { es: "Exprogramador del firmware de Loop", en: "Loop's former firmware programmer" }
+      alibi: { es: "«Mi tarjeta no abre nada desde febrero. Esas noches estuve en mi casa, en Surco.»", en: "“My card hasn't opened anything since February. Those nights I was at home, in Surco.”" }
+      appears_by: sql10-mision-silencio
+      culprit: true
+      reveal_by: sql11-mision-culpable
+  clues:
+    - by: sql9-caso-primera
+      where: { es: "Sesión 9, el caso", en: "Session 9, the case" }
+      text: { es: "Tika y Kusi se descalibran a las 03:00 del martes 24; Pituco, a las 03:00 del jueves 26. Chasqui y Quilla, nunca.", en: "Tika and Kusi go out of calibration at 03:00 on Tuesday 24; Pituco, at 03:00 on Thursday 26. Chasqui and Quilla, never." }
+    - by: sql9-mision-ultimo
+      where: { es: "Sesión 9, la misión", en: "Session 9, the mission" }
+      text: { es: "Cada noche, el último en entrar antes de las 03:00 es Wilmer en su ronda de medianoche. Menos el 24 y el 26: su tarjeta vieja, la T-0412, entra a la 01:38 y a la 01:52.", en: "Every night, the last one in before 03:00 is Wilmer on his midnight round. Except the 24th and 26th: his old card, T-0412, goes in at 01:38 and 01:52." }
+      links: [Wilmer Zevallos Benavides]
+    - by: sql10-caso-visitas
+      where: { es: "Sesión 10, el caso", en: "Session 10, the case" }
+      text: { es: "Las rondas de Wilmer duran de 3 a 5 minutos. Las dos visitas de la T-0412 duran 38 y 39, y Wilmer la había denunciado perdida el lunes 23.", en: "Wilmer's rounds last 3 to 5 minutes. T-0412's two visits last 38 and 39, and Wilmer had reported it lost on Monday 23." }
+      links: [Wilmer Zevallos Benavides]
+    - by: sql10-mision-silencio
+      where: { es: "Sesión 10, la misión", en: "Session 10, the mission" }
+      text: { es: "Tika, Kusi y Pituco se apagan 40 minutos justo mientras la T-0412 está adentro, y la nueva tarjeta de Wilmer hace sus rondas de siempre. Alguien más usó la tarjeta perdida.", en: "Tika, Kusi and Pituco go dark for 40 minutes exactly while T-0412 is inside, and Wilmer's new card does its usual rounds. Someone else used the lost card." }
+      links: [Gonzalo Pumacayo Tello]
+    - by: sql11-caso-version
+      where: { es: "Sesión 11, el caso", en: "Session 11, the case" }
+      text: { es: "Los robots saboteados corren el firmware 2.6.0, que no está en la lista de versiones publicadas. La actualización de Yesenia fue a la 2.5.9, la oficial.", en: "The sabotaged robots run firmware 2.6.0, which isn't in the list of released versions. Yesenia's update was to 2.5.9, the official one." }
+    - by: sql11-mision-culpable
+      where: { es: "Sesión 11, la misión", en: "Session 11, the mission" }
+      text: { es: "La 2.6.0 la instaló el usuario gpumacayo desde el equipo LAP-07: el mismo usuario que firmó 27 versiones del firmware. Es Gonzalo Pumacayo.", en: "2.6.0 was installed by user gpumacayo from device LAP-07: the same user who signed 27 firmware versions. It's Gonzalo Pumacayo." }
+      links: [Gonzalo Pumacayo Tello]
+
+pagos:
+  title: { es: "Expediente EST-0323 · La red de los pagos", en: "Case file EST-0323 · The payments ring" }
+  place: pagos
+  marks:
+    - at: victims
+      by: sql5-caso-adelanto
+      label: { es: "Sonia le yapeó S/ 300 de adelanto por un iPhone 13 al celular de Brenda Salazar.", en: "Sonia sent a S/ 300 Yape deposit for an iPhone 13 to Brenda Salazar's phone." }
+    - at: kevin
+      by: sql5-mision-cobradores
+      label: { es: "Nueve denuncias, siete filas: Kevin, Brenda y Jhonatan cobran los adelantos.", en: "Nine reports, seven rows: Kevin, Brenda and Jhonatan collect the deposits." }
+    - at: chip
+      by: sql6-caso-chip
+      label: { es: "Los dos pagos que faltaban fueron a un chip sin dueño: 951207384.", en: "The two missing payments went to a chip with no owner: 951207384." }
+    - at: comisaria
+      by: sql6-escribe-sin-denuncia
+      label: { es: "Cinco víctimas pagaron y nunca denunciaron.", en: "Five victims paid and never reported it." }
+    - at: cajera
+      by: sql6-mision-salto
+      label: { es: "Cada adelanto salta en menos de tres horas al celular de Milagros Tello.", en: "Every deposit hops to Milagros Tello's phone within three hours." }
+    - at: casero
+      by: sql7-escribe-inquilinos
+      label: { es: "Teodoro cobra el alquiler a seis inquilinos: Milagros es una de ellos.", en: "Teodoro collects rent from six tenants: Milagros is one of them." }
+    - at: center
+      by: sql7-mision-dinero
+      label: { es: "Milagros recibió S/ 4806 de los cobradores: el 90 % de lo que pagaron las víctimas.", en: "Milagros got S/ 4806 from the collectors: 90% of what the victims paid." }
+    - at: empresa
+      by: sql8-caso-empresa
+      label: { es: "Kevin, Brenda y Milagros trabajan en Importaciones Ccori, en Gamarra.", en: "Kevin, Brenda and Milagros work at Importaciones Ccori, in Gamarra." }
+    - at: lider
+      by: sql8-mision-lider
+      label: { es: "El gerente de Importaciones Ccori recibió S/ 4300 de Milagros.", en: "Importaciones Ccori's manager got S/ 4300 from Milagros." }
+  witnesses:
+    - name: Sonia Huamán Ríos
+      traits: { style: bun, shirt: "#3f7cc4", glasses: true }
+      role: { es: "Docente de Surquillo, la primera denuncia", en: "Surquillo teacher, the first report" }
+    - name: Ernesto Cusi Yupanqui
+      traits: { style: short, shirt: "#c49a3f" }
+      role: { es: "Panadero de Ate, pagó y no denunció", en: "Baker from Ate, paid and never reported" }
+      appears_by: sql6-escribe-sin-denuncia
+    - name: Chasqui
+      kind: chasqui
+      role: { es: "Sigue la plata contigo", en: "Follows the money with you" }
+  suspects:
+    - name: Brenda Salazar Cusi
+      traits: { style: long, shirt: "#c43f84", earrings: true }
+      role: { es: "Cobradora: recibe adelantos", en: "Collector: takes the deposits" }
+      alibi: { es: "«Solo presto mi Yape a una amiga.»", en: "“I just lend my Yape to a friend.”" }
+      appears_by: sql5-caso-adelanto
+    - name: Kevin Rojas Palomino
+      traits: { style: cap, capColor: "#c4553f", shirt: "#c4553f" }
+      role: { es: "Cobrador: recibe adelantos", en: "Collector: takes the deposits" }
+      alibi: { es: "«Me pagaban por unos delivery.»", en: "“They were paying me for some deliveries.”" }
+      appears_by: sql5-mision-cobradores
+    - name: Jhonatan Ugarte Llanos
+      traits: { style: short, shirt: "#3fa7a7", beard: true }
+      role: { es: "Cobrador: recibe adelantos", en: "Collector: takes the deposits" }
+      alibi: { es: "«Mi primo usa mi número a veces.»", en: "“My cousin uses my number sometimes.”" }
+      appears_by: sql5-mision-cobradores
+    - name: Chip 951207384
+      kind: unknown
+      role: { es: "Número sin dueño en el padrón", en: "A number nobody owns in the register" }
+      appears_by: sql6-caso-chip
+    - name: Milagros Tello Benavides
+      traits: { style: bun, shirt: "#8a5cc4", earrings: true }
+      role: { es: "Cajera: recibe de los cobradores", en: "Cashier: gets paid by the collectors" }
+      alibi: { es: "«Me devolvían plata que les presté.»", en: "“They were paying back money I lent them.”" }
+      appears_by: sql6-mision-salto
+    - name: Teodoro Huanca Cruz
+      traits: { style: short, hair: "#7a7a7a", shirt: "#5b6b7a", glasses: true }
+      role: { es: "Casero de Milagros", en: "Milagros's landlord" }
+      alibi: { es: "«Me paga el alquiler, como todos.»", en: "“She pays me rent, like everyone.”" }
+      appears_by: sql7-caso-grandes
+      cleared_by: sql7-escribe-inquilinos
+    - name: Percy Tello Benavides
+      traits: { style: cap, capColor: "#4f9a6a", shirt: "#4f9a6a" }
+      role: { es: "Hermano de Milagros, mototaxista", en: "Milagros's brother, motorcycle-taxi driver" }
+      alibi: { es: "«Mi hermana me prestó para mi mototaxi.»", en: "“My sister lent me money for my motorcycle taxi.”" }
+      appears_by: sql7-caso-grandes
+      cleared_by: sql8-mision-lider
+    - name: Gustavo Alvarado Zevallos
+      traits: { style: short, hair: "#3b2a1e", shirt: "#2f3a4a", glasses: true }
+      role: { es: "Comerciante de San Borja", en: "Merchant from San Borja" }
+      alibi: { es: "«Milagros me compra mercadería.»", en: "“Milagros buys stock from me.”" }
+      appears_by: sql7-caso-grandes
+      culprit: true
+      reveal_by: sql8-mision-lider
+    - name: Rocío Medina Huanca
+      traits: { style: long, shirt: "#4f9a6a" }
+      role: { es: "Asistente en Importaciones Ccori", en: "Assistant at Importaciones Ccori" }
+      alibi: { es: "«Yo solo atiendo el teléfono de la tienda.»", en: "“I just answer the shop's phone.”" }
+      appears_by: sql8-caso-empresa
+      cleared_by: sql8-mision-lider
+  clues:
+    - by: sql5-caso-adelanto
+      where: { es: "Sesión 5, el caso", en: "Session 5, the case" }
+      text: { es: "La denuncia de Sonia, su celular y su pago: S/ 300 de adelanto al número de Brenda Salazar.", en: "Sonia's report, her phone and her payment: a S/ 300 deposit to Brenda Salazar's number." }
+      links: [Brenda Salazar Cusi]
+    - by: sql5-mision-cobradores
+      where: { es: "Sesión 5, la misión", en: "Session 5, the mission" }
+      text: { es: "Siete adelantos con nombre: Kevin cobró tres, Brenda dos, Jhonatan dos. Pero las denuncias son nueve.", en: "Seven deposits with a name: Kevin took three, Brenda two, Jhonatan two. But there are nine reports." }
+      links: [Kevin Rojas Palomino, Brenda Salazar Cusi, Jhonatan Ugarte Llanos]
+    - by: sql6-caso-chip
+      where: { es: "Sesión 6, el caso", en: "Session 6, the case" }
+      text: { es: "Con LEFT JOIN aparecen los dos que faltaban: fueron al 951207384, un chip que no es de nadie en el padrón.", en: "LEFT JOIN brings back the missing two: they went to 951207384, a chip nobody owns in the register." }
+      links: [Chip 951207384]
+    - by: sql6-mision-salto
+      where: { es: "Sesión 6, la misión", en: "Session 6, the mission" }
+      text: { es: "Los 14 adelantos saltan, en menos de tres horas, al celular de Milagros Tello: siempre el 90 %.", en: "All 14 deposits hop, within three hours, to Milagros Tello's phone: always 90%." }
+      links: [Milagros Tello Benavides, Kevin Rojas Palomino, Brenda Salazar Cusi, Jhonatan Ugarte Llanos, Chip 951207384]
+    - by: sql7-caso-grandes
+      where: { es: "Sesión 7, el caso", en: "Session 7, the case" }
+      text: { es: "Milagros hizo pagos por encima de su propio promedio a tres personas: Teodoro, Percy y Gustavo.", en: "Milagros made payments above her own average to three people: Teodoro, Percy and Gustavo." }
+      links: [Teodoro Huanca Cruz, Percy Tello Benavides, Gustavo Alvarado Zevallos]
+    - by: sql7-escribe-inquilinos
+      where: { es: "Sesión 7, la práctica", en: "Session 7, practice" }
+      text: { es: "Seis inquilinos le pagan «alquiler marzo» a Teodoro: es su casero, nada más.", en: "Six tenants pay Teodoro “March rent”: he's her landlord, nothing more." }
+      links: [Teodoro Huanca Cruz]
+    - by: sql7-mision-dinero
+      where: { es: "Sesión 7, la misión", en: "Session 7, the mission" }
+      text: { es: "Milagros recibió S/ 4806 de los cobradores, el 90 % de los S/ 5340 de adelantos.", en: "Milagros got S/ 4806 from the collectors, 90% of the S/ 5340 in deposits." }
+      links: [Milagros Tello Benavides]
+    - by: sql8-caso-empresa
+      where: { es: "Sesión 8, el caso", en: "Session 8, the case" }
+      text: { es: "Kevin, Brenda y Milagros trabajan hoy en la misma empresa: Importaciones Ccori S.A.C., en La Victoria.", en: "Kevin, Brenda and Milagros all work at the same company today: Importaciones Ccori S.A.C., in La Victoria." }
+      links: [Kevin Rojas Palomino, Brenda Salazar Cusi, Milagros Tello Benavides, Rocío Medina Huanca]
+    - by: sql8-mision-lider
+      where: { es: "Sesión 8, la misión", en: "Session 8, the mission" }
+      text: { es: "Solo una persona recibió pagos grandes de Milagros y trabaja en Importaciones Ccori: su gerente, Gustavo Alvarado.", en: "Only one person got large payments from Milagros and works at Importaciones Ccori: its manager, Gustavo Alvarado." }
+      links: [Gustavo Alvarado Zevallos]
+
+frio:
+  title: { es: "Expediente LVI-9812 · El caso frío de 1998", en: "Case file LVI-9812 · The 1998 cold case" }
+  place: fabrica
+  marks:
+    - at: caja
+      by: sql12-caso-combinacion
+      label: { es: "La caja fuerte se abrió con la combinación: 12 personas la conocían.", en: "The safe was opened with the combination: 12 people knew it." }
+    - at: publico
+      by: sql12-mision-red
+      label: { es: "Teléfono público 4723310: a tres llamadas de Víctor, Rosa y Nilton esa noche.", en: "Public phone 4723310: three calls from Víctor, Rosa and Nilton that night." }
+    - at: calle
+      by: sql13-caso-cerrajeria
+      label: { es: "El 4417825 llamó cinco veces a la Cerrajería El Candado (cajas fuertes).", en: "4417825 called Cerrajería El Candado (safes) five times." }
+    - at: caseta
+      by: sql13-mision-relevo
+      label: { es: "Dos relevos: casa 4417825 → público → caseta, el martes 15 y el viernes 18.", en: "Two relays: home 4417825 → public phone → booth, Tuesday 15th and Friday 18th." }
+    - at: lateral
+      by: sql14-caso-caseta
+      label: { es: "00:52: Teodoro llamó a la casa de Rosa Ugarte y nadie contestó. Decía la verdad.", en: "00:52: Teodoro called Rosa Ugarte's home and nobody answered. He told the truth." }
+  witnesses:
+    - name: Haydée Llanos Quispe
+      traits: { style: long, hair: "#3b2a1e", shirt: "#f4efe2", skin: "#a86f47" }
+      role: { es: "Enfermera en Surquillo, hija de Teodoro. Pidió reabrir el caso", en: "Nurse in Surquillo, Teodoro's daughter. Asked to reopen the case" }
+    - name: Teodoro Llanos Cusi
+      traits: { style: cap, capColor: "#2f3a4a", shirt: "#2f3a4a", skin: "#a86f47", beard: true }
+      role: { es: "Vigilante nocturno en 1998. Condenado en 1999; murió en 2021", en: "Night guard in 1998. Convicted in 1999; died in 2021" }
+    - name: Chasqui
+      kind: chasqui
+      role: { es: "Detective asistente de Loop", en: "Loop's assistant detective" }
+  suspects:
+    - name: Rosa Ugarte Bustamante
+      traits: { style: bun, hair: "#7a7a7a", shirt: "#8a5cc4", glasses: true }
+      role: { es: "Jefa de Tesorería (1998)", en: "Head of Treasury (1998)" }
+      alibi: { es: "«Esa noche me fui a dormir temprano y no escuché el teléfono.»", en: "“I went to bed early that night and didn't hear the phone.”" }
+      appears_by: sql12-mision-red
+      cleared_by: sql14-caso-caseta
+    - name: Víctor Salazar Montes
+      traits: { style: short, shirt: "#5b6b7a", vest: "#2f3a4a" }
+      role: { es: "Supervisor de caja (1998)", en: "Cash supervisor (1998)" }
+      alibi: { es: "«No conozco a ningún cerrajero y nunca he llamado a uno.»", en: "“I don't know any locksmith and I've never called one.”" }
+      appears_by: sql12-mision-red
+      culprit: true
+      reveal_by: sql14-mision-culpable
+    - name: Nilton Palomino Ríos
+      traits: { style: curly, shirt: "#3fa7a7" }
+      role: { es: "Cajero (1998)", en: "Cashier (1998)" }
+      alibi: { es: "«Estuve en una pollada en Breña con mi enamorada.»", en: "“I was at a chicken fundraiser in Breña with my girlfriend.”" }
+      appears_by: sql12-mision-red
+      cleared_by: sql13-mision-relevo
+    - name: Cerrajería El Candado
+      kind: note
+      role: { es: "Jr. Huánuco 1290: cajas fuertes y llaves", en: "Jr. Huánuco 1290: safes and keys" }
+      alibi: { es: "El técnico que entró por la puerta lateral.", en: "The technician who came in through the side door." }
+      appears_by: sql13-caso-cerrajeria
+  clues:
+    - by: sql12-caso-combinacion
+      where: { es: "Sesión 12, el caso", en: "Session 12, the case" }
+      text: { es: "Rosa Ugarte cambió la combinación el martes 15: solo la sabían ella y los 11 que dependen de ella, 12 en total.", en: "Rosa Ugarte changed the combination on Tuesday 15th: only she and the 11 below her knew it, 12 in all." }
+    - by: sql12-mision-red
+      where: { es: "Sesión 12, la misión", en: "Session 12, the mission" }
+      text: { es: "Esa noche, a tres llamadas o menos del teléfono público frente a la fábrica: tres de los doce.", en: "That night, three calls or fewer from the public phone opposite the mill: three of the twelve." }
+      links: [Víctor Salazar Montes, Rosa Ugarte Bustamante, Nilton Palomino Ríos]
+    - by: sql13-caso-cerrajeria
+      where: { es: "Sesión 13, el caso", en: "Session 13, the case" }
+      text: { es: "En diciembre, la casa 4417825 llamó cinco veces a la Cerrajería El Candado, especialista en cajas fuertes.", en: "In December, home 4417825 called Cerrajería El Candado, a safe specialist, five times." }
+      links: [Cerrajería El Candado]
+    - by: sql13-mision-relevo
+      where: { es: "Sesión 13, la misión", en: "Session 13, the mission" }
+      text: { es: "Dos relevos: el 4417825 llama al público y, minutos después, el público llama a la caseta. Ni la casa de Rosa ni la de Nilton.", en: "Two relays: 4417825 calls the public phone and, minutes later, the public phone calls the booth. Neither Rosa's home nor Nilton's." }
+      links: [Cerrajería El Candado, Víctor Salazar Montes]
+    - by: sql14-caso-caseta
+      where: { es: "Sesión 14, el caso", en: "Session 14, the case" }
+      text: { es: "A las 00:52 y 00:55 la caseta llamó a la casa de Rosa Ugarte: 0 segundos. Teodoro dijo la verdad en 1998.", en: "At 00:52 and 00:55 the booth called Rosa Ugarte's home: 0 seconds. Teodoro told the truth in 1998." }
+      links: [Rosa Ugarte Bustamante]
+    - by: sql14-mision-culpable
+      where: { es: "Sesión 14, la misión", en: "Session 14, the mission" }
+      text: { es: "El 4417825 es la casa de Víctor Salazar Montes, supervisor de caja: conocía la combinación y mintió sobre el cerrajero.", en: "4417825 is the home of Víctor Salazar Montes, cash supervisor: he knew the combination and lied about the locksmith." }
+      links: [Víctor Salazar Montes, Cerrajería El Candado]
+
+taller:
+  title: { es: "Expediente MUN-0320 · El padrón del mercado", en: "Case file MUN-0320 · The market registry" }
+  place: oficina
+  marks:
+    - at: archivo
+      by: sql15-caso-titular
+      label: { es: "Padrón: el puesto 47 figura a nombre de Yolanda Ugarte desde el viernes 20, 18:52.", en: "Registry: stall 47 has been in Yolanda Ugarte's name since Friday 20, 18:52." }
+    - at: v1
+      by: sql15-mision-devolver
+      label: { es: "Ventanilla 1: cuatro traspasos pedidos por la propia beneficiaria, sin pago.", en: "Counter 1: four transfers requested by the beneficiary herself, with no fee." }
+    - at: v2
+      by: sql16-caso-renovacion
+      label: { es: "Ventanilla 2: Susana renovó la licencia de Carmen a las 18:47.", en: "Counter 2: Susana renewed Carmen's licence at 18:47." }
+    - at: server
+      by: sql16-mision-bitacora
+      label: { es: "La sesión 328 leyó el puesto 47 a las 18:45 y a las 18:52 pisó la renovación.", en: "Session 328 read stall 47 at 18:45 and overwrote the renewal at 18:52." }
+    - at: sis
+      by: sql17-caso-planilla
+      label: { es: "En la planilla, el celular de contacto de los cuatro puestos es el de Delia.", en: "In the spreadsheet, the contact mobile for the four stalls is Delia's." }
+    - at: laptop
+      by: sql17-mision-terminal
+      label: { es: "Las cuatro escrituras salieron de VENT-1, la computadora de la ventanilla 1.", en: "All four writes came from VENT-1, the computer at counter 1." }
+    - at: door
+      by: sql18-caso-contraloria
+      label: { es: "Abel Vílchez le pagó a Yolanda S/ 5000 por el puesto 47.", en: "Abel Vílchez paid Yolanda S/ 5000 for stall 47." }
+    - at: [40, 48]
+      by: sql18-mision-final
+      label: { es: "Alfredo volvió a entrar a las 18:41, cobró S/ 7500 de Yolanda y la llamó a las 18:53.", en: "Alfredo came back in at 18:41, got S/ 7500 from Yolanda and called her at 18:53." }
+  witnesses:
+    - name: Edith Choque Ramos
+      traits: { style: bun, hair: "#7a7a7a", shirt: "#c43f84" }
+      role: { es: "Gerenta de Mercados, Municipalidad de Surquillo", en: "Head of Markets, Surquillo municipality" }
+    - name: Carmen Ríos Llanos
+      traits: { style: bun, shirt: "#3f7cc4", glasses: true }
+      role: { es: "Técnica de Loop, puesto 47", en: "Loop technician, stall 47" }
+    - name: Chasqui
+      kind: chasqui
+      role: { es: "Asistente de detective de Loop", en: "Loop's assistant detective" }
+  suspects:
+    - name: Alfredo Benavides Tello
+      traits: { style: short, hair: "#121212", shirt: "#2f3a4a", glasses: true, beard: false }
+      role: { es: "Registrador, ventanilla 1 (usuario abenavides)", en: "Registrar, counter 1 (user abenavides)" }
+      alibi: { es: "«A las seis y media ya me había ido. Delia, la de sistemas, sabe todas las claves.»", en: "“By half past six I'd gone. Delia, from IT, knows every password.”" }
+      appears_by: sql15-mision-devolver
+      culprit: true
+      reveal_by: sql18-mision-final
+    - name: Susana Salazar Pumacayo
+      traits: { style: long, shirt: "#8a5cc4", glasses: false }
+      role: { es: "Registradora, ventanilla 2 (usuario ssalazar)", en: "Registrar, counter 2 (user ssalazar)" }
+      alibi: { es: "«Yo renové la licencia de la señora Carmen. Ahí está su voucher.»", en: "“I renewed Mrs Carmen's licence. There's her receipt.”" }
+      appears_by: sql15-mision-devolver
+      cleared_by: sql16-mision-bitacora
+    - name: Delia Lozano Yupanqui
+      traits: { style: bun, shirt: "#3fa7a7", glasses: true }
+      role: { es: "Sistemas (usuaria dlozano)", en: "IT (user dlozano)" }
+      alibi: { es: "«Salí a las seis y veinte. Cada uno cambia su clave.»", en: "“I left at twenty past six. Everyone changes their own password.”" }
+      appears_by: sql15-mision-devolver
+      cleared_by: sql17-mision-terminal
+    - name: Yolanda Ugarte Montes
+      traits: { style: curly, shirt: "#e07a5f", earrings: true }
+      role: { es: "Nueva titular de cuatro puestos", en: "New holder of four stalls" }
+      alibi: { es: "«Yo hice todo en regla. Pregunten en la municipalidad.»", en: "“I did everything by the book. Ask the municipality.”" }
+      appears_by: sql15-caso-titular
+    - name: Abel Vílchez Arias
+      traits: { style: cap, capColor: "#c4553f", shirt: "#5b6b7a", beard: true }
+      role: { es: "Taxista; hermano de Tito Vílchez", en: "Taxi driver; Tito Vílchez's brother" }
+      alibi: { es: "«Yo compré un puesto. ¿Desde cuándo eso es delito?»", en: "“I bought a stall. Since when is that a crime?”" }
+      appears_by: sql18-caso-contraloria
+  clues:
+    - by: sql15-caso-titular
+      where: { es: "Sesión 15, el caso", en: "Session 15, the case" }
+      text: { es: "El padrón dice que el puesto 47 es de Yolanda Ugarte Montes desde el viernes 20 a las 18:52, cambio hecho por abenavides.", en: "The registry says stall 47 belongs to Yolanda Ugarte Montes since Friday 20 at 18:52, a change made by abenavides." }
+      links: [Yolanda Ugarte Montes]
+    - by: sql15-mision-devolver
+      where: { es: "Sesión 15, la misión", en: "Session 15, the mission" }
+      text: { es: "Cuatro traspasos (19, 47, 64 y 102) los pidió la misma beneficiaria, sin pagar nada, en la ventanilla 1. Tres personas tienen acceso al padrón.", en: "Four transfers (19, 47, 64 and 102) were requested by the beneficiary herself, with no fee, at counter 1. Three people can write to the registry." }
+      links: [Yolanda Ugarte Montes, Alfredo Benavides Tello, Susana Salazar Pumacayo, Delia Lozano Yupanqui]
+    - by: sql16-caso-renovacion
+      where: { es: "Sesión 16, el caso", en: "Session 16, the case" }
+      text: { es: "Carmen sí renovó: Susana aprobó la renovación a las 18:47 y Carmen pagó S/ 120. Pero el padrón dice que su licencia vence el 31 de marzo.", en: "Carmen did renew: Susana approved it at 18:47 and Carmen paid S/ 120. But the registry says her licence expires on 31 March." }
+      links: [Susana Salazar Pumacayo]
+    - by: sql16-mision-bitacora
+      where: { es: "Sesión 16, la misión", en: "Session 16, the mission" }
+      text: { es: "Actualización perdida: la sesión 328 (abenavides, VENT-1) leyó la fila a las 18:45 y la escribió entera a las 18:52, borrando la renovación de Susana.", en: "Lost update: session 328 (abenavides, VENT-1) read the row at 18:45 and wrote all of it back at 18:52, wiping out Susana's renewal." }
+      links: [Alfredo Benavides Tello]
+    - by: sql17-caso-planilla
+      where: { es: "Sesión 17, el caso", en: "Session 17, the case" }
+      text: { es: "En la planilla, los cuatro puestos de Yolanda tienen como contacto el celular de Delia Lozano. ¿Una pista o una trampa?", en: "In the spreadsheet, Yolanda's four stalls list Delia Lozano's mobile as contact. A clue or a trap?" }
+      links: [Delia Lozano Yupanqui, Yolanda Ugarte Montes]
+    - by: sql17-mision-terminal
+      where: { es: "Sesión 17, la misión", en: "Session 17, the mission" }
+      text: { es: "Las cuatro escrituras salieron de VENT-1, en la ventanilla 1; SIS-01, la computadora de Delia, no tocó el padrón ese día.", en: "All four writes came from VENT-1, at counter 1; SIS-01, Delia's computer, didn't touch the registry that day." }
+      links: [Alfredo Benavides Tello]
+    - by: sql18-caso-contraloria
+      where: { es: "Sesión 18, el caso", en: "Session 18, the case" }
+      text: { es: "Abel Vílchez Arias, hermano de Tito (el del giroscopio), le pagó a Yolanda S/ 3000 + S/ 2000 por el puesto 47.", en: "Abel Vílchez Arias, Tito's brother (the gyroscope buyer), paid Yolanda S/ 3000 + S/ 2000 for stall 47." }
+      links: [Abel Vílchez Arias, Yolanda Ugarte Montes]
+    - by: sql18-mision-final
+      where: { es: "Sesión 18, la misión", en: "Session 18, the mission" }
+      text: { es: "Solo Alfredo estaba en el mercado a las 18:52 (volvió a entrar a las 18:41), recibió S/ 7500 de Yolanda y la llamó tres veces.", en: "Only Alfredo was in the market at 18:52 (he came back in at 18:41), got S/ 7500 from Yolanda and called her three times." }
+      links: [Alfredo Benavides Tello, Yolanda Ugarte Montes]

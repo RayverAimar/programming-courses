@@ -1,0 +1,120 @@
+{
+  "internet-modem-1995": {
+    "file": "js/internet-modem-1995",
+    "w": 1000,
+    "h": 322,
+    "sw": 800,
+    "alt": {
+      "es": "Módem externo U.S. Robotics Sportster 28.8 Faxmodem",
+      "en": "U.S. Robotics Sportster 28.8 Faxmodem external modem"
+    },
+    "caption": {
+      "es": "Un módem externo U.S. Robotics Sportster de 28.8 kbit/s, de mediados de los noventa: convertía los datos en sonido para mandarlos por la línea del teléfono.",
+      "en": "A U.S. Robotics Sportster 28.8 kbit/s external modem from the mid-nineties: it turned data into sound to send it down the phone line."
+    },
+    "credit": {
+      "author": "Centre for Computing History",
+      "source": "computinghistory.org.uk",
+      "url": "https://www.computinghistory.org.uk/det/44296/US-Robotics-Sportster-Voice-28-8-Faxmodem/"
+    }
+  },
+  "netscape-navigator-2": {
+    "file": "js/netscape-navigator-2",
+    "w": 1117,
+    "h": 699,
+    "sw": 800,
+    "alt": {
+      "es": "Ventana de Netscape Navigator 2 con su página about",
+      "en": "Netscape Navigator 2 window showing its about page"
+    },
+    "caption": {
+      "es": "Netscape Navigator 2, el navegador que en 1996 trajo la primera versión de JavaScript (la ventana «About», recreada en una captura de 2015).",
+      "en": "Netscape Navigator 2, the browser that shipped the first JavaScript in 1996 (its About window, in a 2015 screenshot)."
+    },
+    "credit": {
+      "author": "Indolering",
+      "license": "CC0",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:Netscape_Navigator_2_Screenshot.png"
+    }
+  },
+  "guido-van-rossum-2006": {
+    "file": "py/guido-van-rossum-2006",
+    "w": 1067,
+    "h": 1600,
+    "sw": 534,
+    "alt": {
+      "es": "Retrato de Guido van Rossum",
+      "en": "Portrait of Guido van Rossum"
+    },
+    "caption": {
+      "es": "Guido van Rossum, creador de Python, en la conferencia OSCON de 2006.",
+      "en": "Guido van Rossum, Python's creator, at the OSCON conference in 2006."
+    },
+    "credit": {
+      "author": "Doc Searls",
+      "license": "CC BY-SA 2.0",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:Guido_van_Rossum_OSCON_2006.jpg"
+    }
+  },
+  "ibm-system-360": {
+    "file": "sql/ibm-system-360",
+    "w": 1600,
+    "h": 1200,
+    "sw": 800,
+    "alt": {
+      "es": "Consola y gabinetes de una computadora IBM System/360",
+      "en": "Console and cabinets of an IBM System/360 computer"
+    },
+    "caption": {
+      "es": "Un IBM System/360 Modelo 30 en el Computer History Museum: la familia de computadoras de los sesenta en la que corrían bases jerárquicas como IMS.",
+      "en": "An IBM System/360 Model 30 at the Computer History Museum: the sixties computer family that ran hierarchical databases such as IMS."
+    },
+    "credit": {
+      "author": "Dave Ross",
+      "license": "CC BY 2.0",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:IBM_System360_Model_30.jpg"
+    }
+  },
+  "codd-1970-paper": {
+    "file": "sql/codd-1970-paper",
+    "w": 1151,
+    "h": 1600,
+    "sw": 576,
+    "alt": {
+      "es": "Primera página del artículo de E. F. Codd de 1970",
+      "en": "First page of E. F. Codd's 1970 paper"
+    },
+    "caption": {
+      "es": "Primera página del artículo de Codd «A Relational Model of Data for Large Shared Data Banks», publicado en Communications of the ACM en junio de 1970.",
+      "en": "First page of Codd's paper \"A Relational Model of Data for Large Shared Data Banks\", published in Communications of the ACM in June 1970."
+    },
+    "credit": {
+      "author": "E. F. Codd, Communications of the ACM 13(6)",
+      "source": "University of Pennsylvania",
+      "url": "https://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf"
+    }
+  },
+  "hdd-open-wd": {
+    "file": "sql/hdd-open-wd",
+    "w": 1600,
+    "h": 1067,
+    "sw": 800,
+    "alt": {
+      "es": "Disco duro abierto con el plato y el brazo con el cabezal",
+      "en": "Opened hard disk with the platter and the arm with the head"
+    },
+    "caption": {
+      "es": "Un disco duro abierto: el brazo lleva el cabezal hasta la pista del plato que gira. Cada página que SQLite lee puede costar ese viaje.",
+      "en": "An opened hard disk: the arm carries the head to the track on the spinning platter. Every page SQLite reads can cost that trip."
+    },
+    "credit": {
+      "author": "Raimond Spekking",
+      "license": "CC BY-SA 4.0",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:WD_Blue_WD40NMZW-11GX6S1_-_cover_removed_-_platter_and_head-2203.jpg"
+    }
+  }
+}

@@ -1,0 +1,718 @@
+# SQL as we write it here (SQLite, close to the standard), beside what you'll meet in older queries or
+# other engines. Sessions place a box with <!-- legacy: key --> and a row of links with
+# <!-- mdn: key key -->. `mdn:` is a path under https://www.sqlite.org/ or a full URL.
+# See docs/content.md and docs/sql.md.
+
+limit:
+  mdn: lang_select.html#limitoffset
+  session: 1
+  es:
+    name: LIMIT y OFFSET
+    old: |
+      SELECT TOP 5 * FROM denuncias;              -- SQL Server
+      SELECT * FROM denuncias WHERE ROWNUM <= 5;  -- Oracle antiguo
+    new: |
+      SELECT * FROM denuncias LIMIT 5;
+      SELECT * FROM denuncias LIMIT 5 OFFSET 10;
+    note: |
+      Cada motor inventó su forma de pedir "las primeras filas". SQLite, PostgreSQL y MySQL usan `LIMIT`; el estándar dice `FETCH FIRST 5 ROWS ONLY`, que PostgreSQL también entiende. Sin `ORDER BY`, "las primeras" son las que el motor encuentre primero: no hay orden garantizado.
+  en:
+    name: LIMIT and OFFSET
+    old: |
+      SELECT TOP 5 * FROM reports;              -- SQL Server
+      SELECT * FROM reports WHERE ROWNUM <= 5;  -- old Oracle
+    new: |
+      SELECT * FROM reports LIMIT 5;
+      SELECT * FROM reports LIMIT 5 OFFSET 10;
+    note: |
+      Every engine invented its own way to ask for "the first rows". SQLite, PostgreSQL and MySQL use `LIMIT`; the standard says `FETCH FIRST 5 ROWS ONLY`, which PostgreSQL also understands. Without `ORDER BY`, "the first" are whichever the engine finds first: there's no guaranteed order.
+
+string-quotes:
+  mdn: quirks.html#double_quoted_string_literals_are_accepted
+  session: 1
+  es:
+    name: Comillas simples para textos
+    old: |
+      SELECT * FROM personas WHERE distrito = "Surquillo";
+    new: |
+      SELECT * FROM personas WHERE distrito = 'Surquillo';
+    note: |
+      En SQL los textos van entre comillas simples; las dobles son para nombres de tablas y columnas. SQLite acepta `"Surquillo"` como texto solo si no existe una columna con ese nombre, por compatibilidad con código viejo de MySQL. Si un día alguien crea esa columna, la consulta cambia de significado sin avisar.
+  en:
+    name: Single quotes for text
+    old: |
+      SELECT * FROM people WHERE district = "Surquillo";
+    new: |
+      SELECT * FROM people WHERE district = 'Surquillo';
+    note: |
+      In SQL, text goes in single quotes; double quotes are for table and column names. SQLite accepts `"Surquillo"` as text only when no column has that name, for compatibility with old MySQL code. If someone ever adds that column, the query changes meaning without a word.
+
+is-null:
+  mdn: nulls.html
+  session: 2
+  es:
+    name: IS NULL
+    old: |
+      SELECT * FROM vehiculos WHERE color = NULL;  -- nunca devuelve nada
+    new: |
+      SELECT * FROM vehiculos WHERE color IS NULL;
+    note: |
+      `NULL` significa "no sabemos", así que `color = NULL` no es verdadero ni falso: es `NULL`, y `WHERE` descarta esa fila. Algunos motores antiguos tenían un modo para que `= NULL` funcionara (SQL Server con `ANSI_NULLS OFF`); hoy se escribe `IS NULL` o `IS NOT NULL`.
+  en:
+    name: IS NULL
+    old: |
+      SELECT * FROM vehicles WHERE color = NULL;  -- never returns anything
+    new: |
+      SELECT * FROM vehicles WHERE color IS NULL;
+    note: |
+      `NULL` means "we don't know", so `color = NULL` is neither true nor false: it's `NULL`, and `WHERE` drops that row. Some old engines had a mode to make `= NULL` work (SQL Server with `ANSI_NULLS OFF`); today you write `IS NULL` or `IS NOT NULL`.
+
+coalesce:
+  mdn: lang_corefunc.html#coalesce
+  session: 3
+  es:
+    name: COALESCE
+    old: |
+      SELECT ISNULL(telefono, 'sin número') FROM personas;  -- SQL Server
+      SELECT NVL(telefono, 'sin número') FROM personas;     -- Oracle
+    new: |
+      SELECT COALESCE(telefono, 'sin número') FROM personas;
+    note: |
+      `COALESCE` es estándar y funciona en todos los motores: devuelve el primer argumento que no sea `NULL`. SQLite también tiene `IFNULL(a, b)`, pero solo con dos argumentos.
+  en:
+    name: COALESCE
+    old: |
+      SELECT ISNULL(phone, 'no number') FROM people;  -- SQL Server
+      SELECT NVL(phone, 'no number') FROM people;     -- Oracle
+    new: |
+      SELECT COALESCE(phone, 'no number') FROM people;
+    note: |
+      `COALESCE` is standard and works everywhere: it returns the first argument that isn't `NULL`. SQLite also has `IFNULL(a, b)`, but only with two arguments.
+
+case-when:
+  mdn: lang_expr.html#the_case_expression
+  session: 3
+  es:
+    name: CASE WHEN
+    old: |
+      SELECT DECODE(sentido, 'entrada', 1, 0) FROM ingresos_mercado;  -- Oracle
+      SELECT IF(sentido = 'entrada', 1, 0) FROM ingresos_mercado;      -- MySQL
+    new: |
+      SELECT CASE WHEN sentido = 'entrada' THEN 1 ELSE 0 END
+      FROM ingresos_mercado;
+    note: |
+      `CASE` es la forma estándar de decidir dentro de una consulta y la entienden todos los motores. `DECODE` (Oracle) e `IF` (MySQL) son de cada casa; SQLite tiene `iif()` como atajo, pero `CASE` se lee igual en cualquier lado.
+  en:
+    name: CASE WHEN
+    old: |
+      SELECT DECODE(direction, 'in', 1, 0) FROM market_entries;  -- Oracle
+      SELECT IF(direction = 'in', 1, 0) FROM market_entries;      -- MySQL
+    new: |
+      SELECT CASE WHEN direction = 'in' THEN 1 ELSE 0 END
+      FROM market_entries;
+    note: |
+      `CASE` is the standard way to decide inside a query and every engine understands it. `DECODE` (Oracle) and `IF` (MySQL) are house dialects; SQLite has `iif()` as a shortcut, but `CASE` reads the same everywhere.
+
+dates:
+  mdn: lang_datefunc.html
+  session: 3
+  es:
+    name: Fechas y horas
+    old: |
+      SELECT DATEADD(hour, -5, momento_utc) FROM avistamientos;  -- SQL Server
+      SELECT momento_utc - INTERVAL 5 HOUR FROM avistamientos;  -- MySQL
+    new: |
+      SELECT datetime(momento_utc, '-5 hours') FROM avistamientos;
+    note: |
+      SQLite no tiene un tipo fecha: guarda fechas como texto `AAAA-MM-DD HH:MM:SS` (que se ordena bien) y las calcula con `date`, `time`, `datetime`, `strftime` y `julianday`, más modificadores como `'-5 hours'` o `'start of month'`. En PostgreSQL existen `timestamp` e `interval`: `momento_utc - INTERVAL '5 hours'`.
+  en:
+    name: Dates and times
+    old: |
+      SELECT DATEADD(hour, -5, moment_utc) FROM sightings;  -- SQL Server
+      SELECT moment_utc - INTERVAL 5 HOUR FROM sightings;   -- MySQL
+    new: |
+      SELECT datetime(moment_utc, '-5 hours') FROM sightings;
+    note: |
+      SQLite has no date type: it stores dates as `YYYY-MM-DD HH:MM:SS` text (which sorts correctly) and computes with `date`, `time`, `datetime`, `strftime` and `julianday`, plus modifiers like `'-5 hours'` or `'start of month'`. PostgreSQL has `timestamp` and `interval`: `moment_utc - INTERVAL '5 hours'`.
+
+group-by-bare:
+  mdn: lang_select.html#bareagg
+  session: 4
+  es:
+    name: Columnas sueltas en GROUP BY
+    old: |
+      -- MySQL antiguo (sin ONLY_FULL_GROUP_BY) y SQLite lo aceptan
+      SELECT a_telefono, momento, COUNT(*)
+      FROM transferencias
+      GROUP BY a_telefono;
+    new: |
+      SELECT a_telefono, MAX(momento) AS ultimo, COUNT(*)
+      FROM transferencias
+      GROUP BY a_telefono;
+    note: |
+      El estándar exige que cada columna del `SELECT` esté en el `GROUP BY` o dentro de un agregado, y PostgreSQL lo cumple. MySQL dejaba pasar columnas sueltas hasta que la versión 5.7 activó `ONLY_FULL_GROUP_BY` por defecto; SQLite todavía las acepta y devuelve el valor de una fila cualquiera del grupo. Di cuál quieres: `MAX(momento)`, `MIN(momento)`, o agrega la columna al `GROUP BY`.
+  en:
+    name: Bare columns in GROUP BY
+    old: |
+      -- old MySQL (without ONLY_FULL_GROUP_BY) and SQLite accept it
+      SELECT to_phone, moment, COUNT(*)
+      FROM transfers
+      GROUP BY to_phone;
+    new: |
+      SELECT to_phone, MAX(moment) AS latest, COUNT(*)
+      FROM transfers
+      GROUP BY to_phone;
+    note: |
+      The standard requires every `SELECT` column to be in `GROUP BY` or inside an aggregate, and PostgreSQL enforces it. MySQL let bare columns through until version 5.7 turned on `ONLY_FULL_GROUP_BY` by default; SQLite still accepts them and returns the value from any row of the group. Say which one you want: `MAX(moment)`, `MIN(moment)`, or add the column to `GROUP BY`.
+
+group-concat:
+  mdn: lang_aggfunc.html#group_concat
+  session: 4
+  es:
+    name: Juntar textos de un grupo
+    old: |
+      -- Oracle
+      SELECT LISTAGG(placa, ', ') FROM avistamientos;
+      -- PostgreSQL y SQL Server
+      SELECT STRING_AGG(placa, ', ') FROM avistamientos;
+    new: |
+      SELECT group_concat(placa, ', ') FROM avistamientos;
+    note: |
+      No hay un nombre único: el estándar SQL:2016 llama `LISTAGG` a esta función, PostgreSQL y SQL Server usan `STRING_AGG`, y MySQL y SQLite, `GROUP_CONCAT`. Desde la versión 3.44, SQLite también acepta `string_agg` y un `ORDER BY` dentro del agregado para fijar el orden de los textos; sin él, el orden es el de lectura.
+  en:
+    name: Joining a group's text
+    old: |
+      -- Oracle
+      SELECT LISTAGG(plate, ', ') FROM sightings;
+      -- PostgreSQL and SQL Server
+      SELECT STRING_AGG(plate, ', ') FROM sightings;
+    new: |
+      SELECT group_concat(plate, ', ') FROM sightings;
+    note: |
+      There's no single name: the SQL:2016 standard calls it `LISTAGG`, PostgreSQL and SQL Server use `STRING_AGG`, and MySQL and SQLite use `GROUP_CONCAT`. Since version 3.44, SQLite also accepts `string_agg` and an `ORDER BY` inside the aggregate to fix the order of the text; without it, the order is whatever order the rows were read in.
+
+comma-join:
+  mdn: lang_select.html#the_from_clause
+  session: 5
+  es:
+    name: JOIN … ON
+    old: |
+      SELECT p.nombre, v.placa
+      FROM personas p, vehiculos v
+      WHERE v.persona_id = p.id;
+    new: |
+      SELECT p.nombre, v.placa
+      FROM personas AS p
+      JOIN vehiculos AS v ON v.persona_id = p.id;
+    note: |
+      Antes de SQL-92 se unían tablas con comas y la condición iba mezclada con los filtros en el `WHERE`. Si se olvida la condición, sale el producto cartesiano de las dos tablas sin ningún error. Con `JOIN … ON` la condición de unión va pegada a la tabla que une.
+  en:
+    name: JOIN … ON
+    old: |
+      SELECT p.name, v.plate
+      FROM people p, vehicles v
+      WHERE v.person_id = p.id;
+    new: |
+      SELECT p.name, v.plate
+      FROM people AS p
+      JOIN vehicles AS v ON v.person_id = p.id;
+    note: |
+      Before SQL-92, tables were joined with commas and the condition was mixed with the filters in `WHERE`. Forget the condition and you get the Cartesian product of both tables, with no error. With `JOIN … ON` the join condition sits next to the table it joins.
+
+window-functions:
+  mdn: windowfunctions.html
+  session: 9
+  es:
+    name: Funciones de ventana
+    old: |
+      -- MySQL 5.7: una variable que se va sumando fila por fila
+      SET @n := 0;
+      SELECT tarjeta, momento, @n := @n + 1 AS vez
+      FROM accesos ORDER BY momento;
+      -- Cualquier motor: contar las filas anteriores con una subconsulta
+      SELECT a.tarjeta, a.momento,
+             (SELECT count(*) FROM accesos AS b
+              WHERE b.tarjeta = a.tarjeta AND b.momento <= a.momento) AS vez
+      FROM accesos AS a;
+    new: |
+      SELECT tarjeta, momento,
+             ROW_NUMBER() OVER (PARTITION BY tarjeta ORDER BY momento) AS vez
+      FROM accesos;
+    note: |
+      Antes de las ventanas (SQLite 3.25, MySQL 8.0) se numeraba con variables de sesión, cuyo orden de evaluación MySQL nunca garantizó, o con una subconsulta correlacionada que recorre la tabla una vez por fila. `OVER` lo dice en una línea y el motor lo resuelve ordenando una sola vez.
+  en:
+    name: Window functions
+    old: |
+      -- MySQL 5.7: a variable that adds up row by row
+      SET @n := 0;
+      SELECT card, moment, @n := @n + 1 AS nth
+      FROM access_log ORDER BY moment;
+      -- Any engine: count the earlier rows with a subquery
+      SELECT a.card, a.moment,
+             (SELECT count(*) FROM access_log AS b
+              WHERE b.card = a.card AND b.moment <= a.moment) AS nth
+      FROM access_log AS a;
+    new: |
+      SELECT card, moment,
+             ROW_NUMBER() OVER (PARTITION BY card ORDER BY moment) AS nth
+      FROM access_log;
+    note: |
+      Before windows (SQLite 3.25, MySQL 8.0) people numbered rows with session variables, whose evaluation order MySQL never guaranteed, or with a correlated subquery that walks the table once per row. `OVER` says it in one line and the engine does it with a single sort.
+
+lag-lead:
+  mdn: windowfunctions.html#builtins
+  session: 10
+  es:
+    name: LAG y LEAD
+    old: |
+      -- Unir cada fila con la anterior por un autojoin
+      SELECT a.momento, a.valor - b.valor AS salto
+      FROM lecturas AS a
+      JOIN lecturas AS b
+        ON b.robot_id = a.robot_id AND b.sensor = a.sensor
+       AND b.momento = (SELECT max(c.momento) FROM lecturas AS c
+                        WHERE c.robot_id = a.robot_id AND c.sensor = a.sensor
+                          AND c.momento < a.momento);
+    new: |
+      SELECT momento,
+             valor - LAG(valor) OVER (PARTITION BY robot_id, sensor ORDER BY momento) AS salto
+      FROM lecturas;
+    note: |
+      Para comparar una fila con la anterior hacía falta un autojoin con una subconsulta que buscara "la anterior", y se volvía lento con miles de filas. `LAG` y `LEAD` miran la fila de atrás o de adelante en el orden de la ventana; PostgreSQL y MySQL 8 las escriben igual.
+  en:
+    name: LAG and LEAD
+    old: |
+      -- Join each row to the previous one with a self-join
+      SELECT a.moment, a.value - b.value AS jump
+      FROM readings AS a
+      JOIN readings AS b
+        ON b.robot_id = a.robot_id AND b.sensor = a.sensor
+       AND b.moment = (SELECT max(c.moment) FROM readings AS c
+                       WHERE c.robot_id = a.robot_id AND c.sensor = a.sensor
+                         AND c.moment < a.moment);
+    new: |
+      SELECT moment,
+             value - LAG(value) OVER (PARTITION BY robot_id, sensor ORDER BY moment) AS jump
+      FROM readings;
+    note: |
+      Comparing a row with the previous one used to take a self-join with a subquery to find "the previous one", and it got slow with thousands of rows. `LAG` and `LEAD` look at the row behind or ahead in the window's order; PostgreSQL and MySQL 8 spell them the same way.
+
+json-arrows:
+  mdn: json1.html#jptr
+  session: 11
+  es:
+    name: JSON con -> y ->>
+    old: |
+      SELECT json_extract(datos, '$.firmware') FROM lecturas;    -- SQLite antes de 3.38
+      SELECT JSON_UNQUOTE(JSON_EXTRACT(datos, '$.firmware'))     -- MySQL 5.7
+      FROM lecturas;
+    new: |
+      SELECT datos ->> '$.firmware' FROM lecturas;
+    note: |
+      `->>` llegó a SQLite en la 3.38 (2022) copiando a PostgreSQL y MySQL: devuelve un valor de SQL (texto, número), mientras `->` devuelve JSON (con comillas si es texto). En PostgreSQL la ruta se escribe distinto, `datos ->> 'firmware'`, y la columna suele ser `jsonb`, un JSON binario que se puede indexar.
+  en:
+    name: JSON with -> and ->>
+    old: |
+      SELECT json_extract(data, '$.firmware') FROM readings;    -- SQLite before 3.38
+      SELECT JSON_UNQUOTE(JSON_EXTRACT(data, '$.firmware'))     -- MySQL 5.7
+      FROM readings;
+    new: |
+      SELECT data ->> '$.firmware' FROM readings;
+    note: |
+      `->>` reached SQLite in 3.38 (2022), borrowed from PostgreSQL and MySQL: it returns an SQL value (text, number), while `->` returns JSON (quoted if it's text). In PostgreSQL the path is written differently, `data ->> 'firmware'`, and the column is usually `jsonb`, a binary JSON you can index.
+
+recursive-cte:
+  mdn: lang_with.html#recursive_common_table_expressions
+  session: 12
+  es:
+    name: Jerarquías con WITH RECURSIVE
+    old: |
+      -- Oracle antiguo: su propia sintaxis para árboles
+      SELECT nombre, LEVEL
+      FROM empleados_1998
+      START WITH id = 214
+      CONNECT BY PRIOR id = jefe_id;
+      -- Sin recursión: un autojoin por cada nivel que crees que hay
+      SELECT a.nombre, b.nombre, c.nombre
+      FROM empleados_1998 AS a
+      LEFT JOIN empleados_1998 AS b ON b.jefe_id = a.id
+      LEFT JOIN empleados_1998 AS c ON c.jefe_id = b.id
+      WHERE a.id = 214;
+    new: |
+      WITH RECURSIVE equipo(id, nombre, nivel) AS (
+        SELECT id, nombre, 0 FROM empleados_1998 WHERE id = 214
+        UNION ALL
+        SELECT e.id, e.nombre, q.nivel + 1
+        FROM empleados_1998 AS e
+        JOIN equipo AS q ON e.jefe_id = q.id
+      )
+      SELECT * FROM equipo;
+    note: |
+      `CONNECT BY` solo existe en Oracle (que también acepta `WITH` desde la versión 11g R2). Los autojoins encadenados se quedan cortos el día que el árbol crece un nivel más. `WITH RECURSIVE` es estándar (SQL:1999) y funciona igual en SQLite, PostgreSQL y MySQL 8; SQL Server lo escribe sin la palabra `RECURSIVE`.
+  en:
+    name: Hierarchies with WITH RECURSIVE
+    old: |
+      -- Old Oracle: its own syntax for trees
+      SELECT name, LEVEL
+      FROM employees_1998
+      START WITH id = 214
+      CONNECT BY PRIOR id = boss_id;
+      -- No recursion: one self-join per level you think there is
+      SELECT a.name, b.name, c.name
+      FROM employees_1998 AS a
+      LEFT JOIN employees_1998 AS b ON b.boss_id = a.id
+      LEFT JOIN employees_1998 AS c ON c.boss_id = b.id
+      WHERE a.id = 214;
+    new: |
+      WITH RECURSIVE team(id, name, level) AS (
+        SELECT id, name, 0 FROM employees_1998 WHERE id = 214
+        UNION ALL
+        SELECT e.id, e.name, q.level + 1
+        FROM employees_1998 AS e
+        JOIN team AS q ON e.boss_id = q.id
+      )
+      SELECT * FROM team;
+    note: |
+      `CONNECT BY` only exists in Oracle (which has also accepted `WITH` since 11g R2). Chained self-joins fall short the day the tree grows one more level. `WITH RECURSIVE` is standard (SQL:1999) and works the same in SQLite, PostgreSQL and MySQL 8; SQL Server writes it without the word `RECURSIVE`.
+
+explain-plan:
+  mdn: eqp.html
+  session: 13
+  es:
+    name: Leer el plan de una consulta
+    old: |
+      -- El EXPLAIN a secas de SQLite: el bytecode de su máquina virtual
+      EXPLAIN SELECT * FROM llamadas_1998 WHERE origen = '4417825';
+      -- MySQL antiguo: una tabla con type = ALL cuando recorre todo
+      EXPLAIN SELECT * FROM llamadas_1998 WHERE origen = '4417825';
+    new: |
+      EXPLAIN QUERY PLAN
+      SELECT * FROM llamadas_1998 WHERE origen = '4417825';
+      -- PostgreSQL, que además la corre y mide:
+      -- EXPLAIN ANALYZE SELECT …
+    note: |
+      En SQLite, `EXPLAIN` sin más muestra decenas de instrucciones de bajo nivel; lo que sirve para saber si usa un índice es `EXPLAIN QUERY PLAN` (SCAN o SEARCH). PostgreSQL y MySQL 8 también dibujan un árbol (`EXPLAIN`, `EXPLAIN FORMAT=TREE`) y `EXPLAIN ANALYZE` corre la consulta y dice cuánto tardó cada paso.
+  en:
+    name: Reading a query's plan
+    old: |
+      -- SQLite's plain EXPLAIN: its virtual machine's bytecode
+      EXPLAIN SELECT * FROM calls_1998 WHERE caller = '4417825';
+      -- Old MySQL: a table with type = ALL when it reads everything
+      EXPLAIN SELECT * FROM calls_1998 WHERE caller = '4417825';
+    new: |
+      EXPLAIN QUERY PLAN
+      SELECT * FROM calls_1998 WHERE caller = '4417825';
+      -- PostgreSQL, which also runs and times it:
+      -- EXPLAIN ANALYZE SELECT …
+    note: |
+      In SQLite, plain `EXPLAIN` prints dozens of low-level instructions; what tells you whether an index is used is `EXPLAIN QUERY PLAN` (SCAN or SEARCH). PostgreSQL and MySQL 8 also draw a tree (`EXPLAIN`, `EXPLAIN FORMAT=TREE`), and `EXPLAIN ANALYZE` runs the query and says how long each step took.
+
+join-hints:
+  mdn: optoverview.html#manual_control_of_query_plans_using_cross_join
+  session: 14
+  es:
+    name: Forzar el orden de los joins
+    old: |
+      -- MySQL: STRAIGHT_JOIN obliga a seguir el orden escrito
+      SELECT STRAIGHT_JOIN e.nombre, l.inicio
+      FROM empleados_1998 AS e JOIN llamadas_1998 AS l ON l.origen = e.telefono;
+      -- Oracle: pistas dentro de un comentario
+      SELECT /*+ ORDERED USE_NL(l) */ e.nombre, l.inicio
+      FROM empleados_1998 e, llamadas_1998 l WHERE l.origen = e.telefono;
+    new: |
+      CREATE INDEX idx_llamadas_origen ON llamadas_1998(origen);
+      ANALYZE;
+      SELECT e.nombre, l.inicio
+      FROM empleados_1998 AS e
+      JOIN llamadas_1998 AS l ON l.origen = e.telefono;
+    note: |
+      Las pistas congelan un plan que era bueno con los datos de ese día. Hoy se le dan al planificador índices y estadísticas (`ANALYZE`) y se deja que elija. Si de verdad hace falta, SQLite respeta el orden escrito con `CROSS JOIN` y deja forzar un índice con `INDEXED BY`; PostgreSQL no tiene pistas.
+  en:
+    name: Forcing the join order
+    old: |
+      -- MySQL: STRAIGHT_JOIN forces the written order
+      SELECT STRAIGHT_JOIN e.name, l.started
+      FROM employees_1998 AS e JOIN calls_1998 AS l ON l.caller = e.phone;
+      -- Oracle: hints inside a comment
+      SELECT /*+ ORDERED USE_NL(l) */ e.name, l.started
+      FROM employees_1998 e, calls_1998 l WHERE l.caller = e.phone;
+    new: |
+      CREATE INDEX idx_calls_caller ON calls_1998(caller);
+      ANALYZE;
+      SELECT e.name, l.started
+      FROM employees_1998 AS e
+      JOIN calls_1998 AS l ON l.caller = e.phone;
+    note: |
+      Hints freeze a plan that was good for that day's data. Today you give the planner indexes and statistics (`ANALYZE`) and let it choose. If you really must, SQLite keeps the written order with `CROSS JOIN` and lets you force an index with `INDEXED BY`; PostgreSQL has no hints.
+
+upsert:
+  mdn: lang_upsert.html
+  session: 15
+  es:
+    name: Insertar o actualizar (UPSERT)
+    old: |
+      INSERT OR REPLACE INTO tarifas (rubro, monto) VALUES ('pescado', 95);       -- SQLite antiguo
+      INSERT INTO tarifas (rubro, monto) VALUES ('pescado', 95)
+        ON DUPLICATE KEY UPDATE monto = VALUES(monto);                           -- MySQL
+    new: |
+      INSERT INTO tarifas (rubro, monto) VALUES ('pescado', 95)
+      ON CONFLICT (rubro) DO UPDATE SET monto = excluded.monto;
+    note: |
+      `INSERT OR REPLACE` no actualiza: **borra** la fila vieja e inserta otra, así que pierde las columnas que no nombras y dispara los `DELETE` en cascada. `ON CONFLICT … DO UPDATE` (SQLite 3.24, PostgreSQL 9.5) cambia solo lo que dices. MySQL usa `ON DUPLICATE KEY UPDATE`.
+  en:
+    name: Insert or update (UPSERT)
+    old: |
+      INSERT OR REPLACE INTO fees (trade, amount) VALUES ('fish', 95);        -- old SQLite
+      INSERT INTO fees (trade, amount) VALUES ('fish', 95)
+        ON DUPLICATE KEY UPDATE amount = VALUES(amount);                      -- MySQL
+    new: |
+      INSERT INTO fees (trade, amount) VALUES ('fish', 95)
+      ON CONFLICT (trade) DO UPDATE SET amount = excluded.amount;
+    note: |
+      `INSERT OR REPLACE` doesn't update: it **deletes** the old row and inserts a new one, so it loses the columns you don't name and fires cascading `DELETE`s. `ON CONFLICT … DO UPDATE` (SQLite 3.24, PostgreSQL 9.5) changes only what you say. MySQL uses `ON DUPLICATE KEY UPDATE`.
+
+foreign-keys:
+  mdn: foreignkeys.html
+  session: 15
+  es:
+    name: Claves foráneas encendidas
+    old: |
+      CREATE TABLE tramites (puesto INTEGER, solicitante_id INTEGER);
+      -- y en el código: "antes de insertar, revisa que la persona exista"
+    new: |
+      PRAGMA foreign_keys = ON;
+      CREATE TABLE tramites (
+        puesto INTEGER,
+        solicitante_id INTEGER NOT NULL REFERENCES personas(id)
+      );
+    note: |
+      Muchas apps viejas guardaban ids sin declarar la relación y confiaban en que el programa revisara. Declara la clave foránea y deja que la base la haga cumplir. En SQLite, por compatibilidad, hay que encenderlas en cada conexión con `PRAGMA foreign_keys = ON`; en PostgreSQL y MySQL (InnoDB) siempre están activas.
+  en:
+    name: Foreign keys switched on
+    old: |
+      CREATE TABLE filings (stall INTEGER, applicant_id INTEGER);
+      -- and in the code: "before inserting, check the person exists"
+    new: |
+      PRAGMA foreign_keys = ON;
+      CREATE TABLE filings (
+        stall INTEGER,
+        applicant_id INTEGER NOT NULL REFERENCES people(id)
+      );
+    note: |
+      Many old apps stored ids without declaring the relationship and trusted the program to check. Declare the foreign key and let the database enforce it. In SQLite, for compatibility, you switch them on in every connection with `PRAGMA foreign_keys = ON`; in PostgreSQL and MySQL (InnoDB) they're always on.
+
+transactions:
+  mdn: lang_transaction.html
+  session: 16
+  es:
+    name: Transacciones explícitas
+    old: |
+      UPDATE cuentas SET saldo = saldo - 150 WHERE id = 1;
+      UPDATE cuentas SET saldo = saldo + 150 WHERE id = 2;   -- si esto falla, el dinero se pierde
+    new: |
+      BEGIN;
+      UPDATE cuentas SET saldo = saldo - 150 WHERE id = 1;
+      UPDATE cuentas SET saldo = saldo + 150 WHERE id = 2;
+      COMMIT;
+    note: |
+      Sin `BEGIN`, cada sentencia es su propia transacción (*autocommit*) y un corte entre las dos deja la mitad hecha. MySQL con MyISAM ni siquiera tenía transacciones; hoy InnoDB sí. `BEGIN TRANSACTION` y `START TRANSACTION` (MySQL) son la misma idea.
+  en:
+    name: Explicit transactions
+    old: |
+      UPDATE accounts SET balance = balance - 150 WHERE id = 1;
+      UPDATE accounts SET balance = balance + 150 WHERE id = 2;   -- if this fails, the money is gone
+    new: |
+      BEGIN;
+      UPDATE accounts SET balance = balance - 150 WHERE id = 1;
+      UPDATE accounts SET balance = balance + 150 WHERE id = 2;
+      COMMIT;
+    note: |
+      Without `BEGIN`, every statement is its own transaction (*autocommit*), and a crash between the two leaves half the work done. MySQL with MyISAM didn't even have transactions; InnoDB does today. `BEGIN TRANSACTION` and `START TRANSACTION` (MySQL) are the same idea.
+
+journal-wal:
+  mdn: wal.html
+  session: 16
+  es:
+    name: WAL en lugar del diario de reversión
+    old: |
+      PRAGMA journal_mode = DELETE;   -- lo que SQLite trae por defecto
+    new: |
+      PRAGMA journal_mode = WAL;
+    note: |
+      Con el diario clásico, quien escribe bloquea a quienes leen mientras confirma. Con WAL (desde SQLite 3.7, 2010) los cambios se anotan al final de un archivo aparte y los lectores siguen leyendo su foto de la base: lectores y un escritor trabajan a la vez. Casi toda app que usa SQLite con varios usuarios lo enciende.
+  en:
+    name: WAL instead of the rollback journal
+    old: |
+      PRAGMA journal_mode = DELETE;   -- SQLite's default
+    new: |
+      PRAGMA journal_mode = WAL;
+    note: |
+      With the classic journal, a writer blocks readers while it commits. With WAL (since SQLite 3.7, 2010) changes are appended to a separate file and readers keep reading their snapshot: readers and one writer work at the same time. Almost every app that uses SQLite with several users turns it on.
+
+autoincrement:
+  mdn: autoinc.html
+  session: 17
+  es:
+    name: Claves sustitutas que se llenan solas
+    old: |
+      CREATE TABLE titulares (id INTEGER PRIMARY KEY AUTOINCREMENT, dni TEXT);   -- SQLite, por costumbre
+      CREATE TABLE titulares (id SERIAL PRIMARY KEY, dni TEXT);                  -- PostgreSQL antiguo
+      CREATE TABLE titulares (id INT AUTO_INCREMENT PRIMARY KEY, dni TEXT);      -- MySQL
+    new: |
+      CREATE TABLE titulares (id INTEGER PRIMARY KEY, dni TEXT NOT NULL UNIQUE);            -- SQLite
+      CREATE TABLE titulares (id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY, dni text); -- PostgreSQL
+    note: |
+      En SQLite, `INTEGER PRIMARY KEY` ya se numera solo; `AUTOINCREMENT` solo agrega que nunca se reutilice un número borrado, y cuesta una tabla extra. En PostgreSQL, el estándar `GENERATED … AS IDENTITY` reemplaza a `SERIAL`. Y una clave sustituta no quita la natural: declara también `UNIQUE` en el DNI.
+  en:
+    name: Surrogate keys that fill themselves
+    old: |
+      CREATE TABLE holders (id INTEGER PRIMARY KEY AUTOINCREMENT, national_id TEXT);   -- SQLite, out of habit
+      CREATE TABLE holders (id SERIAL PRIMARY KEY, national_id TEXT);                  -- old PostgreSQL
+      CREATE TABLE holders (id INT AUTO_INCREMENT PRIMARY KEY, national_id TEXT);      -- MySQL
+    new: |
+      CREATE TABLE holders (id INTEGER PRIMARY KEY, national_id TEXT NOT NULL UNIQUE);            -- SQLite
+      CREATE TABLE holders (id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY, national_id text); -- PostgreSQL
+    note: |
+      In SQLite, `INTEGER PRIMARY KEY` already numbers itself; `AUTOINCREMENT` only adds that a deleted number is never reused, and it costs an extra table. In PostgreSQL, the standard `GENERATED … AS IDENTITY` replaces `SERIAL`. And a surrogate key doesn't remove the natural one: declare `UNIQUE` on the ID number too.
+
+ilike:
+  mdn: https://www.postgresql.org/docs/current/functions-matching.html
+  session: 18
+  es:
+    name: Buscar sin mayúsculas en cada motor
+    old: |
+      SELECT nombre FROM personas WHERE nombre ILIKE '%ugarte%';   -- PostgreSQL
+    new: |
+      SELECT nombre FROM personas WHERE lower(nombre) LIKE '%ugarte%';
+    note: |
+      `ILIKE` es de PostgreSQL. En SQLite, `LIKE` ya ignora mayúsculas, pero solo en letras sin tilde (`'Á'` no es `'á'`); en MySQL depende de la *collation* de la columna. `lower(…) LIKE …` se entiende igual en los tres, aunque le impide al motor usar un índice común.
+  en:
+    name: Case-insensitive search in each engine
+    old: |
+      SELECT name FROM people WHERE name ILIKE '%ugarte%';   -- PostgreSQL
+    new: |
+      SELECT name FROM people WHERE lower(name) LIKE '%ugarte%';
+    note: |
+      `ILIKE` is PostgreSQL's. In SQLite, `LIKE` already ignores case, but only for unaccented letters (`'Á'` isn't `'á'`); in MySQL it depends on the column's *collation*. `lower(…) LIKE …` means the same in all three, though it stops the engine from using a plain index.
+
+booleans:
+  mdn: datatype3.html#boolean_datatype
+  session: 18
+  es:
+    name: Verdadero y falso
+    old: |
+      SELECT puesto FROM padron WHERE activo = 'S';        -- texto 'S'/'N' en apps viejas
+      SELECT puesto FROM padron WHERE activo = b'1';       -- MySQL, BIT(1)
+    new: |
+      SELECT puesto FROM padron WHERE activo;              -- PostgreSQL: boolean; SQLite: 1 o 0
+    note: |
+      PostgreSQL tiene un tipo `boolean` de verdad (`true`, `false`, `NULL`). SQLite guarda 1 y 0, y desde 3.23 entiende las palabras `TRUE` y `FALSE` como 1 y 0. MySQL llama `BOOLEAN` a un `TINYINT(1)`. Una comparación (`vence < '2026-04-01'`) devuelve 1/0 en SQLite y MySQL, y `true`/`false` en PostgreSQL.
+  en:
+    name: True and false
+    old: |
+      SELECT stall FROM registry WHERE active = 'Y';       -- text 'Y'/'N' in old apps
+      SELECT stall FROM registry WHERE active = b'1';      -- MySQL, BIT(1)
+    new: |
+      SELECT stall FROM registry WHERE active;             -- PostgreSQL: boolean; SQLite: 1 or 0
+    note: |
+      PostgreSQL has a real `boolean` type (`true`, `false`, `NULL`). SQLite stores 1 and 0, and since 3.23 it understands the words `TRUE` and `FALSE` as 1 and 0. MySQL calls a `TINYINT(1)` `BOOLEAN`. A comparison (`expires < '2026-04-01'`) gives 1/0 in SQLite and MySQL, and `true`/`false` in PostgreSQL.
+
+left-join:
+  mdn: lang_select.html#the_from_clause
+  session: 6
+  es:
+    name: LEFT JOIN
+    old: |
+      SELECT p.nombre, v.placa
+      FROM personas p, vehiculos v
+      WHERE v.persona_id(+) = p.id;          -- Oracle antiguo
+      -- WHERE p.id *= v.persona_id          -- SQL Server antiguo
+    new: |
+      SELECT p.nombre, v.placa
+      FROM personas AS p
+      LEFT JOIN vehiculos AS v ON v.persona_id = p.id;
+    note: |
+      Antes del estándar SQL-92, cada motor marcaba la unión externa a su manera dentro del `WHERE`: `(+)` en Oracle, `*=` en SQL Server. Hoy se escribe `LEFT JOIN … ON` en todos. `RIGHT JOIN` y `FULL JOIN` llegaron a SQLite recién en la versión 3.39 (2022); antes se daba vuelta el orden de las tablas.
+  en:
+    name: LEFT JOIN
+    old: |
+      SELECT p.name, v.plate
+      FROM people p, vehicles v
+      WHERE v.person_id(+) = p.id;           -- old Oracle
+      -- WHERE p.id *= v.person_id           -- old SQL Server
+    new: |
+      SELECT p.name, v.plate
+      FROM people AS p
+      LEFT JOIN vehicles AS v ON v.person_id = p.id;
+    note: |
+      Before the SQL-92 standard, every engine marked an outer join its own way inside `WHERE`: `(+)` in Oracle, `*=` in SQL Server. Today everyone writes `LEFT JOIN … ON`. `RIGHT JOIN` and `FULL JOIN` only reached SQLite in version 3.39 (2022); before that you swapped the order of the tables.
+
+not-exists:
+  mdn: lang_expr.html#the_exists_operator
+  session: 7
+  es:
+    name: NOT EXISTS
+    old: |
+      SELECT a_telefono FROM transferencias
+      WHERE a_telefono NOT IN (SELECT telefono FROM personas);
+    new: |
+      SELECT a_telefono FROM transferencias AS t
+      WHERE NOT EXISTS (
+        SELECT 1 FROM personas AS p WHERE p.telefono = t.a_telefono
+      );
+    note: |
+      `NOT IN (subconsulta)` devuelve cero filas en cuanto la subconsulta trae un solo `NULL`, sin ningún aviso. `NOT EXISTS` pregunta "¿hay alguna fila que cumpla?", que siempre es verdadero o falso, así que no cae en esa trampa. Los planificadores modernos ejecutan los dos como un antijoin.
+  en:
+    name: NOT EXISTS
+    old: |
+      SELECT to_phone FROM transfers
+      WHERE to_phone NOT IN (SELECT phone FROM people);
+    new: |
+      SELECT to_phone FROM transfers AS t
+      WHERE NOT EXISTS (
+        SELECT 1 FROM people AS p WHERE p.phone = t.to_phone
+      );
+    note: |
+      `NOT IN (subquery)` returns zero rows as soon as the subquery brings a single `NULL`, with no warning. `NOT EXISTS` asks "is there any row that matches?", which is always true or false, so it can't fall into that trap. Modern planners run both as an anti-join.
+
+with-cte:
+  mdn: lang_with.html
+  session: 8
+  es:
+    name: WITH (CTE)
+    old: |
+      SELECT nombre FROM personas
+      WHERE telefono IN (
+        SELECT a_telefono FROM transferencias
+        WHERE de_telefono IN (
+          SELECT a_telefono FROM transferencias WHERE mensaje LIKE 'adelanto%'));
+    new: |
+      WITH cobradores AS (
+        SELECT a_telefono AS telefono FROM transferencias WHERE mensaje LIKE 'adelanto%'
+      ),
+      siguientes AS (
+        SELECT a_telefono AS telefono FROM transferencias
+        WHERE de_telefono IN (SELECT telefono FROM cobradores)
+      )
+      SELECT nombre FROM personas WHERE telefono IN (SELECT telefono FROM siguientes);
+    note: |
+      Las subconsultas anidadas se leen de adentro hacia afuera. `WITH` (estándar desde SQL:1999; en SQLite desde 3.8.3, en MySQL recién desde 8.0) les pone nombre y las ordena de arriba abajo, como pasos. Antes, para reusar un paso había que copiarlo o crear una vista.
+  en:
+    name: WITH (CTE)
+    old: |
+      SELECT name FROM people
+      WHERE phone IN (
+        SELECT to_phone FROM transfers
+        WHERE from_phone IN (
+          SELECT to_phone FROM transfers WHERE note LIKE 'deposit%'));
+    new: |
+      WITH collectors AS (
+        SELECT to_phone AS phone FROM transfers WHERE note LIKE 'deposit%'
+      ),
+      next_hop AS (
+        SELECT to_phone AS phone FROM transfers
+        WHERE from_phone IN (SELECT phone FROM collectors)
+      )
+      SELECT name FROM people WHERE phone IN (SELECT phone FROM next_hop);
+    note: |
+      Nested subqueries read from the inside out. `WITH` (standard since SQL:1999; in SQLite since 3.8.3, in MySQL only since 8.0) names them and lays them out top to bottom, as steps. Before it, reusing a step meant copying it or creating a view.

@@ -1,0 +1,11 @@
+# The course cover (Temario): what you can do at the end. One line each, concrete.
+es:
+  outcomes:
+    - Escribir consultas SQL que respondan preguntas reales, de un SELECT a joins, ventanas y WITH RECURSIVE
+    - Explicar en qué orden ejecuta SQLite una consulta y leer su plan para hacerla rápida
+    - Diseñar tablas, escribir datos con transacciones y pasar de SQLite a PostgreSQL sin sorpresas
+en:
+  outcomes:
+    - Write SQL queries that answer real questions, from a SELECT to joins, windows and WITH RECURSIVE
+    - Explain the order SQLite runs a query in and read its plan to make it fast
+    - Design tables, write data with transactions and move from SQLite to PostgreSQL without surprises
