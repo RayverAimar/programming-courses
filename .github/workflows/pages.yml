@@ -1,8 +1,8 @@
-# The website: build dist/ and publish it on GitHub Pages on every push to main.
+# The website: build dist/ and publish it on GitHub Pages on every push to master.
 name: Pages
 on:
   push:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
 permissions:
   contents: read

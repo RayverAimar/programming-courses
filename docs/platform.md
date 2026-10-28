@@ -231,7 +231,7 @@ checked against the integrity hash in `pnpm-lock.yaml` and cached in `.cache/`; 
 Grotesque, Newsreader: SIL OFL, licences copied next to them), Lucide icons (ISC, only the ones the
 code names), CodeMirror, ProseMirror (the notes and answers editor) and sql.js are bundled from `node_modules`. Nothing loads from a CDN.
 
-**Website:** `.github/workflows/pages.yml` builds and deploys `dist/` on every push to `main`.
+**Website:** `.github/workflows/pages.yml` builds and deploys `dist/` on every push to `master`.
 
 **App:** push a tag `vX.Y.Z` (after bumping `version` in `package.json`) and
 `.github/workflows/release.yml` builds on macOS, Linux and Windows and attaches to the release:
