@@ -226,7 +226,7 @@
 .pspeed button:hover:not([aria-pressed="true"]) { color: var(--ink); }
 .pbtn svg { width: 16px; height: 16px; stroke-width: 2; }
 .pbtn svg .fill { fill: currentColor; }
-.pstat { flex: 1 1 0; min-width: 0; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pstat { flex: 1 1 0; min-width: 0; color: var(--muted); font-variant-numeric: tabular-nums; line-height: 1.3; text-wrap: balance; }
 .pspeed { margin-left: auto; flex: none; display: flex; background: var(--raise); border-radius: 999px; padding: 2px; }
 .pspeed button { min-width: 34px; height: 30px; border-radius: 999px; font: 600 var(--ui-s) var(--display); color: var(--muted); }
 .pspeed button[aria-pressed="true"] { background: var(--paper); color: var(--accent); }
