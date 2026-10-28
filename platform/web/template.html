@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="{{lang}}" data-root="{{root}}">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="{{csp}}">
+<meta name="description" content="{{description}}">
+<meta name="theme-color" content="#f7f7f8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)">
+<title>{{title}}</title>
+<link rel="icon" href="{{root}}assets/icon.svg" type="image/svg+xml">
+<link rel="preload" href="{{root}}assets/fonts/bricolage-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="{{root}}assets/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{{root}}assets/app.css?v={{version}}">
+<script>{{themeScript}}</script>
+<body>
+<div class="shell" id="shell"><main id="view"><div class="boot" aria-busy="true"></div></main></div>
+<noscript><p style="padding:24px;font-family:system-ui">{{noscript}}</p></noscript>
+<script src="{{root}}assets/app.js?v={{version}}"></script>

@@ -1,0 +1,1193 @@
+{
+ "keywords": [
+  "if",
+  "elif",
+  "else",
+  "for",
+  "while",
+  "in",
+  "not",
+  "and",
+  "or",
+  "is",
+  "None",
+  "True",
+  "False",
+  "def",
+  "return",
+  "lambda",
+  "class",
+  "pass",
+  "break",
+  "continue",
+  "try",
+  "except",
+  "finally",
+  "raise",
+  "with",
+  "as",
+  "import",
+  "from",
+  "global",
+  "nonlocal",
+  "yield",
+  "async",
+  "await",
+  "assert",
+  "del",
+  "match",
+  "case"
+ ],
+ "globals": [
+  [
+   "print",
+   "print(*valores, sep=' ', end='\\n')",
+   "Muestra valores en la consola.",
+   "Prints values to the console."
+  ],
+  [
+   "input",
+   "input() → str",
+   "Lee la siguiente línea de la entrada (en el juez).",
+   "Reads the next line of input (in the judge)."
+  ],
+  [
+   "len",
+   "len(algo) → int",
+   "Cuántos elementos tiene (lista, texto, dict…).",
+   "How many items it has (list, string, dict…)."
+  ],
+  [
+   "range",
+   "range(inicio, fin, paso)",
+   "Números de inicio hasta fin (sin incluirlo).",
+   "Numbers from start up to end (not included)."
+  ],
+  [
+   "int",
+   "int(valor) → int",
+   "Convierte a entero.",
+   "Converts to an integer."
+  ],
+  [
+   "float",
+   "float(valor) → float",
+   "Convierte a decimal.",
+   "Converts to a float."
+  ],
+  [
+   "str",
+   "str(valor) → str",
+   "Convierte a texto.",
+   "Converts to a string."
+  ],
+  [
+   "bool",
+   "bool(valor) → bool",
+   "True o False según si el valor es verdadero.",
+   "True or False by the value's truthiness."
+  ],
+  [
+   "list",
+   "list(iterable) → list",
+   "Una lista nueva con los elementos.",
+   "A new list with the items."
+  ],
+  [
+   "dict",
+   "dict(pares) → dict",
+   "Un diccionario nuevo.",
+   "A new dictionary."
+  ],
+  [
+   "set",
+   "set(iterable) → set",
+   "Un set: elementos sin repetir.",
+   "A set: items without repeats."
+  ],
+  [
+   "tuple",
+   "tuple(iterable) → tuple",
+   "Una tupla (inmutable).",
+   "A tuple (immutable)."
+  ],
+  [
+   "sum",
+   "sum(iterable, inicio=0)",
+   "La suma de los elementos.",
+   "The sum of the items."
+  ],
+  [
+   "min",
+   "min(iterable, key=None)",
+   "El menor elemento.",
+   "The smallest item."
+  ],
+  [
+   "max",
+   "max(iterable, key=None)",
+   "El mayor elemento.",
+   "The largest item."
+  ],
+  [
+   "abs",
+   "abs(x)",
+   "Valor absoluto.",
+   "Absolute value."
+  ],
+  [
+   "round",
+   "round(x, decimales)",
+   "Redondea (al par más cercano en .5).",
+   "Rounds (to the nearest even on .5)."
+  ],
+  [
+   "sorted",
+   "sorted(iterable, key=None, reverse=False) → list",
+   "Una lista nueva, ordenada.",
+   "A new, sorted list."
+  ],
+  [
+   "reversed",
+   "reversed(secuencia)",
+   "Recorre al revés.",
+   "Iterates backwards."
+  ],
+  [
+   "enumerate",
+   "enumerate(iterable, start=0)",
+   "Pares (posición, elemento).",
+   "(index, item) pairs."
+  ],
+  [
+   "zip",
+   "zip(a, b, strict=False)",
+   "Recorre varias secuencias a la vez, en pares.",
+   "Walks several sequences at once, in pairs."
+  ],
+  [
+   "map",
+   "map(funcion, iterable)",
+   "Aplica la función a cada elemento.",
+   "Applies the function to each item."
+  ],
+  [
+   "filter",
+   "filter(funcion, iterable)",
+   "Los elementos para los que la función da True.",
+   "The items the function returns True for."
+  ],
+  [
+   "any",
+   "any(iterable) → bool",
+   "True si alguno es verdadero.",
+   "True if any is truthy."
+  ],
+  [
+   "all",
+   "all(iterable) → bool",
+   "True si todos son verdaderos.",
+   "True if all are truthy."
+  ],
+  [
+   "isinstance",
+   "isinstance(valor, tipo) → bool",
+   "¿Es de ese tipo?",
+   "Is it of that type?"
+  ],
+  [
+   "type",
+   "type(valor)",
+   "El tipo del valor.",
+   "The value's type."
+  ],
+  [
+   "repr",
+   "repr(valor) → str",
+   "Cómo se escribe el valor en código.",
+   "How the value is written in code."
+  ],
+  [
+   "divmod",
+   "divmod(a, b) → (cociente, resto)",
+   "Cociente y resto a la vez.",
+   "Quotient and remainder at once."
+  ],
+  [
+   "pow",
+   "pow(base, exp, mod=None)",
+   "Potencia (con módulo opcional).",
+   "Power (optionally modulo)."
+  ],
+  [
+   "ord",
+   "ord(caracter) → int",
+   "El código Unicode de un carácter.",
+   "A character's Unicode code."
+  ],
+  [
+   "chr",
+   "chr(codigo) → str",
+   "El carácter de un código Unicode.",
+   "The character for a Unicode code."
+  ],
+  [
+   "iter",
+   "iter(iterable)",
+   "Un iterador sobre el iterable.",
+   "An iterator over the iterable."
+  ],
+  [
+   "next",
+   "next(iterador, defecto)",
+   "El siguiente elemento del iterador.",
+   "The iterator's next item."
+  ],
+  [
+   "hasattr",
+   "hasattr(objeto, nombre) → bool",
+   "¿Tiene ese atributo?",
+   "Does it have that attribute?"
+  ],
+  [
+   "getattr",
+   "getattr(objeto, nombre, defecto)",
+   "Lee un atributo por su nombre.",
+   "Reads an attribute by name."
+  ],
+  [
+   "setattr",
+   "setattr(objeto, nombre, valor)",
+   "Cambia un atributo por su nombre.",
+   "Sets an attribute by name."
+  ],
+  [
+   "callable",
+   "callable(valor) → bool",
+   "¿Se puede llamar con ()?",
+   "Can it be called with ()?"
+  ],
+  [
+   "id",
+   "id(valor) → int",
+   "La identidad del objeto.",
+   "The object's identity."
+  ],
+  [
+   "hash",
+   "hash(valor) → int",
+   "El hash del valor.",
+   "The value's hash."
+  ],
+  [
+   "super",
+   "super()",
+   "La clase padre, para llamar a sus métodos.",
+   "The parent class, to call its methods."
+  ],
+  [
+   "property",
+   "@property",
+   "Un atributo calculado.",
+   "A computed attribute."
+  ],
+  [
+   "staticmethod",
+   "@staticmethod",
+   "Un método sin self.",
+   "A method without self."
+  ],
+  [
+   "classmethod",
+   "@classmethod",
+   "Un método que recibe la clase.",
+   "A method that receives the class."
+  ],
+  [
+   "open",
+   "open(ruta, modo='r', encoding='utf-8')",
+   "Abre un archivo; úsalo con with.",
+   "Opens a file; use it with with."
+  ],
+  [
+   "frozenset",
+   "frozenset(iterable)",
+   "Un set inmutable.",
+   "An immutable set."
+  ],
+  [
+   "ValueError",
+   "ValueError(mensaje)",
+   "Error: valor inválido.",
+   "Error: invalid value."
+  ],
+  [
+   "TypeError",
+   "TypeError(mensaje)",
+   "Error: tipo equivocado.",
+   "Error: wrong type."
+  ],
+  [
+   "KeyError",
+   "KeyError(clave)",
+   "Error: clave que no existe.",
+   "Error: missing key."
+  ],
+  [
+   "IndexError",
+   "IndexError(mensaje)",
+   "Error: posición fuera de rango.",
+   "Error: index out of range."
+  ],
+  [
+   "Exception",
+   "Exception(mensaje)",
+   "La base de los errores comunes.",
+   "The base of the usual errors."
+  ]
+ ],
+ "statics": {
+  "math": [
+   [
+    "sqrt",
+    "math.sqrt(x)",
+    "Raíz cuadrada.",
+    "Square root."
+   ],
+   [
+    "floor",
+    "math.floor(x) → int",
+    "Redondea hacia abajo.",
+    "Rounds down."
+   ],
+   [
+    "ceil",
+    "math.ceil(x) → int",
+    "Redondea hacia arriba.",
+    "Rounds up."
+   ],
+   [
+    "pi",
+    "math.pi",
+    "π.",
+    "π."
+   ],
+   [
+    "inf",
+    "math.inf",
+    "Infinito.",
+    "Infinity."
+   ],
+   [
+    "gcd",
+    "math.gcd(a, b)",
+    "Máximo común divisor.",
+    "Greatest common divisor."
+   ],
+   [
+    "isclose",
+    "math.isclose(a, b)",
+    "¿Casi iguales? (para decimales).",
+    "Nearly equal? (for floats)."
+   ],
+   [
+    "prod",
+    "math.prod(iterable)",
+    "El producto de los elementos.",
+    "The product of the items."
+   ],
+   [
+    "comb",
+    "math.comb(n, k)",
+    "Combinaciones de n en k.",
+    "n choose k."
+   ],
+   [
+    "dist",
+    "math.dist(p, q)",
+    "Distancia entre dos puntos.",
+    "Distance between two points."
+   ]
+  ],
+  "random": [
+   [
+    "randint",
+    "random.randint(a, b)",
+    "Entero al azar entre a y b (incluidos).",
+    "Random integer between a and b (inclusive)."
+   ],
+   [
+    "choice",
+    "random.choice(secuencia)",
+    "Un elemento al azar.",
+    "A random item."
+   ],
+   [
+    "shuffle",
+    "random.shuffle(lista)",
+    "Desordena la lista en su lugar.",
+    "Shuffles the list in place."
+   ],
+   [
+    "seed",
+    "random.seed(n)",
+    "Fija la semilla: los mismos números cada vez.",
+    "Sets the seed: the same numbers every time."
+   ]
+  ],
+  "itertools": [
+   [
+    "count",
+    "itertools.count(inicio=0)",
+    "0, 1, 2… sin fin.",
+    "0, 1, 2… forever."
+   ],
+   [
+    "islice",
+    "itertools.islice(iterable, fin)",
+    "Los primeros elementos de un iterable.",
+    "The first items of an iterable."
+   ],
+   [
+    "chain",
+    "itertools.chain(a, b)",
+    "Recorre uno tras otro.",
+    "Walks one after another."
+   ],
+   [
+    "groupby",
+    "itertools.groupby(iterable, key=None)",
+    "Agrupa elementos seguidos con la misma clave.",
+    "Groups consecutive items with the same key."
+   ],
+   [
+    "product",
+    "itertools.product(a, b)",
+    "Todas las combinaciones de pares.",
+    "Every combination of pairs."
+   ],
+   [
+    "permutations",
+    "itertools.permutations(iterable, r)",
+    "Todos los órdenes posibles.",
+    "Every possible ordering."
+   ],
+   [
+    "combinations",
+    "itertools.combinations(iterable, r)",
+    "Todos los grupos de r, sin orden.",
+    "Every group of r, unordered."
+   ],
+   [
+    "accumulate",
+    "itertools.accumulate(iterable)",
+    "Sumas acumuladas.",
+    "Running totals."
+   ],
+   [
+    "pairwise",
+    "itertools.pairwise(iterable)",
+    "Pares de vecinos: (a, b), (b, c)…",
+    "Neighbour pairs: (a, b), (b, c)…"
+   ],
+   [
+    "batched",
+    "itertools.batched(iterable, n)",
+    "Tandas de n.",
+    "Batches of n."
+   ]
+  ],
+  "collections": [
+   [
+    "Counter",
+    "collections.Counter(iterable)",
+    "Cuenta cuántas veces aparece cada cosa.",
+    "Counts how often each thing appears."
+   ],
+   [
+    "defaultdict",
+    "collections.defaultdict(fabrica)",
+    "Un dict que crea el valor que falta.",
+    "A dict that creates missing values."
+   ],
+   [
+    "deque",
+    "collections.deque(iterable)",
+    "Una cola rápida por ambos extremos.",
+    "A queue fast at both ends."
+   ],
+   [
+    "namedtuple",
+    "collections.namedtuple(nombre, campos)",
+    "Una tupla con nombres.",
+    "A tuple with names."
+   ]
+  ],
+  "functools": [
+   [
+    "cache",
+    "@functools.cache",
+    "Recuerda resultados ya calculados.",
+    "Remembers results already computed."
+   ],
+   [
+    "lru_cache",
+    "@functools.lru_cache(maxsize=128)",
+    "Caché con límite.",
+    "A cache with a limit."
+   ],
+   [
+    "reduce",
+    "functools.reduce(funcion, iterable, inicial)",
+    "Combina todo en un valor.",
+    "Folds everything into one value."
+   ],
+   [
+    "partial",
+    "functools.partial(funcion, *args)",
+    "Una función con argumentos ya puestos.",
+    "A function with arguments already filled in."
+   ],
+   [
+    "wraps",
+    "@functools.wraps(funcion)",
+    "Copia nombre y doc en un decorador.",
+    "Copies name and doc in a decorator."
+   ]
+  ],
+  "heapq": [
+   [
+    "heappush",
+    "heapq.heappush(monticulo, valor)",
+    "Agrega al montículo.",
+    "Pushes onto the heap."
+   ],
+   [
+    "heappop",
+    "heapq.heappop(monticulo)",
+    "Saca el menor.",
+    "Pops the smallest."
+   ],
+   [
+    "heapify",
+    "heapq.heapify(lista)",
+    "Convierte la lista en montículo.",
+    "Turns the list into a heap."
+   ],
+   [
+    "nsmallest",
+    "heapq.nsmallest(n, iterable)",
+    "Los n menores.",
+    "The n smallest."
+   ],
+   [
+    "nlargest",
+    "heapq.nlargest(n, iterable)",
+    "Los n mayores.",
+    "The n largest."
+   ]
+  ],
+  "bisect": [
+   [
+    "bisect_left",
+    "bisect.bisect_left(lista, valor)",
+    "Dónde insertar en una lista ordenada.",
+    "Where to insert in a sorted list."
+   ],
+   [
+    "insort",
+    "bisect.insort(lista, valor)",
+    "Inserta manteniendo el orden.",
+    "Inserts keeping the order."
+   ]
+  ],
+  "asyncio": [
+   [
+    "run",
+    "asyncio.run(corrutina)",
+    "Ejecuta la corrutina principal.",
+    "Runs the main coroutine."
+   ],
+   [
+    "sleep",
+    "await asyncio.sleep(segundos)",
+    "Espera sin bloquear.",
+    "Waits without blocking."
+   ],
+   [
+    "gather",
+    "await asyncio.gather(*corrutinas)",
+    "Espera varias a la vez.",
+    "Awaits several at once."
+   ],
+   [
+    "create_task",
+    "asyncio.create_task(corrutina)",
+    "La lanza en paralelo.",
+    "Starts it concurrently."
+   ],
+   [
+    "TaskGroup",
+    "async with asyncio.TaskGroup() as tg",
+    "Un grupo de tareas que termina junto.",
+    "A group of tasks that ends together."
+   ],
+   [
+    "timeout",
+    "async with asyncio.timeout(segundos)",
+    "Corta si tarda demasiado.",
+    "Cuts it off if it takes too long."
+   ],
+   [
+    "wait_for",
+    "await asyncio.wait_for(corrutina, timeout)",
+    "Espera con límite de tiempo.",
+    "Awaits with a time limit."
+   ],
+   [
+    "Queue",
+    "asyncio.Queue()",
+    "Una cola entre tareas.",
+    "A queue between tasks."
+   ],
+   [
+    "Semaphore",
+    "asyncio.Semaphore(n)",
+    "Deja pasar a n a la vez.",
+    "Lets n through at a time."
+   ]
+  ],
+  "json": [
+   [
+    "dumps",
+    "json.dumps(valor, indent=None)",
+    "Convierte a texto JSON.",
+    "Converts to JSON text."
+   ],
+   [
+    "loads",
+    "json.loads(texto)",
+    "Lee texto JSON.",
+    "Parses JSON text."
+   ]
+  ],
+  "re": [
+   [
+    "search",
+    "re.search(patron, texto)",
+    "Busca el patrón.",
+    "Searches for the pattern."
+   ],
+   [
+    "findall",
+    "re.findall(patron, texto)",
+    "Todas las coincidencias.",
+    "Every match."
+   ],
+   [
+    "sub",
+    "re.sub(patron, poner, texto)",
+    "Reemplaza coincidencias.",
+    "Replaces matches."
+   ],
+   [
+    "fullmatch",
+    "re.fullmatch(patron, texto)",
+    "¿Todo el texto coincide?",
+    "Does the whole text match?"
+   ]
+  ],
+  "sys": [
+   [
+    "stdin",
+    "sys.stdin",
+    "La entrada estándar.",
+    "Standard input."
+   ],
+   [
+    "setrecursionlimit",
+    "sys.setrecursionlimit(n)",
+    "Permite más llamadas anidadas.",
+    "Allows deeper recursion."
+   ]
+  ],
+  "time": [
+   [
+    "perf_counter",
+    "time.perf_counter()",
+    "Un reloj para medir duraciones.",
+    "A clock for timing."
+   ]
+  ],
+  "dataclasses": [
+   [
+    "dataclass",
+    "@dataclass",
+    "Crea __init__, __repr__ y __eq__ por ti.",
+    "Writes __init__, __repr__ and __eq__ for you."
+   ],
+   [
+    "field",
+    "field(default_factory=list)",
+    "Opciones de un campo.",
+    "A field's options."
+   ]
+  ],
+  "string": [
+   [
+    "ascii_lowercase",
+    "string.ascii_lowercase",
+    "'abc…z'.",
+    "'abc…z'."
+   ],
+   [
+    "digits",
+    "string.digits",
+    "'0123456789'.",
+    "'0123456789'."
+   ]
+  ]
+ },
+ "types": {
+  "list": [
+   [
+    "append",
+    "lista.append(valor)",
+    "Agrega al final.",
+    "Adds to the end."
+   ],
+   [
+    "extend",
+    "lista.extend(iterable)",
+    "Agrega varios al final.",
+    "Adds several to the end."
+   ],
+   [
+    "insert",
+    "lista.insert(posicion, valor)",
+    "Inserta en una posición.",
+    "Inserts at a position."
+   ],
+   [
+    "pop",
+    "lista.pop(posicion=-1)",
+    "Saca y devuelve (el último por defecto).",
+    "Removes and returns (the last by default)."
+   ],
+   [
+    "remove",
+    "lista.remove(valor)",
+    "Quita la primera aparición.",
+    "Removes the first occurrence."
+   ],
+   [
+    "index",
+    "lista.index(valor)",
+    "La posición de un valor.",
+    "A value's position."
+   ],
+   [
+    "count",
+    "lista.count(valor)",
+    "Cuántas veces aparece.",
+    "How many times it appears."
+   ],
+   [
+    "sort",
+    "lista.sort(key=None, reverse=False)",
+    "Ordena en su lugar (devuelve None).",
+    "Sorts in place (returns None)."
+   ],
+   [
+    "reverse",
+    "lista.reverse()",
+    "Invierte en su lugar.",
+    "Reverses in place."
+   ],
+   [
+    "copy",
+    "lista.copy()",
+    "Una copia superficial.",
+    "A shallow copy."
+   ],
+   [
+    "clear",
+    "lista.clear()",
+    "La vacía.",
+    "Empties it."
+   ]
+  ],
+  "str": [
+   [
+    "upper",
+    "texto.upper()",
+    "En mayúsculas.",
+    "In uppercase."
+   ],
+   [
+    "lower",
+    "texto.lower()",
+    "En minúsculas.",
+    "In lowercase."
+   ],
+   [
+    "strip",
+    "texto.strip(caracteres)",
+    "Sin espacios al inicio y al final.",
+    "Without leading and trailing spaces."
+   ],
+   [
+    "split",
+    "texto.split(separador=None)",
+    "Lo parte en una lista.",
+    "Splits it into a list."
+   ],
+   [
+    "join",
+    "separador.join(iterable)",
+    "Une textos con el separador.",
+    "Joins strings with the separator."
+   ],
+   [
+    "replace",
+    "texto.replace(viejo, nuevo)",
+    "Reemplaza todas las apariciones.",
+    "Replaces every occurrence."
+   ],
+   [
+    "startswith",
+    "texto.startswith(prefijo)",
+    "¿Empieza así?",
+    "Does it start with this?"
+   ],
+   [
+    "endswith",
+    "texto.endswith(sufijo)",
+    "¿Termina así?",
+    "Does it end with this?"
+   ],
+   [
+    "find",
+    "texto.find(parte)",
+    "Dónde está (-1 si no está).",
+    "Where it is (-1 if absent)."
+   ],
+   [
+    "count",
+    "texto.count(parte)",
+    "Cuántas veces aparece.",
+    "How many times it appears."
+   ],
+   [
+    "isdigit",
+    "texto.isdigit()",
+    "¿Solo dígitos?",
+    "Only digits?"
+   ],
+   [
+    "isalpha",
+    "texto.isalpha()",
+    "¿Solo letras?",
+    "Only letters?"
+   ],
+   [
+    "title",
+    "texto.title()",
+    "Cada Palabra Con Mayúscula.",
+    "Each Word Capitalised."
+   ],
+   [
+    "capitalize",
+    "texto.capitalize()",
+    "La primera letra en mayúscula.",
+    "First letter uppercase."
+   ],
+   [
+    "center",
+    "texto.center(ancho, relleno)",
+    "Centrado en un ancho.",
+    "Centred in a width."
+   ],
+   [
+    "ljust",
+    "texto.ljust(ancho)",
+    "Alineado a la izquierda.",
+    "Left-aligned."
+   ],
+   [
+    "rjust",
+    "texto.rjust(ancho)",
+    "Alineado a la derecha.",
+    "Right-aligned."
+   ],
+   [
+    "zfill",
+    "texto.zfill(ancho)",
+    "Ceros a la izquierda.",
+    "Zeros on the left."
+   ],
+   [
+    "partition",
+    "texto.partition(separador)",
+    "(antes, separador, después).",
+    "(before, separator, after)."
+   ],
+   [
+    "removeprefix",
+    "texto.removeprefix(prefijo)",
+    "Sin ese prefijo.",
+    "Without that prefix."
+   ],
+   [
+    "removesuffix",
+    "texto.removesuffix(sufijo)",
+    "Sin ese sufijo.",
+    "Without that suffix."
+   ],
+   [
+    "splitlines",
+    "texto.splitlines()",
+    "Una lista de líneas.",
+    "A list of lines."
+   ],
+   [
+    "format",
+    "texto.format(*valores)",
+    "Rellena {} con valores (mejor: f-strings).",
+    "Fills {} with values (better: f-strings)."
+   ]
+  ],
+  "dict": [
+   [
+    "get",
+    "dicc.get(clave, defecto=None)",
+    "El valor, o el defecto si no está.",
+    "The value, or the default if absent."
+   ],
+   [
+    "keys",
+    "dicc.keys()",
+    "Las claves.",
+    "The keys."
+   ],
+   [
+    "values",
+    "dicc.values()",
+    "Los valores.",
+    "The values."
+   ],
+   [
+    "items",
+    "dicc.items()",
+    "Pares (clave, valor).",
+    "(key, value) pairs."
+   ],
+   [
+    "setdefault",
+    "dicc.setdefault(clave, defecto)",
+    "Lo pone si falta y lo devuelve.",
+    "Sets it if missing and returns it."
+   ],
+   [
+    "pop",
+    "dicc.pop(clave, defecto)",
+    "Saca la clave y devuelve su valor.",
+    "Removes the key, returns its value."
+   ],
+   [
+    "update",
+    "dicc.update(otro)",
+    "Copia las claves de otro.",
+    "Copies another's keys."
+   ],
+   [
+    "copy",
+    "dicc.copy()",
+    "Una copia superficial.",
+    "A shallow copy."
+   ]
+  ],
+  "set": [
+   [
+    "add",
+    "conjunto.add(valor)",
+    "Agrega (si ya estaba, nada).",
+    "Adds (nothing if present)."
+   ],
+   [
+    "discard",
+    "conjunto.discard(valor)",
+    "Quita si está.",
+    "Removes if present."
+   ],
+   [
+    "remove",
+    "conjunto.remove(valor)",
+    "Quita (error si no está).",
+    "Removes (error if absent)."
+   ],
+   [
+    "union",
+    "conjunto.union(otro)",
+    "Todo lo de ambos (también a | b).",
+    "Everything in both (also a | b)."
+   ],
+   [
+    "intersection",
+    "conjunto.intersection(otro)",
+    "Lo común (también a & b).",
+    "What they share (also a & b)."
+   ],
+   [
+    "difference",
+    "conjunto.difference(otro)",
+    "Lo que no está en el otro (también a - b).",
+    "What's not in the other (also a - b)."
+   ],
+   [
+    "issubset",
+    "conjunto.issubset(otro)",
+    "¿Está todo dentro del otro?",
+    "Is all of it inside the other?"
+   ]
+  ]
+ },
+ "snippets": [
+  [
+   "for … in",
+   "for ${elemento} in ${lista}:\n\t${}",
+   "for ${item} in ${items}:\n\t${}",
+   "Recorre cada elemento.",
+   "Loops over each item."
+  ],
+  [
+   "for range",
+   "for ${i} in range(${n}):\n\t${}",
+   "for ${i} in range(${n}):\n\t${}",
+   "Un bucle con contador.",
+   "A counting loop."
+  ],
+  [
+   "if",
+   "if ${condicion}:\n\t${}",
+   "if ${condition}:\n\t${}",
+   "Un condicional.",
+   "A conditional."
+  ],
+  [
+   "if / else",
+   "if ${condicion}:\n\t${}\nelse:\n\t",
+   "if ${condition}:\n\t${}\nelse:\n\t",
+   "Con camino alternativo.",
+   "With an alternative path."
+  ],
+  [
+   "while",
+   "while ${condicion}:\n\t${}",
+   "while ${condition}:\n\t${}",
+   "Repite mientras se cumpla.",
+   "Repeats while it holds."
+  ],
+  [
+   "def",
+   "def ${nombre}(${parametros}):\n\t${}",
+   "def ${name}(${params}):\n\t${}",
+   "Una función.",
+   "A function."
+  ],
+  [
+   "class",
+   "class ${Nombre}:\n\tdef __init__(self${}):\n\t\t",
+   "class ${Name}:\n\tdef __init__(self${}):\n\t\t",
+   "Una clase.",
+   "A class."
+  ],
+  [
+   "try / except",
+   "try:\n\t${}\nexcept ${Exception} as e:\n\t",
+   "try:\n\t${}\nexcept ${Exception} as e:\n\t",
+   "Atrapa un error.",
+   "Catches an error."
+  ],
+  [
+   "with open",
+   "with open(${ruta}) as ${archivo}:\n\t${}",
+   "with open(${path}) as ${file}:\n\t${}",
+   "Abre un archivo y lo cierra solo.",
+   "Opens a file and closes it for you."
+  ],
+  [
+   "async def",
+   "async def ${nombre}(${}):\n\t",
+   "async def ${name}(${}):\n\t",
+   "Una corrutina.",
+   "A coroutine."
+  ],
+  [
+   "match",
+   "match ${valor}:\n\tcase ${patron}:\n\t\t${}",
+   "match ${value}:\n\tcase ${pattern}:\n\t\t${}",
+   "Comparación por patrones.",
+   "Pattern matching."
+  ],
+  [
+   "[… for …]",
+   "[${x} for ${x} in ${lista}]",
+   "[${x} for ${x} in ${items}]",
+   "Una comprensión de lista.",
+   "A list comprehension."
+  ]
+ ],
+ "sigWordsEn": {
+  "valores": "values",
+  "valor": "value",
+  "algo": "obj",
+  "inicio": "start",
+  "fin": "stop",
+  "paso": "step",
+  "pares": "pairs",
+  "decimales": "ndigits",
+  "secuencia": "seq",
+  "funcion": "function",
+  "tipo": "type",
+  "cociente": "quotient",
+  "resto": "remainder",
+  "caracter": "char",
+  "codigo": "code",
+  "iterador": "iterator",
+  "defecto": "default",
+  "objeto": "obj",
+  "nombre": "name",
+  "ruta": "path",
+  "modo": "mode",
+  "mensaje": "message",
+  "clave": "key",
+  "lista": "items",
+  "texto": "text",
+  "separador": "sep",
+  "parte": "sub",
+  "prefijo": "prefix",
+  "sufijo": "suffix",
+  "viejo": "old",
+  "nuevo": "new",
+  "ancho": "width",
+  "relleno": "fill",
+  "dicc": "d",
+  "otro": "other",
+  "conjunto": "s",
+  "posicion": "index",
+  "caracteres": "chars",
+  "fabrica": "factory",
+  "campos": "fields",
+  "monticulo": "heap",
+  "corrutina": "coro",
+  "corrutinas": "coros",
+  "segundos": "seconds",
+  "patron": "pattern",
+  "poner": "repl",
+  "inicial": "initial",
+  "base": "base",
+  "exp": "exp",
+  "mod": "mod"
+ }
+}

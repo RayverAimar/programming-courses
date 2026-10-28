@@ -1,0 +1,192 @@
+{
+  "keywords": ["const", "let", "if", "else", "for", "of", "in", "while", "do", "break", "continue", "return", "function", "class", "extends", "new", "this", "super", "async", "await", "try", "catch", "finally", "throw", "switch", "case", "default", "typeof", "instanceof", "true", "false", "null", "undefined", "import", "export", "static", "get", "set"],
+  "globals": [
+    ["console", "console", "Para mostrar valores en la consola.", "Prints values to the console."],
+    ["Math", "Math", "Funciones y constantes matemáticas.", "Maths functions and constants."],
+    ["JSON", "JSON", "Convierte entre valores y texto JSON.", "Converts between values and JSON text."],
+    ["Object", "Object", "Utilidades para objetos: claves, valores, pares.", "Object utilities: keys, values, entries."],
+    ["Array", "Array", "Utilidades para listas.", "List utilities."],
+    ["Number", "Number", "Utilidades para números.", "Number utilities."],
+    ["String", "String(valor)", "Convierte un valor en texto.", "Turns a value into a string."],
+    ["Boolean", "Boolean(valor)", "Convierte un valor en true o false.", "Turns a value into true or false."],
+    ["Map", "new Map()", "Un diccionario: claves de cualquier tipo, en orden de inserción.", "A dictionary: keys of any type, in insertion order."],
+    ["Set", "new Set()", "Un conjunto: valores sin repetir.", "A set: values without repeats."],
+    ["Promise", "Promise", "Un valor que llegará más tarde.", "A value that arrives later."],
+    ["Error", "new Error(mensaje)", "Un error, para lanzarlo con throw.", "An error, to throw."],
+    ["parseInt", "parseInt(texto, base = 10)", "Lee un entero al inicio de un texto.", "Reads a whole number from the start of a string."],
+    ["parseFloat", "parseFloat(texto)", "Lee un número decimal al inicio de un texto.", "Reads a decimal number from the start of a string."],
+    ["structuredClone", "structuredClone(valor)", "Una copia profunda de un valor.", "A deep copy of a value."],
+    ["performance", "performance", "Para medir tiempos: performance.now().", "To measure time: performance.now()."]
+  ],
+  "statics": {
+    "console": [
+      ["log", "console.log(...valores)", "Muestra valores en la consola, separados por espacios.", "Prints values to the console, separated by spaces."],
+      ["error", "console.error(...valores)", "Como log, para errores.", "Like log, for errors."],
+      ["table", "console.table(datos)", "Muestra una lista u objeto (aquí, como log).", "Shows a list or object (here, like log)."]
+    ],
+    "Math": [
+      ["max", "Math.max(...números)", "El mayor de los números.", "The largest of the numbers."],
+      ["min", "Math.min(...números)", "El menor de los números.", "The smallest of the numbers."],
+      ["abs", "Math.abs(x)", "El valor absoluto.", "The absolute value."],
+      ["round", "Math.round(x)", "Redondea al entero más cercano.", "Rounds to the nearest whole number."],
+      ["floor", "Math.floor(x)", "Redondea hacia abajo.", "Rounds down."],
+      ["ceil", "Math.ceil(x)", "Redondea hacia arriba.", "Rounds up."],
+      ["trunc", "Math.trunc(x)", "Quita los decimales.", "Drops the decimals."],
+      ["sqrt", "Math.sqrt(x)", "La raíz cuadrada.", "The square root."],
+      ["pow", "Math.pow(base, exp)", "Potencia; también se escribe base ** exp.", "Power; also written base ** exp."],
+      ["random", "Math.random()", "Un número al azar entre 0 y 1.", "A random number between 0 and 1."],
+      ["sign", "Math.sign(x)", "-1, 0 o 1 según el signo.", "-1, 0 or 1 by sign."],
+      ["hypot", "Math.hypot(...lados)", "La raíz de la suma de cuadrados (distancia).", "Square root of the sum of squares (distance)."],
+      ["PI", "Math.PI", "π, 3.14159…", "π, 3.14159…"]
+    ],
+    "JSON": [
+      ["stringify", "JSON.stringify(valor, null, 2)", "Convierte un valor en texto JSON.", "Turns a value into JSON text."],
+      ["parse", "JSON.parse(texto)", "Lee texto JSON y devuelve el valor.", "Reads JSON text and returns the value."]
+    ],
+    "Object": [
+      ["keys", "Object.keys(obj)", "La lista de claves.", "The list of keys."],
+      ["values", "Object.values(obj)", "La lista de valores.", "The list of values."],
+      ["entries", "Object.entries(obj)", "La lista de pares [clave, valor].", "The list of [key, value] pairs."],
+      ["fromEntries", "Object.fromEntries(pares)", "Un objeto a partir de pares [clave, valor].", "An object from [key, value] pairs."],
+      ["assign", "Object.assign(destino, ...fuentes)", "Copia propiedades al destino.", "Copies properties into the target."],
+      ["freeze", "Object.freeze(obj)", "Impide cambiar el objeto.", "Stops the object from changing."],
+      ["groupBy", "Object.groupBy(lista, fn)", "Agrupa una lista en un objeto según fn.", "Groups a list into an object by fn."]
+    ],
+    "Array": [
+      ["isArray", "Array.isArray(valor)", "true si el valor es una lista.", "true if the value is a list."],
+      ["from", "Array.from(algo, fn)", "Una lista a partir de algo iterable o { length: n }.", "A list from something iterable or { length: n }."],
+      ["of", "Array.of(...valores)", "Una lista con esos valores.", "A list of those values."]
+    ],
+    "Number": [
+      ["isInteger", "Number.isInteger(x)", "true si x es un entero.", "true if x is a whole number."],
+      ["isNaN", "Number.isNaN(x)", "true si x es NaN.", "true if x is NaN."],
+      ["parseFloat", "Number.parseFloat(texto)", "Lee un número decimal.", "Reads a decimal number."],
+      ["MAX_SAFE_INTEGER", "Number.MAX_SAFE_INTEGER", "El mayor entero exacto.", "The largest exact integer."],
+      ["EPSILON", "Number.EPSILON", "La diferencia mínima entre decimales cercanos a 1.", "The smallest gap between decimals near 1."]
+    ],
+    "Promise": [
+      ["all", "Promise.all(promesas)", "Espera a todas; falla si una falla.", "Waits for all; fails if one fails."],
+      ["allSettled", "Promise.allSettled(promesas)", "Espera a todas y dice cómo terminó cada una.", "Waits for all and says how each ended."],
+      ["race", "Promise.race(promesas)", "La primera que termine, bien o mal.", "The first to finish, either way."],
+      ["any", "Promise.any(promesas)", "La primera que se cumpla.", "The first to fulfil."],
+      ["resolve", "Promise.resolve(valor)", "Una promesa ya cumplida.", "An already fulfilled promise."],
+      ["reject", "Promise.reject(error)", "Una promesa ya rechazada.", "An already rejected promise."]
+    ],
+    "performance": [
+      ["now", "performance.now()", "Milisegundos desde que empezó la página, con decimales.", "Milliseconds since the page started, with decimals."]
+    ]
+  },
+  "types": {
+    "array": [
+      ["length", "lista.length", "Cuántos elementos tiene.", "How many items it has."],
+      ["push", "lista.push(...valores)", "Agrega al final; devuelve el nuevo largo.", "Adds to the end; returns the new length."],
+      ["pop", "lista.pop()", "Quita y devuelve el último.", "Removes and returns the last item."],
+      ["shift", "lista.shift()", "Quita y devuelve el primero.", "Removes and returns the first item."],
+      ["unshift", "lista.unshift(...valores)", "Agrega al inicio.", "Adds to the start."],
+      ["includes", "lista.includes(valor)", "true si el valor está en la lista.", "true if the value is in the list."],
+      ["indexOf", "lista.indexOf(valor)", "La posición del valor, o -1.", "The value's position, or -1."],
+      ["at", "lista.at(i)", "El elemento en i; con negativos cuenta desde el final.", "The item at i; negatives count from the end."],
+      ["slice", "lista.slice(inicio, fin)", "Una copia de un tramo.", "A copy of a stretch."],
+      ["splice", "lista.splice(inicio, cuántos, ...nuevos)", "Quita o inserta en su lugar (cambia la lista).", "Removes or inserts in place (changes the list)."],
+      ["concat", "lista.concat(otra)", "Una lista nueva con ambas.", "A new list with both."],
+      ["join", "lista.join(separador)", "Une los elementos en un texto.", "Joins the items into a string."],
+      ["map", "lista.map((x, i) => …)", "Una lista nueva con fn aplicada a cada elemento.", "A new list with fn applied to each item."],
+      ["filter", "lista.filter((x) => …)", "Los elementos que cumplen la condición.", "The items that pass the test."],
+      ["find", "lista.find((x) => …)", "El primero que cumple, o undefined.", "The first that passes, or undefined."],
+      ["findIndex", "lista.findIndex((x) => …)", "La posición del primero que cumple, o -1.", "The position of the first that passes, or -1."],
+      ["some", "lista.some((x) => …)", "true si alguno cumple.", "true if any passes."],
+      ["every", "lista.every((x) => …)", "true si todos cumplen.", "true if all pass."],
+      ["reduce", "lista.reduce((acc, x) => …, inicial)", "Acumula la lista en un solo valor.", "Folds the list into one value."],
+      ["forEach", "lista.forEach((x) => …)", "Hace algo con cada elemento.", "Does something with each item."],
+      ["sort", "lista.sort((a, b) => a - b)", "Ordena en su lugar (cambia la lista).", "Sorts in place (changes the list)."],
+      ["toSorted", "lista.toSorted((a, b) => a - b)", "Una copia ordenada.", "A sorted copy."],
+      ["reverse", "lista.reverse()", "Invierte en su lugar.", "Reverses in place."],
+      ["toReversed", "lista.toReversed()", "Una copia invertida.", "A reversed copy."],
+      ["flat", "lista.flat()", "Aplana un nivel de listas dentro de listas.", "Flattens one level of nested lists."],
+      ["fill", "lista.fill(valor)", "Llena la lista con un valor.", "Fills the list with a value."],
+      ["entries", "lista.entries()", "Pares [índice, valor], para for…of.", "[index, value] pairs, for for…of."]
+    ],
+    "string": [
+      ["length", "texto.length", "Cuántos caracteres tiene.", "How many characters it has."],
+      ["includes", "texto.includes(parte)", "true si contiene la parte.", "true if it contains the part."],
+      ["startsWith", "texto.startsWith(parte)", "true si empieza así.", "true if it starts with it."],
+      ["endsWith", "texto.endsWith(parte)", "true si termina así.", "true if it ends with it."],
+      ["indexOf", "texto.indexOf(parte)", "Dónde aparece la parte, o -1.", "Where the part appears, or -1."],
+      ["slice", "texto.slice(inicio, fin)", "Un pedazo del texto.", "A piece of the string."],
+      ["split", "texto.split(separador)", "Parte el texto en una lista.", "Splits the string into a list."],
+      ["trim", "texto.trim()", "Sin espacios al inicio ni al final.", "Without spaces at either end."],
+      ["toUpperCase", "texto.toUpperCase()", "En mayúsculas.", "In capitals."],
+      ["toLowerCase", "texto.toLowerCase()", "En minúsculas.", "In lower case."],
+      ["replaceAll", "texto.replaceAll(buscar, poner)", "Reemplaza todas las apariciones.", "Replaces every occurrence."],
+      ["replace", "texto.replace(buscar, poner)", "Reemplaza la primera aparición.", "Replaces the first occurrence."],
+      ["padStart", "texto.padStart(largo, relleno)", "Rellena por la izquierda hasta ese largo.", "Pads on the left to that length."],
+      ["padEnd", "texto.padEnd(largo, relleno)", "Rellena por la derecha hasta ese largo.", "Pads on the right to that length."],
+      ["repeat", "texto.repeat(n)", "El texto repetido n veces.", "The string repeated n times."],
+      ["at", "texto.at(i)", "El carácter en i; con negativos cuenta desde el final.", "The character at i; negatives count from the end."],
+      ["match", "texto.match(/patrón/)", "Busca un patrón (expresión regular).", "Searches for a pattern (regular expression)."]
+    ],
+    "map": [
+      ["get", "mapa.get(clave)", "El valor de esa clave, o undefined.", "That key's value, or undefined."],
+      ["set", "mapa.set(clave, valor)", "Guarda un valor en esa clave.", "Stores a value under that key."],
+      ["has", "mapa.has(clave)", "true si la clave existe.", "true if the key exists."],
+      ["delete", "mapa.delete(clave)", "Borra la clave.", "Removes the key."],
+      ["size", "mapa.size", "Cuántas claves tiene.", "How many keys it has."],
+      ["keys", "mapa.keys()", "Las claves, para for…of.", "The keys, for for…of."],
+      ["values", "mapa.values()", "Los valores, para for…of.", "The values, for for…of."],
+      ["entries", "mapa.entries()", "Pares [clave, valor], para for…of.", "[key, value] pairs, for for…of."]
+    ],
+    "set": [
+      ["add", "conjunto.add(valor)", "Agrega un valor (si ya estaba, no pasa nada).", "Adds a value (nothing happens if it's there)."],
+      ["has", "conjunto.has(valor)", "true si el valor está.", "true if the value is there."],
+      ["delete", "conjunto.delete(valor)", "Quita el valor.", "Removes the value."],
+      ["size", "conjunto.size", "Cuántos valores tiene.", "How many values it has."]
+    ],
+    "promise": [
+      ["then", "promesa.then((valor) => …)", "Qué hacer cuando se cumpla.", "What to do when it fulfils."],
+      ["catch", "promesa.catch((error) => …)", "Qué hacer si se rechaza.", "What to do if it rejects."],
+      ["finally", "promesa.finally(() => …)", "Qué hacer al terminar, bien o mal.", "What to do when it settles, either way."]
+    ]
+  },
+  "snippets": [
+    ["for…of", "for (const ${elemento} of ${lista}) {\n\t${}\n}", "for (const ${item} of ${list}) {\n\t${}\n}", "Recorre cada elemento de una lista.", "Loops over each item of a list."],
+    ["for (i)", "for (let ${i} = 0; ${i} < ${n}; ${i}++) {\n\t${}\n}", "for (let ${i} = 0; ${i} < ${n}; ${i}++) {\n\t${}\n}", "Un bucle con contador.", "A counting loop."],
+    ["if", "if (${condicion}) {\n\t${}\n}", "if (${condition}) {\n\t${}\n}", "Hace algo solo si se cumple la condición.", "Does something only if the condition holds."],
+    ["if / else", "if (${condicion}) {\n\t${}\n} else {\n\t\n}", "if (${condition}) {\n\t${}\n} else {\n\t\n}", "Un camino u otro.", "One way or the other."],
+    ["while", "while (${condicion}) {\n\t${}\n}", "while (${condition}) {\n\t${}\n}", "Repite mientras se cumpla la condición.", "Repeats while the condition holds."],
+    ["function", "function ${nombre}(${parametros}) {\n\t${}\n}", "function ${name}(${params}) {\n\t${}\n}", "Declara una función.", "Declares a function."],
+    ["=> arrow", "const ${nombre} = (${parametros}) => ${};", "const ${name} = (${params}) => ${};", "Una función flecha guardada en una constante.", "An arrow function stored in a constant."],
+    ["try / catch", "try {\n\t${}\n} catch (error) {\n\t\n}", "try {\n\t${}\n} catch (error) {\n\t\n}", "Intenta algo y atrapa el error si falla.", "Tries something and catches the error if it fails."],
+    ["async function", "async function ${nombre}(${parametros}) {\n\t${}\n}", "async function ${name}(${params}) {\n\t${}\n}", "Una función que puede usar await.", "A function that can use await."]
+  ],
+  "sigWordsEn": {
+    "valores": "values",
+    "valor": "value",
+    "lista": "list",
+    "texto": "text",
+    "parte": "part",
+    "inicio": "start",
+    "fin": "end",
+    "separador": "separator",
+    "buscar": "find",
+    "poner": "replacement",
+    "largo": "length",
+    "relleno": "pad",
+    "clave": "key",
+    "conjunto": "set",
+    "mapa": "map",
+    "promesa": "promise",
+    "promesas": "promises",
+    "números": "numbers",
+    "lados": "sides",
+    "destino": "target",
+    "fuentes": "sources",
+    "pares": "pairs",
+    "algo": "source",
+    "cuántos": "count",
+    "nuevos": "items",
+    "otra": "other",
+    "inicial": "initial",
+    "patrón": "pattern",
+    "mensaje": "message"
+  }
+}

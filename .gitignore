@@ -1,0 +1,8 @@
+node_modules/
+dist/
+release/
+.cache/
+.DS_Store
+build/icons/
+build/icon.icns
+build/icon.ico

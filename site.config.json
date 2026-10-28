@@ -1,0 +1,11 @@
+{
+  "id": "programming-courses",
+  "name": "Loop",
+  "prefix": "taller",
+  "repo": "RayverAimar/programming-courses",
+  "mark": "bot",
+  "langs": ["es", "en"],
+  "defaultLang": "es",
+  "artifact": "loop",
+  "appId": "pe.rayver.loop", "userDataDirs": ["El Taller", "programming-courses"]
+}

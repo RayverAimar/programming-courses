@@ -1,0 +1,67 @@
+/* The frame around every screen: top menu (web, from 700px), bottom tabs (phone), icon rail (desktop app).
+   Lección and Taller run in focus mode: no general menu, only the course you are in. */
+
+.shell { min-height: 100vh; min-height: 100dvh; }
+.wrap { width: 100%; max-width: calc(var(--frame) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+#view { min-width: 0; }
+#view:focus { outline: none; }
+
+.topbar { position: sticky; top: 0; z-index: 40; background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid transparent; transition: border-color var(--fast) var(--ease); }
+.topbar.scrolled { border-bottom-color: var(--hair); }
+.topbar .wrap { display: flex; align-items: center; gap: 20px; height: var(--bar-h); }
+.brand { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 6px; margin-left: -6px; font: 800 1.125rem var(--display); letter-spacing: -.02em; text-decoration: none; white-space: nowrap; border-radius: 10px; }
+.brand:active .brand-mark { transform: scale(.96); }
+.brand-mark { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--accent); color: var(--on-accent); }
+.brand-mark svg { width: 18px; height: 18px; }
+.brand:hover .brand-mark { background: color-mix(in srgb, var(--accent) 86%, var(--ink)); }
+.mainnav { display: flex; gap: 2px; }
+.mainnav a { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; white-space: nowrap; border-radius: 9px; text-decoration: none; font-weight: 600; color: var(--ink-2);
+  transition: background-color var(--fast) var(--ease), color var(--fast) var(--ease); }
+.mainnav a:hover { color: var(--ink); background: var(--raise-2); }
+.mainnav a:active { transform: translateY(1px); }
+.mainnav a[aria-current="page"] { color: var(--ink); background: var(--raise-2); }
+.mainnav .ic { width: 17px; height: 17px; }
+@media (max-width: 899px) { .mainnav .ic { display: none; } }
+.bar-actions { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+.lang-sw { display: inline-flex; border: 1px solid var(--hair); border-radius: 9px; padding: 2px; }
+.lang-sw a { min-width: 40px; min-height: 40px; display: grid; place-items: center; border-radius: 7px; font: 700 .75rem var(--display); text-decoration: none; color: var(--ink-2); transition: background-color var(--fast) var(--ease); }
+.lang-sw a:hover { background: var(--raise-2); color: var(--ink); }
+.lang-sw a[aria-current="true"] { background: var(--ink); color: var(--paper); }
+
+/* Phone: the three sections move to a bar at the bottom, within reach of the thumb. */
+.tabs { display: none; }
+@media (max-width: 699px) {
+  .mainnav, .bar-actions .lang-sw, .bar-actions .theme-btn { display: none; }
+  .tabs { display: grid; grid-template-columns: repeat(3, 1fr); position: fixed; z-index: 45; left: 0; right: 0; bottom: 0;
+    height: calc(var(--tab-h) + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom);
+    background: color-mix(in srgb, var(--paper) 94%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--hair); }
+  .tabs a { display: grid; justify-items: center; align-content: center; gap: 3px; text-decoration: none; font: 600 .6875rem var(--display); color: var(--muted); -webkit-tap-highlight-color: transparent; }
+  .tabs a .ic { width: 22px; height: 22px; }
+  .tabs a[aria-current="page"] { color: var(--accent-ink); }
+  .tabs a:active { opacity: .7; }
+  body.has-tabs #view { padding-bottom: calc(var(--tab-h) + 24px + env(safe-area-inset-bottom)); }
+}
+
+/* Focus mode: Lección and Taller bring their own bar. */
+body.focus .topbar, body.focus .tabs { display: none; }
+body.focus #view { padding-bottom: 0; }
+
+/* Desktop app: the menu becomes an icon rail on the left, like VS Code or Obsidian. */
+.rail { display: none; }
+body.app .topbar .mainnav, body.app .topbar .bar-actions .settings-btn { display: none; }
+body.app .rail { display: flex; flex-direction: column; align-items: center; gap: 4px; position: fixed; z-index: 50; top: 0; bottom: 0; left: 0; width: var(--rail-w);
+  padding: 14px 0; background: var(--raise); border-right: 1px solid var(--hair); -webkit-app-region: drag; }
+body.app.mac .rail { padding-top: 40px; }
+body.app .rail a { -webkit-app-region: no-drag; display: grid; justify-items: center; gap: 4px; width: 62px; padding: 8px 0 6px; border-radius: 12px; text-decoration: none; font: 600 .6875rem var(--display); color: var(--muted);
+  transition: background-color var(--fast) var(--ease), color var(--fast) var(--ease); }
+body.app .rail a .ic { width: 22px; height: 22px; }
+body.app .rail a:hover { background: var(--raise-2); color: var(--ink); }
+body.app .rail a[aria-current="page"] { color: var(--accent-ink); background: var(--wash); }
+body.app .rail .sp { flex: 1; }
+body.app .shell { padding-left: var(--rail-w); }
+body.app .topbar { -webkit-app-region: drag; }
+body.app .topbar a, body.app .topbar button { -webkit-app-region: no-drag; }
+body.app .tabs { display: none !important; }
+body.app.focus .topbar { display: none; }
+body.app .wbar, body.app .lbar { -webkit-app-region: drag; }
+body.app .wbar a, body.app .wbar button, body.app .lbar a, body.app .lbar button { -webkit-app-region: no-drag; }

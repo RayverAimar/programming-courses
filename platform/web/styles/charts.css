@@ -1,0 +1,89 @@
+/* Charts, diagrams and lab readouts (core/chart.js). Text sizes are what the reader sees: a chart
+   kept clear by keepLabelsClear() sets --ch-k (viewBox units per screen pixel), so its text stays
+   the same size however much the drawing is scaled. */
+:root {
+  --ch-fs-tick: 12px;
+  --ch-fs-axis: 12px;
+  --ch-fs-label: 13px;
+  --ch-fs-note: 12px;
+  --ch-fs-title: 14px;
+  --ch-fw-label: 650;
+  --ch-sw-line: 2px;
+  --ch-sw-axis: 1px;
+  --ch-sw-grid: 1px;
+  --ch-sw-arrow: 1.5px;
+  --ch-sw-ref: 1px;
+  --ch-dash: 4 3;
+  --ch-halo-w: 3.5px;
+  --ch-halo: var(--raise);
+  --ch-1: var(--accent);
+  --ch-1-ink: var(--accent-ink);
+  --ch-2: var(--a-teal);
+  --ch-3: var(--ink-2);
+  --ch-4: var(--a-bronze);
+  --ch-axis: var(--hair-2);
+  --ch-grid: var(--hair);
+  --ch-ink: var(--muted);
+  --ch-flow: var(--muted);
+}
+@media (max-width: 640px) {
+  :root { --ch-fs-tick: 11px; --ch-fs-axis: 11px; --ch-fs-label: 12px; --ch-fs-note: 11px; --ch-fs-title: 13px; }
+}
+
+svg .ch-tick { fill: var(--ch-ink); font-size: calc(var(--ch-fs-tick) * var(--ch-k, 1)); font-variant-numeric: tabular-nums; }
+svg .ch-axis { fill: var(--ch-ink); font-size: calc(var(--ch-fs-axis) * var(--ch-k, 1)); font-weight: 600; }
+svg .ch-lab { fill: var(--ch-ink); font-size: calc(var(--ch-fs-label) * var(--ch-k, 1)); font-weight: var(--ch-fw-label); }
+svg .ch-note { fill: var(--ch-ink); font-size: calc(var(--ch-fs-note) * var(--ch-k, 1)); }
+svg .ch-line { fill: none; stroke: var(--ch-1); stroke-width: var(--ch-sw-line); stroke-linejoin: round; stroke-linecap: round; }
+svg .ch-grid { stroke: var(--ch-grid); stroke-width: var(--ch-sw-grid); }
+svg .ch-arrow { fill: none; stroke: var(--ch-flow); stroke-width: var(--ch-sw-arrow); }
+:root svg text.ch-halo, :root svg .ch-halo text { paint-order: stroke fill; stroke: var(--ch-halo); stroke-width: calc(var(--ch-halo-w) * var(--ch-k, 1)); stroke-linejoin: round; stroke-opacity: .92; }
+
+/* Static figures (build/figkit.mjs): boxes, flows and text in viewBox units. A figure with a narrow
+   drawing shows it instead of the wide one when it has less than 560 px. */
+.fig { container-type: inline-size; }
+.fig > svg { width: 100%; height: auto; display: block; }
+.fig > svg.fig-n { display: none; max-width: 400px; margin-inline: auto; }
+@container (max-width: 559px) {
+  .fig > svg.fig-w { display: none; }
+  .fig > svg.fig-n { display: block; }
+}
+.d-box { fill: var(--raise-2); stroke: none; }
+.d-box-line { fill: none; stroke: var(--hair-2); stroke-width: var(--ch-sw-axis); }
+.d-acc { fill: var(--wash); stroke: none; }
+.d-line { stroke: var(--hair-2); stroke-width: var(--ch-sw-axis); fill: none; }
+.d-flow { stroke: var(--ch-flow); stroke-width: var(--ch-sw-arrow); fill: none; }
+.d-flow-acc { stroke: var(--ch-1); stroke-width: var(--ch-sw-arrow); fill: none; }
+.d-dash { stroke: var(--hair-2); stroke-width: var(--ch-sw-axis); stroke-dasharray: var(--ch-dash); fill: none; }
+.d-t { fill: var(--ink); font-size: 14.5px; font-weight: 600; }
+.d-s { fill: var(--ch-ink); font-size: 13px; }
+.d-n { fill: var(--ch-ink); font-size: 13px; font-variant-numeric: tabular-nums; }
+.d-a { fill: var(--accent-ink); font-size: 14px; font-weight: 700; }
+.d-fill-acc { fill: var(--accent); stroke: none; }
+.d-fill-hair { fill: var(--hair-2); stroke: none; }
+.d-arrowhead { fill: var(--ch-flow); stroke: none; }
+.d-arrowhead-acc { fill: var(--ch-1); stroke: none; }
+
+/* Stat tiles: a one-line label, the value at one size that never breaks inside a number, then an
+   optional sub-line. Tiles in a row start together, so their values share a baseline. */
+.stat-row { display: grid; column-gap: 10px; row-gap: 0; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); margin: 20px 0 0; }
+.stat { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 2px; align-content: start; min-width: 0; margin-bottom: 10px; padding: 10px 12px 11px; border-radius: var(--r); background: var(--paper); box-shadow: inset 0 0 0 1px var(--hair); font-family: var(--display); }
+.stat-k { align-self: end; font-size: .75rem; line-height: 1.35; color: var(--muted); text-wrap: balance; }
+.stat-v { align-self: start; font-size: 1.125rem; font-weight: 700; line-height: 1.25; letter-spacing: -.01em; font-variant-numeric: tabular-nums; color: var(--ink); }
+.stat-n { white-space: nowrap; }
+.stat-v small { font-size: .78em; font-weight: 600; color: var(--ink-2); letter-spacing: 0; white-space: nowrap; }
+.stat-v.stat-word { font-size: .9375rem; line-height: 1.3; text-wrap: balance; }
+.stat-word .stat-n { white-space: normal; }
+.stat-sub { align-self: start; font-size: .75rem; line-height: 1.35; color: var(--muted); text-wrap: pretty; }
+.stat-sub:empty { visibility: hidden; }
+.stat.accent .stat-v { color: var(--accent-ink); }
+.stat.good .stat-v { color: var(--ok); }
+.stat.warn .stat-v, .stat.bad .stat-v { color: var(--bad); }
+
+/* A slider row: label left, short value right (never wrapped), the track, and an optional
+   sub-line for what the value means. */
+.rng { display: grid; grid-template-columns: minmax(0, 1fr) max-content; gap: 2px 12px; align-items: baseline; min-width: 0; }
+.rng-k { font-size: var(--ui-s); color: var(--ink-2); line-height: 1.35; text-wrap: pretty; }
+.rng-v { font-size: var(--ui); font-weight: 650; color: var(--accent-ink); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.rng-sub { grid-column: 1 / -1; margin-top: -4px; font-size: .75rem; line-height: 1.35; color: var(--muted); }
+.rng-sub:empty { display: none; }

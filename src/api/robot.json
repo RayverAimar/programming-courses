@@ -1,0 +1,122 @@
+{
+  "groups": {
+    "move": ["forward", "turnLeft", "turnRight", "wallAhead", "say", "battery", "position", "direction"],
+    "deliver": ["deliver"],
+    "museum": ["sensor", "closeDoor", "alarm"],
+    "mine": ["collect", "report"],
+    "kitchen": ["cook", "serve"],
+    "scan": ["scan"],
+    "map": ["map"],
+    "cargo": ["take", "drop", "inventory"],
+    "doors": ["openDoor"],
+    "path": ["followPath", "mark"]
+  },
+  "themes": {
+    "barranco": ["move", "deliver"],
+    "museo": ["move", "museum"],
+    "mina": ["move", "mine"],
+    "cocina": ["move", "kitchen"]
+  },
+  "members": {
+    "forward": {
+      "es": { "name": "avanzar", "params": ["n = 1"], "returns": "", "doc": "Avanza n casillas hacia donde mira. Una pared o la batería vacía detienen el programa." },
+      "en": { "name": "forward", "params": ["n = 1"], "returns": "", "doc": "Moves n tiles the way it faces. A wall or an empty battery stops the program." }
+    },
+    "turnLeft": {
+      "es": { "name": "girarIzquierda", "params": [], "returns": "", "doc": "Gira 90° a la izquierda, sin moverse." },
+      "en": { "name": "turnLeft", "params": [], "returns": "", "doc": "Turns 90° left, in place." }
+    },
+    "turnRight": {
+      "es": { "name": "girarDerecha", "params": [], "returns": "", "doc": "Gira 90° a la derecha, sin moverse." },
+      "en": { "name": "turnRight", "params": [], "returns": "", "doc": "Turns 90° right, in place." }
+    },
+    "wallAhead": {
+      "es": { "name": "hayPared", "params": ["lado = \"frente\""], "returns": "boolean", "doc": "true si hay pared a ese lado: \"frente\", \"izquierda\" o \"derecha\"." },
+      "en": { "name": "wallAhead", "params": ["side = \"front\""], "returns": "boolean", "doc": "true if there is a wall on that side: \"front\", \"left\" or \"right\"." }
+    },
+    "say": {
+      "es": { "name": "decir", "params": ["texto"], "returns": "", "doc": "Muestra un globo de texto sobre el robot." },
+      "en": { "name": "say", "params": ["text"], "returns": "", "doc": "Shows a speech bubble over the robot." }
+    },
+    "battery": {
+      "kind": "property",
+      "es": { "name": "bateria", "returns": "number | null", "doc": "La batería que queda (null si es ilimitada). Solo lectura." },
+      "en": { "name": "battery", "returns": "number | null", "doc": "Battery left (null when unlimited). Read-only." }
+    },
+    "position": {
+      "kind": "property",
+      "es": { "name": "posicion", "returns": "{ x, y }", "doc": "Dónde está el robot: { x, y }, con (0, 0) arriba a la izquierda. Solo lectura." },
+      "en": { "name": "position", "returns": "{ x, y }", "doc": "Where the robot is: { x, y }, with (0, 0) at the top left. Read-only." }
+    },
+    "direction": {
+      "kind": "property",
+      "es": { "name": "direccion", "returns": "\"N\" | \"E\" | \"S\" | \"O\"", "doc": "Hacia dónde mira: \"N\", \"E\", \"S\" u \"O\". Solo lectura." },
+      "en": { "name": "direction", "returns": "\"N\" | \"E\" | \"S\" | \"W\"", "doc": "Which way it faces: \"N\", \"E\", \"S\" or \"W\". Read-only." }
+    },
+    "deliver": {
+      "es": { "name": "entregar", "params": ["etiqueta"], "returns": "", "doc": "Entrega el paquete con esa etiqueta; solo sobre el buzón (D)." },
+      "en": { "name": "deliver", "params": ["label"], "returns": "", "doc": "Delivers the package with that label; only on the mailbox (D)." }
+    },
+    "sensor": {
+      "es": { "name": "sensor", "params": [], "returns": "{ puerta, movimiento }", "doc": "Lee la puerta de abajo: { puerta: \"abierta\" | \"cerrada\", movimiento: boolean }." },
+      "en": { "name": "sensor", "params": [], "returns": "{ door, motion }", "doc": "Reads the door below: { door: \"open\" | \"closed\", motion: boolean }." }
+    },
+    "closeDoor": {
+      "es": { "name": "cerrarPuerta", "params": [], "returns": "", "doc": "Cierra la puerta que está justo debajo." },
+      "en": { "name": "closeDoor", "params": [], "returns": "", "doc": "Closes the door right below." }
+    },
+    "alarm": {
+      "es": { "name": "alarma", "params": [], "returns": "", "doc": "Activa la alarma de la sala de abajo." },
+      "en": { "name": "alarm", "params": [], "returns": "", "doc": "Sets off the alarm in the room below." }
+    },
+    "collect": {
+      "es": { "name": "recoger", "params": [], "returns": "number", "doc": "Recoge los cristales de esta casilla y devuelve cuántos eran." },
+      "en": { "name": "collect", "params": [], "returns": "number", "doc": "Picks up this tile's crystals and returns how many." }
+    },
+    "report": {
+      "es": { "name": "reportar", "params": ["n"], "returns": "", "doc": "Anota un número en el informe." },
+      "en": { "name": "report", "params": ["n"], "returns": "", "doc": "Records a number in the report." }
+    },
+    "cook": {
+      "es": { "name": "preparar", "params": ["plato"], "returns": "", "doc": "En la cocina (K), pone ese plato en la bandeja." },
+      "en": { "name": "cook", "params": ["dish"], "returns": "", "doc": "In the kitchen (K), puts that dish on the tray." }
+    },
+    "serve": {
+      "es": { "name": "servir", "params": [], "returns": "", "doc": "Sirve el plato de la bandeja en la mesa de abajo." },
+      "en": { "name": "serve", "params": [], "returns": "", "doc": "Serves the tray's dish to the table below." }
+    },
+    "scan": {
+      "es": { "name": "escanear", "params": [], "returns": "string[][]", "doc": "La cuadrícula visible alrededor del robot: filas de casillas, con el robot en el centro. \"?\" es lo que no ve." },
+      "en": { "name": "scan", "params": [], "returns": "string[][]", "doc": "The visible grid around the robot: rows of tiles, the robot in the middle. \"?\" is what it can't see." }
+    },
+    "map": {
+      "es": { "name": "mapa", "params": [], "returns": "string[][]", "doc": "El mapa completo como filas de casillas: mapa()[y][x]." },
+      "en": { "name": "map", "params": [], "returns": "string[][]", "doc": "The whole map as rows of tiles: map()[y][x]." }
+    },
+    "take": {
+      "es": { "name": "tomar", "params": [], "returns": "string | null", "doc": "Toma el objeto de esta casilla y lo guarda en la carga. Devuelve su nombre, o null si no hay nada." },
+      "en": { "name": "take", "params": [], "returns": "string | null", "doc": "Takes the item on this tile into the cargo. Returns its name, or null if there is none." }
+    },
+    "drop": {
+      "es": { "name": "soltar", "params": ["nombre"], "returns": "", "doc": "Deja en esta casilla un objeto de la carga (el último, si no dices cuál)." },
+      "en": { "name": "drop", "params": ["name"], "returns": "", "doc": "Leaves an item from the cargo on this tile (the last one, if you don't say which)." }
+    },
+    "inventory": {
+      "kind": "property",
+      "es": { "name": "carga", "returns": "string[]", "doc": "Los objetos que lleva, en el orden en que los tomó. Una copia: cambiarla no cambia la carga." },
+      "en": { "name": "cargo", "returns": "string[]", "doc": "The items it carries, in the order it took them. A copy: changing it doesn't change the cargo." }
+    },
+    "openDoor": {
+      "es": { "name": "abrirPuerta", "params": [], "returns": "", "doc": "Abre la puerta de enfrente. Una puerta con candado (L) necesita la llave en la carga." },
+      "en": { "name": "openDoor", "params": [], "returns": "", "doc": "Opens the door in front. A padlocked door (L) needs the key in the cargo." }
+    },
+    "followPath": {
+      "es": { "name": "seguirRuta", "params": ["ruta"], "returns": "", "doc": "Recorre una ruta: una lista de casillas vecinas ([x, y] o { x, y }) o de direcciones (\"N\", \"E\", \"S\", \"O\")." },
+      "en": { "name": "followPath", "params": ["path"], "returns": "", "doc": "Walks a route: a list of neighbouring tiles ([x, y] or { x, y }) or of directions (\"N\", \"E\", \"S\", \"W\")." }
+    },
+    "mark": {
+      "es": { "name": "marcar", "params": ["casillas"], "returns": "", "doc": "Pinta casillas en el mapa sin moverse: una casilla o una lista. Sirve para ver qué exploró tu búsqueda." },
+      "en": { "name": "mark", "params": ["tiles"], "returns": "", "doc": "Paints tiles on the map without moving: one tile or a list. Handy to see what your search explored." }
+    }
+  }
+}
