@@ -2,6 +2,8 @@
 
 ## El encargo
 
+> **La vez pasada:** Chasqui aprendió a guardar valores en variables y a mostrarlos con `console.log`. Guardar no es decidir: de noche, cada sala pide una respuesta distinta.
+
 La Casa-Museo Sarmiento, en Pueblo Libre, guarda mantos de Paracas y un vigilante nocturno que se duerme a las once. La directora contrató a Loop para que Chasqui haga la ronda de noche. Le pusimos una sirena en la cabeza y un sensor que lee cada sala: si la puerta quedó abierta y si algo se mueve adentro.
 
 El problema: cada noche es distinta. Un robot que repite siempre lo mismo cierra puertas que ya estaban cerradas y le suena la alarma al gato del vigilante. Chasqui tiene que **decidir**.
@@ -60,14 +62,33 @@ notes:
   6: Corre este bloque y la cadena termina; el else ni se mira.
 ```
 
-Para comparar: `===` (igual), `!==` (distinto), `<`, `>`, `<=`, `>=`. Para combinar: `&&` (y), `||` (o), `!` (no).
+### Comparar y combinar
 
-Lo que JavaScript tiene de particular:
+Para que un `if` decida, necesita una pregunta con respuesta sí o no. Para comparar: `===` (igual), `!==` (distinto), `<`, `>`, `<=`, `>=`. Para combinar preguntas: `&&` (y), `||` (o), `!` (no).
 
-- **Usa siempre `===`**. El `==` antiguo convierte tipos antes de comparar, y entonces `"0" == 0` es `true`.
-- **Truthy y falsy.** Un `if` acepta cualquier valor, no solo booleanos. Son *falsy* `false`, `0`, `""`, `null`, `undefined` y `NaN`; todo lo demás es *truthy*, incluso el texto `"0"`.
-- **`null` y `undefined`.** `undefined` es "nunca tuvo valor" (una propiedad que no existe, una variable sin asignar). `null` es "vacío a propósito", lo pone alguien.
-- **`??` y `?.`** para datos incompletos. `a ?? 18` da `18` solo si `a` es `null` o `undefined`. `camara?.movimiento` no se cae si `camara` no existe.
+**Usa siempre `===`.** El `==` antiguo convierte tipos antes de comparar, y entonces `"0" == 0` es `true`.
+
+### Leer los campos de una lectura
+
+El sensor de Chasqui no devuelve un número suelto, sino una ficha con campos que tienen nombre, como `{ puerta: "abierta", movimiento: false }`. Se llama *objeto*; la sesión 6 lo explica a fondo. Por ahora solo necesitas leer un campo con un punto: si `lectura` es esa ficha, `lectura.puerta` vale `"abierta"` y `lectura.movimiento` vale `false`.
+
+### Truthy y falsy
+
+Un `if` acepta cualquier valor, no solo booleanos. Son *falsy* (se comportan como `false`) estos seis: `false`, `0`, `""`, `null`, `undefined` y `NaN`. Todo lo demás es *truthy*, incluso el texto `"0"`.
+
+### `null` y `undefined`
+
+`undefined` es "nunca tuvo valor" (un campo que no existe, una variable sin asignar). `null` es "vacío a propósito": lo pone alguien.
+
+### `??` y `?.` para datos incompletos
+
+`a ?? 18` da `18` solo si `a` es `null` o `undefined`. `camara?.movimiento` lee el campo `movimiento` de `camara`, pero no se cae si `camara` no existe: da `undefined`.
+
+<!-- photo: js-tony-hoare -->
+
+**Historia:** el científico británico Tony Hoare inventó la referencia nula en 1965, cuando diseñaba el lenguaje ALGOL W. En 2009 pidió disculpas: la llamó su «error de mil millones de dólares», porque no resistió la tentación de ponerla solo porque era fácil de implementar, y desde entonces ha causado innumerables errores y caídas de programas. Por eso `null` se trata con cuidado, y para eso sirven `??` y `?.`.
+
+<!-- /photo -->
 
 > **Trampa común:** `if (x = 5)` no compara, *asigna* 5 a `x`, y como 5 es truthy el bloque corre siempre. Comparar es `===`.
 
@@ -140,7 +161,7 @@ title: ¿Cierro o sigo?
 prompt: |
   Completa los huecos para que `accion` sea `"cerrar"` si la puerta está abierta, y `"seguir"` si no.
 
-  `lectura` viene del sensor, por ejemplo `{ puerta: "abierta", movimiento: false }`. Se prueba con dos lecturas distintas.
+  `let accion;` crea la variable sin valor todavía; el `if` se lo pone. `lectura` viene del sensor, por ejemplo `{ puerta: "abierta", movimiento: false }`. Se prueba con dos lecturas distintas.
 visual:
   figure:
     title: Lo que lee el sensor y lo que debe decidir
@@ -337,6 +358,8 @@ prompt: |
   **318, 427, 294, 568, 746, 836, 952, 583**
 
   Pistas: el código es **par**; la **suma de sus tres cifras es mayor que 15**; y la cifra de las **centenas es menor que la de las unidades**.
+
+  Para sacar las cifras, el programa ya trae tres líneas hechas: `%` da el **resto** de una división (`318 % 10` es `8`, la última cifra; `candidato % 2` es `0` si es par) y `Math.floor` redondea hacia abajo (`Math.floor(318 / 100)` es `3`). Tú solo usas `centenas`, `decenas` y `unidades`.
 
   Escribe la condición con las tres pistas y prueba cada candidato cambiando `candidato`. (En la sesión 3 harás esto sin cambiar el número a mano.)
 visual:

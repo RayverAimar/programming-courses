@@ -2,9 +2,11 @@
 
 ## The job
 
-Tingo María, in the Huánuco jungle. At the mouth of the Cueva de las Lechuzas the air smells of guano and from inside comes a screech that makes your hair stand on end: those are the oilbirds, birds that live in the dark and that everyone calls owls even though they aren't. Biologist Maritza Rengifo has to count their nests before the rainy season, and her budget covers a single week.
+> **Last time:** classes tidied Chasqui's code into a mould and separate files. This time the mess isn't in the code but in the problem: a cave that repeats itself inside itself.
 
-The problem is the cave. Each gallery opens into other galleries, which open into others, and nobody knows how many levels there are. A loop needs to know how many times to go round; here nobody knows. But the task fits in one line: **exploring a gallery means counting its nests and exploring each of its exits**. A function that uses itself to solve a smaller piece of the problem is called **recursive**.
+Tingo María, in the Huánuco jungle. At the mouth of the Cueva de las Lechuzas the air smells of guano and a screech comes from inside: the oilbirds, which live in the dark and which everyone calls owls even though they aren't. Biologist Maritza Rengifo has to count their nests before the rains, on a budget for a single week.
+
+The problem is the cave. Each gallery opens into others, and nobody knows how many levels there are. A loop needs to know how many times to go round; here nobody knows. But the task fits in one line: **exploring a gallery means counting its nests and exploring each of its exits**. A function that uses itself to solve a smaller piece of the problem is called **recursive**.
 
 ```scene
 theme: mina
@@ -40,6 +42,33 @@ program: |
 
 A **recursive** function calls itself with a smaller problem, until it reaches one so small that it's answered without calling anyone: the **base case**. Each call waits for the one it made to finish, on the **call stack**.
 
+### The simplest case: going down one branch
+
+Start with the simplest case, with no branches. Watch the stack going down from level 3 to the bottom: on each level there are as many nests as its number.
+
+```anim
+title: The stack grows down to the base case and then unwinds
+code: |
+  function descend(level) {
+    if (level === 0) {
+      return 0;
+    }
+    const below = descend(level - 1);
+    return below + level;
+  }
+  const total = descend(3);
+  console.log(total);
+notes:
+  2: "Is this the bottom yet? That's the base case."
+  3: "The bottom answers 0 without calling anyone: here the stack stops growing."
+  5: "To answer, this level needs what's below it: it calls and waits."
+  6: "The answer from below has arrived: it adds its own and answers upwards."
+```
+
+### Now, a cave with branches
+
+The same trick with a real cave, where every gallery opens into others:
+
 ```js run
 function nests(gallery) {
   let total = gallery.nests;
@@ -51,8 +80,14 @@ function nests(gallery) {
 const entrance = { nests: 2, exits: [{ nests: 3, exits: [] }, { nests: 1, exits: [{ nests: 4, exits: [] }] }] };
 console.log(nests(entrance));
 ```
+Here the base case can't be seen, but it's there: a gallery with no exits never enters the `for` and returns its own nests.
 
-Here the base case can't be seen, but it's there: a gallery with no exits never enters the `for` and returns its own nests. Watch the stack in a simpler version. Going down from level 3 to the bottom: on each level there are as many nests as its number.
+<!-- photo: js-droste-tin -->
+
+**Story:** in 1904 the Dutch cocoa brand Droste put on its tins the picture of a nurse with a tray carrying a cocoa box with the same picture, which carries another box, and another... It is called the *Droste effect*: a picture that contains itself, and only stops when the resolution can no longer keep up. It is recursion: each copy contains a smaller copy, until none can be told apart, and that is its base case.
+
+<!-- /photo -->
+
 
 That cave drawn as a tree, and the stack while `nests` walks it:
 
@@ -84,24 +119,8 @@ steps:
   - { line: 6, vars: { total: 10 }, stack: [{ name: nests, args: 'gallery = entrance', ret: "10" }], note: "`entrance` adds its 2 nests plus what A (3) and B (5) returned: 2 + 3 + 5 = 10. Each gallery is visited **once**, one whole branch before the next." }
 ```
 
-```anim
-title: The stack grows down to the base case and then unwinds
-code: |
-  function descend(level) {
-    if (level === 0) {
-      return 0;
-    }
-    const below = descend(level - 1);
-    return below + level;
-  }
-  const total = descend(3);
-  console.log(total);
-notes:
-  2: "Is this the bottom yet? That's the base case."
-  3: "The bottom answers 0 without calling anyone: here the stack stops growing."
-  5: "To answer, this level needs what's below it: it calls and waits."
-  6: "The answer from below has arrived: it adds its own and answers upwards."
-```
+
+### Filling a region
 
 The same idea **fills** a region of a map: I paint my tile and ask my four neighbours to do the same. The base case is "it's rock or I already painted it".
 
@@ -408,7 +427,10 @@ starter: |
   console.log(withNests(east));
 solution: |
   function withNests(gallery) {
-    const names = gallery.nests > 0 ? [gallery.name] : [];
+    const names = [];
+    if (gallery.nests > 0) {
+      names.push(gallery.name);
+    }
     for (const exit of gallery.exits) {
       names.push(...withNests(exit));
     }
@@ -728,7 +750,10 @@ solution: |
     }
     seen.add(tileKey);
     robot.mark([x, y]);
-    const here = caveMap[y][x] === "n" ? 1 : 0;
+    let here = 0;
+    if (caveMap[y][x] === "n") {
+      here = 1;
+    }
     return here + explore(x + 1, y) + explore(x - 1, y) + explore(x, y + 1) + explore(x, y - 1);
   }
 

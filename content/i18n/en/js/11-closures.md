@@ -2,9 +2,11 @@
 
 ## The job
 
-Machu Picchu, twenty to six in the morning. Mist rises from the Urubamba river and swallows the terraces; from one terrace you can't see the one below. Yeny Huillca, a ranger at the sanctuary, has a problem with an animal's name on it: the vet is coming up today to deworm the llamas, and will bring **exactly** as many doses as llamas get reported.
+> **Last time:** Chasqui learned to find the shortest path, but every function it has written forgets everything when it ends. Counting llamas means remembering from one turn to the next.
 
-Last year a robot from another company did the count. It reported 47 llamas. Twelve live at Machu Picchu. The robot saw a llama, took a step, saw it again through the mist and counted it again. Today Chasqui has to **remember what it has already seen** from one turn to the next, and that memory has to be its own, not something anyone passing through the code can touch.
+Machu Picchu, twenty to six in the morning. Mist rises from the Urubamba river and swallows the terraces. Yeny Huillca, a ranger at the sanctuary, has a problem with an animal's name on it: the vet is coming up today to deworm the llamas, and will bring **exactly** as many doses as llamas get reported.
+
+Last year a robot from another company did the count. It reported 47 llamas. Twelve live at Machu Picchu. The robot saw a llama, took a step, saw it again through the mist and counted it again. Today Chasqui has to **remember what it has already seen** from one turn to the next, and that memory has to be its own.
 
 ```scene
 theme: museo
@@ -32,6 +34,8 @@ program: |
 
 ## The minimum
 
+### Scope: every block is a room
+
 A variable lives in the `{ }` block where it was declared: that's its **scope**. Code inside sees the variables outside; code outside doesn't see the ones inside. Think of rooms: each block is a room, and from one you can look out into the rooms around it, never into the ones inside it.
 
 ```scope
@@ -47,6 +51,8 @@ rooms:
         up: "If a name is missing, it looks in the room outside: global."
 note: "From inside you read `rate`, which lives outside. From global, `km` doesn't exist: its room belongs to the function only."
 ```
+
+### Closure: the backpack of variables
 
 A function created inside another one takes with it the variables of the place where it was born, and keeps using them even after that other function has finished. That backpack of variables is called a **closure**. It gives a function **memory between calls**:
 
@@ -64,6 +70,8 @@ countLlamas();
 console.log(countLlamas());
 console.log(makeCounter()());
 ```
+
+### Factories: one memory per call
 
 `makeCounter` is a **factory**: each time you call it, a new `count` is born, along with a function that is the only one able to touch it. Watch the animation, and below it the same movie drawing **where everything lives**.
 
@@ -150,6 +158,8 @@ function makeLogbook() {
   };
 }
 ```
+
+### The `var` bug in loops
 
 The same mechanism explains the most famous loop bug. Each notice is a function that remembers **the room where it was born**; what changes is how many rooms there are:
 

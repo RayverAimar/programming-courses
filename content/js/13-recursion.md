@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Tingo María, en la selva de Huánuco. A la entrada de la Cueva de las Lechuzas el aire huele a guano y desde adentro llega un chillido que pone los pelos de punta: son los guácharos, unas aves que viven a oscuras y que todo el mundo llama lechuzas aunque no lo sean. La bióloga Maritza Rengifo tiene que contar sus nidos antes de la temporada de lluvias, y su presupuesto alcanza para una sola semana.
+> **La vez pasada:** las clases ordenaron el código de Chasqui en un molde y en archivos. Esta vez el desorden no está en el código, sino en el problema: una cueva que se repite dentro de sí misma.
 
-El problema es la cueva. Cada galería se abre en otras galerías, que se abren en otras, y nadie sabe cuántos niveles hay. Un bucle necesita saber cuántas vueltas dar; aquí no se sabe. Pero la tarea se puede decir en una línea: **explorar una galería es contar sus nidos y explorar cada una de sus salidas**. Una función que se usa a sí misma para resolver un pedazo más chico del problema se llama **recursiva**.
+Tingo María, en la selva de Huánuco. A la entrada de la Cueva de las Lechuzas el aire huele a guano y desde adentro llega un chillido: son los guácharos, aves que viven a oscuras y que todos llaman lechuzas aunque no lo sean. La bióloga Maritza Rengifo tiene que contar sus nidos antes de las lluvias, con presupuesto para una sola semana.
+
+El problema es la cueva. Cada galería se abre en otras, y nadie sabe cuántos niveles hay. Un bucle necesita saber cuántas vueltas dar; aquí no se sabe. Pero la tarea cabe en una línea: **explorar una galería es contar sus nidos y explorar cada salida**. Una función que se usa a sí misma para resolver un pedazo más chico del problema se llama **recursiva**.
 
 ```escena
 theme: mina
@@ -40,6 +42,33 @@ program: |
 
 Una función **recursiva** se llama a sí misma con un problema más chico, hasta llegar a uno tan chico que se responde sin llamar a nadie: el **caso base**. Cada llamada espera a que termine la que hizo, en la **pila de llamadas**.
 
+### Lo más simple: bajar por una rama
+
+Empieza por lo más simple, sin ramas. Mira la pila al bajar desde el nivel 3 hasta el fondo: en cada nivel hay tantos nidos como su número.
+
+```anima
+title: La pila crece hasta el caso base y luego se desarma
+code: |
+  function bajar(nivel) {
+    if (nivel === 0) {
+      return 0;
+    }
+    const debajo = bajar(nivel - 1);
+    return debajo + nivel;
+  }
+  const total = bajar(3);
+  console.log(total);
+notes:
+  2: "¿Ya es el fondo? Ese es el caso base."
+  3: "El fondo responde 0 sin llamar a nadie: aquí la pila deja de crecer."
+  5: "Para responder, este nivel necesita lo que hay debajo: llama y espera."
+  6: "Ya llegó la respuesta de abajo: le suma lo suyo y responde hacia arriba."
+```
+
+### Ahora, una cueva con ramas
+
+El mismo truco con una cueva real, donde cada galería se abre en otras:
+
 ```js run
 function nidos(galeria) {
   let total = galeria.nidos;
@@ -51,8 +80,14 @@ function nidos(galeria) {
 const entrada = { nidos: 2, salidas: [{ nidos: 3, salidas: [] }, { nidos: 1, salidas: [{ nidos: 4, salidas: [] }] }] };
 console.log(nidos(entrada));
 ```
+Aquí el caso base no se ve, pero está: una galería sin salidas no entra al `for` y devuelve sus nidos.
 
-Aquí el caso base no se ve, pero está: una galería sin salidas no entra al `for` y devuelve sus nidos. Mira la pila en una versión más simple. Bajar desde el nivel 3 hasta el fondo: en cada nivel hay tantos nidos como su número.
+<!-- photo: js-droste-tin -->
+
+**Historia:** en 1904 la marca holandesa de cacao Droste puso en sus latas la imagen de una enfermera con una bandeja que lleva una caja de cacao, con la misma imagen, que lleva otra caja, y otra… Se llama *efecto Droste*: una imagen que se contiene a sí misma, y que solo se detiene cuando la resolución ya no alcanza. Es una recursión: cada copia contiene una copia más chica, hasta que ya no se distingue ninguna, y ese es su caso base.
+
+<!-- /photo -->
+
 
 Esa cueva, dibujada como un árbol, y la pila mientras `nidos` la recorre:
 
@@ -84,24 +119,8 @@ steps:
   - { line: 6, vars: { total: 10 }, stack: [{ name: nidos, args: 'galeria = entrada', ret: "10" }], note: "`entrada` suma sus 2 nidos más lo que devolvieron A (3) y B (5): 2 + 3 + 5 = 10. Cada galería se visita **una vez**, de una rama completa antes de pasar a la siguiente." }
 ```
 
-```anima
-title: La pila crece hasta el caso base y luego se desarma
-code: |
-  function bajar(nivel) {
-    if (nivel === 0) {
-      return 0;
-    }
-    const debajo = bajar(nivel - 1);
-    return debajo + nivel;
-  }
-  const total = bajar(3);
-  console.log(total);
-notes:
-  2: "¿Ya es el fondo? Ese es el caso base."
-  3: "El fondo responde 0 sin llamar a nadie: aquí la pila deja de crecer."
-  5: "Para responder, este nivel necesita lo que hay debajo: llama y espera."
-  6: "Ya llegó la respuesta de abajo: le suma lo suyo y responde hacia arriba."
-```
+
+### Rellenar una región
 
 Con la misma idea se **rellena** una región de un mapa: pinto mi casilla y le pido lo mismo a mis cuatro vecinas. El caso base es "es roca o ya la pinté".
 
@@ -408,7 +427,10 @@ starter: |
   console.log(conNidos(este));
 solution: |
   function conNidos(galeria) {
-    const lista = galeria.nidos > 0 ? [galeria.nombre] : [];
+    const lista = [];
+    if (galeria.nidos > 0) {
+      lista.push(galeria.nombre);
+    }
     for (const salida of galeria.salidas) {
       lista.push(...conNidos(salida));
     }
@@ -728,7 +750,10 @@ solution: |
     }
     vistas.add(clave);
     robot.marcar([x, y]);
-    const aqui = mapa[y][x] === "n" ? 1 : 0;
+    let aqui = 0;
+    if (mapa[y][x] === "n") {
+      aqui = 1;
+    }
     return aqui + explorar(x + 1, y) + explorar(x - 1, y) + explorar(x, y + 1) + explorar(x, y - 1);
   }
 

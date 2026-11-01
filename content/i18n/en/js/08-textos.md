@@ -2,6 +2,8 @@
 
 ## The job
 
+> **Last time:** Chasqui filtered and sorted arrays of data that arrived clean. What comes over the radio is dirty text, and it has to be cleaned before you can ask it anything.
+
 The fishermen's pier at Chucuito, in Callao, five in the morning. Don Eusebio Chumpitaz has run the pier's radio for forty years: the boats tell him where they are, what they caught and when they're coming back, and he writes it on a board. This week the old radio started adding static: messages arrive with `~` everywhere, extra spaces, half in capitals and half in lowercase. And Don Eusebio hasn't found his glasses since Tuesday.
 
 Loop lent him Chasqui. What comes over the radio is **text**, and today Chasqui learns to clean it, cut it, search inside it and build new text. At the end he'll carry the radio's orders to the pier himself.
@@ -28,15 +30,38 @@ program: |
 
 ## The minimum
 
-A string is a row of characters. Like an array, it has a `length` and is read by position from **0**. Its methods **don't change it**: they return a new string.
+A string is a row of characters. Like an array, it has a `length` and is read by position from **0**. Its methods **don't change it**: they return a new string. There are several; I'll introduce them in groups.
+
+### Reading and cleaning
+
+What comes over the radio has static and extra spaces. `text.length` counts the characters, `text[0]` is the first and `text.at(-1)` the last. To clean: `trim()` removes the spaces at the ends (not the ones inside), `replaceAll("~", "")` replaces every `~` with nothing, and `toUpperCase()` and `toLowerCase()` change the case.
 
 ```js run
 const incoming = "  mayday~ VIRGEN del carmen~  ";
 const clean = incoming.replaceAll("~", "").trim().toUpperCase();
 console.log(clean);
-console.log(clean.length, clean[0], clean.includes("CARMEN"));
+console.log(clean.length, clean[0]);
+```
+
+<!-- photo: js-ascii-chart -->
+
+**Story:** to the computer, every character in a text is a number. The American ASCII standard gave a number from 0 to 127 to 128 characters: 95 you can see (letters, digits, signs) and 33 control codes. The `i` is 105, and in JavaScript `"i".charCodeAt(0)` shows it to you. The first 128 codes of Unicode, the system behind today's texts, are the same as ASCII's.
+
+<!-- /photo -->
+
+### Asking and padding
+
+`includes("x")`, `startsWith("x")` and `endsWith("x")` return `true` or `false`. `"7".padStart(2, "0")` pads on the left until it has 2 characters and gives `"07"`: ideal for times and codes. And *template literals* (`` `Boat ${name}: ${crates} crates` ``) take any expression inside `${ }`.
+
+```js run
+const clean = "MAYDAY VIRGEN DEL CARMEN";
+console.log(clean.includes("CARMEN"), clean.startsWith("SOS"));
 console.log(`Arrived at ${String(7).padStart(2, "0")}:05`);
 ```
+
+### Cutting, splitting and joining
+
+`text.slice(start, end)` goes from `start` up to *before* `end`; without `end`, to the end; negatives count from the back: `"MAYDAY".slice(-3)` is `"DAY"`. `"a/b/c".split("/")` gives `["a", "b", "c"]`, and `parts.join(" ")` does the opposite.
 
 Watch how Chasqui reads a radio order: he splits it into pieces with `split`, checks what each piece starts with and takes the number out with `slice`.
 
@@ -61,13 +86,7 @@ notes:
   7: "slice(4) is the string from position 4 to the end: \"3\". Number turns it into a number."
 ```
 
-- **Read**: `text.length`, `text[0]`, `text.at(-1)` (the last one).
-- **Cut**: `text.slice(start, end)` goes from `start` up to *before* `end`; without `end`, to the end; negatives count from the back: `"MAYDAY".slice(-3)` is `"DAY"`.
-- **Split and join**: `"a/b/c".split("/")` gives `["a", "b", "c"]`; `parts.join(" ")` does the opposite.
-- **Clean**: `trim()` removes the spaces at the ends (not the ones inside); `replaceAll("~", "")` replaces every occurrence; `toUpperCase()` and `toLowerCase()`.
-- **Ask**: `includes("x")`, `startsWith("x")`, `endsWith("x")` return `true` or `false`.
-- **Pad**: `"7".padStart(2, "0")` gives `"07"`. Ideal for times and codes.
-- **Build**: *template literals* (`` `Boat ${name}: ${crates} crates` ``) take any expression inside `${ }`.
+### Regular expressions
 
 For patterns a fixed string can't capture, JavaScript has **regular expressions**, written between slashes. Three you'll use a lot: `/\d+/g` (every group of digits), `/\s+/` (one or more spaces) and `/^SOS/i` (starts with SOS, in any case).
 
@@ -349,7 +368,10 @@ solution: |
   for (const transmission of transmissions) {
     const [boat, message, declared] = transmission.split("|");
     const length = clean(message).length;
-    const flag = length === Number(declared) ? "" : "  <- doesn't match, declared " + declared;
+    let flag = "";
+    if (length !== Number(declared)) {
+      flag = "  <- doesn't match, declared " + declared;
+    }
     console.log(`${clean(boat).toUpperCase()}: ${length}${flag}`);
   }
 answer: MI CHABELITA
@@ -489,7 +511,11 @@ solution: |
     }
     let result = "";
     for (const word of trimmed.split(/\s+/)) {
-      result += word.toLowerCase() === "stop" ? " " : word[0].toUpperCase();
+      if (word.toLowerCase() === "stop") {
+        result += " ";
+      } else {
+        result += word[0].toUpperCase();
+      }
     }
     return result;
   }

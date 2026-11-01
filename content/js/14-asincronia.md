@@ -2,6 +2,8 @@
 
 ## El encargo
 
+> **La vez pasada:** una función recursiva se llama a sí misma y espera su resultado al instante. Ahora la respuesta tarda: viaja por una antena que a veces no contesta.
+
 Puno, cuatro de la tarde, a tres cuadras del muelle. Doña Teodora Mamani tiene Encomiendas Titicaca: recibe paquetes de Juliaca y los manda en lancha a las islas. Todo pasa por un servidor que vive al otro lado de una antena en el cerro Azoguini, y la antena funciona como el WhatsApp de su sobrino: contesta tarde, y a veces no contesta.
 
 Doña Teodora contrató a Chasqui para llevar cada encomienda al muelle, pero primero tiene que **preguntarle al servidor** qué ruta seguir y qué etiqueta poner. Si Chasqui se queda congelado esperando cada respuesta, la lancha de las cinco zarpa sin el paquete. Hoy aprende a pedir algo, seguir con su vida mientras llega y reaccionar cuando el servidor falla.
@@ -37,11 +39,14 @@ program: |
 
 Hasta ahora cada línea terminaba antes de que empezara la siguiente. Pedirle algo a un servidor no es así: la respuesta tarda. JavaScript no se detiene a esperar; te da una **promesa**, como el ticket que te dan en la ventanilla de encomiendas: todavía no es tu paquete, pero dice que llegará (o que hubo un problema).
 
+### `async` y `await`
+
 - **`async function`** declara una función que puede esperar. Siempre devuelve una promesa.
 - **`await promesa`** pausa *esa* función hasta que la promesa se cumple, y te da su valor. El resto del programa sigue andando.
-- Si la promesa se **rechaza** (el servidor falló), `await` lanza el error: lo atrapas con **`try { … } catch (error) { … }`**, como cualquier otro error.
-- **`Promise.all([p1, p2])`** espera varias promesas **a la vez** y te da sus valores en el mismo orden. Dos pedidos en paralelo tardan lo que el más lento, no la suma.
-- **`setTimeout(funcion, ms)`** es la forma antigua de "avísame después": recibe un *callback*, que es una función que el navegador deja en la cola de avisos cuando pasa el tiempo. Se envuelve en una promesa con `new Promise((resolve) => setTimeout(resolve, ms))`.
+
+### `setTimeout`: la forma antigua de esperar
+
+**`setTimeout(funcion, ms)`** es la forma antigua de "avísame después": recibe un *callback*, que es una función que el navegador deja en la cola de avisos cuando pasa el tiempo. Se envuelve en una promesa con `new Promise((resolve) => setTimeout(resolve, ms))`, y así se puede usar con `await`. El ejemplo siguiente lo hace con una función `esperar`:
 
 ```exercise
 id: js14-demo-encomienda
@@ -61,6 +66,19 @@ starter: |
 ```
 
 (Un `await` suelto, fuera de una función, solo funciona en el Taller y en los módulos; dentro de cualquier otra función necesitas `async`.)
+
+### Cuando la promesa falla: `try` y `catch`
+
+Si la promesa se **rechaza** (el servidor falló), `await` lanza el error: lo atrapas con **`try { … } catch (error) { … }`**. Lo que va dentro del `try` se intenta; si algo falla, el programa salta al `catch` en vez de caerse. Y `throw error` lanza un error a propósito, o lo vuelve a lanzar si no sabes arreglarlo ahí. La sesión 15 explica los errores a fondo; aquí solo lo necesitas para los pedidos que fallan.
+
+```js
+try {
+  const ruta = await taller.pedir("ruta");
+  console.log(ruta);
+} catch (error) {
+  console.log("El servidor no contestó");
+}
+```
 
 En los ejercicios de hoy, el servidor del Taller se llama `taller`: `await taller.pedir("ruta")` trae un recurso, y `taller.ahora()` dice cuántos milisegundos van. El tiempo es simulado: nada espera de verdad, pero las demoras y las fallas son las mismas cada vez que corres.
 
@@ -120,6 +138,10 @@ steps:
     note: "El aviso pasa a la pila y tu función **continúa justo después del `await`**, con la respuesta en la mano. Así \"despierta\" un `await`. Si tu código estuviera ocupado en un bucle larguísimo, el aviso esperaría: nada interrumpe lo que está corriendo."
     tags: { stack: "tu función continúa" }
 ```
+
+### `Promise.all`: dos pedidos a la vez
+
+**`Promise.all([p1, p2])`** espera varias promesas **a la vez** y te da sus valores en el mismo orden. Dos pedidos en paralelo tardan lo que el más lento, no la suma.
 
 Mira dos pedidos en paralelo. Cada uno sale como promesa pendiente; `await Promise.all` espera hasta que llegue el último.
 

@@ -2,6 +2,8 @@
 
 ## El encargo
 
+> **La vez pasada:** las closures le dieron a una función una memoria privada. Con tres robots, copiar y pegar esa memoria tres veces ya no escala: hace falta un molde.
+
 Arequipa, una casona de sillar a dos cuadras de la Plaza de Armas. Ahí funciona Rapidito, una empresa de reparto que mañana alquila **tres** robots de Loop: Chasqui, Misti y Chachani. Valeria Zegarra, su jefa de tecnología, pidió ver el código antes de firmar. Lo abrió, bajó un poco, y nos mandó una captura sin comentarios: `bateria`, `bateria2`, `bateriaMistiNueva`, `posicionX_final_v3`.
 
 El código se escribió para un solo robot y cada robot nuevo se agregó copiando y pegando. Con tres, cualquier cambio hay que hacerlo tres veces, y una variable equivocada descarga al robot que no era. Hoy ordenamos el cerebro de Chasqui: **un molde** (una clase) del que salen todos los robots que haga falta, cada uno con su propio estado, y **archivos** separados (módulos) para cada parte.
@@ -35,17 +37,16 @@ program: |
 
 Una **clase** es un molde. Con `new` sacas objetos de ese molde (**instancias**): todos tienen los mismos métodos, pero cada uno guarda sus propios datos.
 
+### `constructor`, `this` y métodos
+
 ```js run
 class Robot {
-  #bateria = 100;
   constructor(nombre) {
     this.nombre = nombre;
+    this.bateria = 100;
   }
   avanzar(pasos) {
-    this.#bateria -= pasos * 2;
-  }
-  get bateria() {
-    return this.#bateria;
+    this.bateria -= pasos * 2;
   }
 }
 
@@ -53,6 +54,17 @@ const chasqui = new Robot("Chasqui");
 chasqui.avanzar(5);
 console.log(chasqui.nombre, chasqui.bateria);
 ```
+
+- **`constructor`** se ejecuta con cada `new` y prepara el objeto. Dentro de la clase, **`this`** es el objeto con el que estás trabajando.
+- **Métodos**: funciones del molde, como `avanzar(pasos)`. Se llaman con un punto: `chasqui.avanzar(5)`.
+
+
+### `#privado` y `get`
+
+Con lo anterior, cualquiera puede escribir `chasqui.bateria = 500`. Para proteger un dato:
+
+- **`#privado`**: un campo con `#` solo se puede tocar desde dentro de la clase. Nadie de afuera puede poner `chasqui.#bateria = 500`; es un error antes de correr. Así la regla de cómo se gasta la batería vive en un solo lugar.
+- **`get`**: un método que se lee como propiedad (`chasqui.bateria`). Deja leer un dato privado sin dejar cambiarlo.
 
 ```anima
 title: Un molde, dos robots, dos baterías
@@ -86,11 +98,9 @@ steps:
   - { line: 16, vars: { chasqui: { "#bateria": 90, nombre: "Chasqui" }, misti: { "#bateria": 100, nombre: "Misti" } }, out: "90 100" }
 ```
 
-- **`constructor`** se ejecuta con cada `new` y prepara el objeto. Dentro de la clase, **`this`** es el objeto con el que estás trabajando.
-- **Métodos**: funciones del molde, como `avanzar(pasos)`. Se llaman con un punto: `chasqui.avanzar(5)`.
-- **`#privado`**: un campo con `#` solo se puede tocar desde dentro de la clase. Nadie de afuera puede poner `chasqui.#bateria = 500`; es un error antes de correr. Así la regla de cómo se gasta la batería vive en un solo lugar.
-- **`get`**: un método que se lee como propiedad (`chasqui.bateria`). Deja leer un dato privado sin dejar cambiarlo.
-- **`extends`**: una clase hija hereda todo de su madre y agrega o cambia lo que necesita; `super(...)` llama al constructor de la madre y `super.metodo()` a su versión de un método.
+### Herencia: `extends` y `super`
+
+Una clase hija **hereda** todo de su madre y agrega o cambia lo que necesita (**`extends`**); `super(...)` llama al constructor de la madre y `super.metodo()` a su versión de un método.
 
 ```js
 class Repartidor extends Robot {
@@ -100,6 +110,20 @@ class Repartidor extends Robot {
   }
 }
 ```
+
+```steps
+# Qué pasa al hacer `new Repartidor("Chasqui", "plaza")`
+## Se crea el objeto y arranca el constructor de la hija
+`new` hace un objeto nuevo y corre el `constructor(nombre, zona)` de `Repartidor`, con `nombre = "Chasqui"` y `zona = "plaza"`.
+## `super(nombre)` llama al constructor de la madre
+En una clase hija, **lo primero** es `super(...)`: antes de eso no puedes usar `this`. El constructor de `Robot` corre con `nombre` y prepara lo que todo robot tiene.
+## Vuelve el constructor de la hija
+Con la parte de `Robot` lista, la hija sigue: `this.zona = zona` agrega lo que solo tiene un `Repartidor`.
+## El objeto queda completo
+`chasqui` tiene lo que puso la madre y su propia `zona`. Si faltara el `super`, JavaScript lanzaría un error al crear el objeto.
+```
+
+### Módulos
 
 **Módulos.** Cuando el cerebro crece, cada clase va en su archivo. Un archivo **exporta** lo que ofrece y otro lo **importa**. En los ejercicios todo vive en un solo archivo, pero el proyecto de Rapidito queda así:
 
@@ -775,11 +799,19 @@ solution: |
       const dx = x - posicion.x;
       const dy = y - posicion.y;
       const pasos = [];
+      let horizontal = "O";
+      if (dx > 0) {
+        horizontal = "E";
+      }
+      let vertical = "N";
+      if (dy > 0) {
+        vertical = "S";
+      }
       for (let i = 0; i < Math.abs(dx); i++) {
-        pasos.push(dx > 0 ? "E" : "O");
+        pasos.push(horizontal);
       }
       for (let i = 0; i < Math.abs(dy); i++) {
-        pasos.push(dy > 0 ? "S" : "N");
+        pasos.push(vertical);
       }
       this.#robot.seguirRuta(pasos);
     }

@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Arequipa, 15 de agosto, aniversario de la ciudad. La municipalidad invitó a Loop a la Plaza de Armas: Chasqui debía cruzar la plaza y entregarle un queso helado a la alcaldesa, delante de dos mil personas y de la tele local. Avanzó cuatro casillas, se detuvo en seco y se quedó ahí, quieto bajo el sol, mientras el queso helado se derretía. En la pantalla de Loop decía: `TypeError: Reduce of empty array with no initial value`.
+> **La vez pasada:** Chasqui aprendió a pedir algo y a seguir mientras llega, y a reaccionar si el servidor falla. Pero un fallo dentro de su propio código lo congela igual, y falta saber leerlo.
 
-Nadie se hizo daño, pero el video ya tiene más vistas que el himno de Arequipa. El domingo hay revancha en el Mirador de Yanahuara. Antes, toca hacer lo que hacen los equipos serios después de un choque: un **post-mortem**. Encontrar qué falló, hacer que el programa **avise con errores claros** en vez de congelarse, y escribir **pruebas** para que ese bug no vuelva nunca.
+Arequipa, 15 de agosto, aniversario de la ciudad. La municipalidad invitó a Loop a la Plaza de Armas: Chasqui debía cruzar la plaza y entregarle un queso helado a la alcaldesa, delante de dos mil personas y de la tele local. Avanzó cuatro casillas, se detuvo en seco y se quedó quieto bajo el sol, mientras el queso se derretía. En la pantalla de Loop decía: `TypeError: Reduce of empty array with no initial value`.
+
+Nadie se hizo daño, pero el video ya tiene más vistas que el himno de Arequipa. El domingo hay revancha en Yanahuara. Antes, toca un **post-mortem**: encontrar qué falló, hacer que el programa **avise con errores claros** en vez de congelarse, y escribir **pruebas** para que ese bug no vuelva nunca.
 
 ```escena
 theme: barranco
@@ -26,12 +28,23 @@ program: |
 
 Un error no es una tragedia: es un mensaje. Lo grave es que el programa se caiga sin decir nada útil, o que siga como si nada con datos malos.
 
-- **`throw new Error("mensaje")`** detiene la función en esa línea y lanza el error hacia quien la llamó. Hay tipos de error que ya vienen: `TypeError` (un valor del tipo equivocado), `RangeError` (un número fuera de rango), `SyntaxError`…
-- **`try { … } catch (error) { … }`** atrapa el error: si algo dentro del `try` lanza, el programa salta al `catch` y sigue desde ahí. `error.name` y `error.message` dicen qué pasó.
-- **`finally { … }`** corre siempre, haya error o no: el lugar para dejar al robot en modo seguro.
-- **Validar la entrada**: revisa los datos *antes* de usarlos y lanza un error claro si están mal. Mejor "Comando inválido: F0" en la oficina que un robot congelado en la plaza.
-- **Tus propios errores**: `class ErrorDeComando extends Error { … }` crea un tipo nuevo; con `error instanceof ErrorDeComando` el `catch` sabe si es un error que esperabas o un bug de verdad.
-- **Una prueba** es código que llama a tu función con un dato conocido y lanza un error si el resultado no es el esperado. Antes de entregar, las corres todas: te avisan, en un segundo, qué rompiste.
+<!-- photo: js-first-computer-bug -->
+
+**Historia:** el 9 de septiembre de 1947, en la computadora Mark II de la Universidad de Harvard, los operadores encontraron una polilla atrapada en un relé que impedía que funcionara. La pegaron con cinta en el cuaderno de registro y escribieron: «First actual case of bug being found» (primer caso real de un bicho encontrado). La almirante Grace Hopper popularizó la historia, aunque la palabra *bug* para una falla ya se usaba en otros oficios.
+
+<!-- /photo -->
+
+### Lanzar un error: `throw`
+
+**`throw new Error("mensaje")`** detiene la función en esa línea y lanza el error hacia quien la llamó. Hay tipos de error que ya vienen: `TypeError` (un valor del tipo equivocado), `RangeError` (un número fuera de rango), `SyntaxError`…
+
+### Atraparlo: `try` y `catch`
+
+**`try { … } catch (error) { … }`** atrapa el error (lo viste en la sesión 14 con los pedidos): si algo dentro del `try` lanza, el programa salta al `catch` y sigue desde ahí. `error.name` y `error.message` dicen qué pasó.
+
+### Limpiar siempre: `finally`
+
+**`finally { … }`** corre siempre, haya error o no: el lugar para dejar al robot en modo seguro.
 
 ```js run
 try {
@@ -123,6 +136,18 @@ steps:
   - { line: 6, vars: {}, stack: [{ name: atender, args: 'pedido = "F0"', err: 'sigue subiendo' }], note: "Sube a `atender`, que tampoco lo atrapa." }
   - { line: 8, vars: {}, stack: [], out: "Uncaught Error: Comando inválido\n    at pasosDe\n    at atender", note: "La pila se vació sin encontrar un `catch`: el programa **se detiene** y el mensaje de error lista las llamadas por las que pasó el error. La línea 9 nunca corre." }
 ```
+
+### Validar la entrada
+
+Revisa los datos *antes* de usarlos y lanza un error claro si están mal. Mejor "Comando inválido: F0" en la oficina que un robot congelado en la plaza.
+
+### Tus propios errores
+
+`class ErrorDeComando extends Error { … }` crea un tipo nuevo (usa la herencia de la sesión 12); con `error instanceof ErrorDeComando` el `catch` sabe si es un error que esperabas o un bug de verdad.
+
+### Las pruebas
+
+Una **prueba** es código que llama a tu función con un dato conocido y lanza un error si el resultado no es el esperado. Antes de entregar, las corres todas: te avisan, en un segundo, qué rompiste.
 
 Y así se ve una prueba hecha a mano. No necesitas una librería para empezar: una función que compara y lanza.
 
@@ -365,7 +390,12 @@ visual:
       - { cards: [{ title: "F3 son 3 pasos", rows: [["pasosDe da", "3"], ["se espera", "3"], ["imprime", "✓ F3 son 3 pasos"]] }, { title: "F10 son 10 pasos", rows: [["pasosDe da", "1"], ["se espera", "10"], ["imprime", "✗ F10 son 10 pasos: salió 1, se esperaba 10"]] }, { title: "L no avanza", rows: [["pasosDe da", "0"], ["se espera", "0"], ["imprime", "✓ L no avanza"]] }] }
 starter: |
   // La función que vamos a probar (tiene un bug):
-  const pasosDe = (comando) => (comando === "L" || comando === "R" ? 0 : Number(comando[1]));
+  function pasosDe(comando) {
+    if (comando === "L" || comando === "R") {
+      return 0;
+    }
+    return Number(comando[1]);
+  }
 
   function afirmarIgual(real, esperado) {
     // TODO: si son distintos, lanza un Error: "salió X, se esperaba Y"
@@ -379,7 +409,12 @@ starter: |
   probar("F10 son 10 pasos", () => afirmarIgual(pasosDe("F10"), 10));
   probar("L no avanza", () => afirmarIgual(pasosDe("L"), 0));
 solution: |
-  const pasosDe = (comando) => (comando === "L" || comando === "R" ? 0 : Number(comando[1]));
+  function pasosDe(comando) {
+    if (comando === "L" || comando === "R") {
+      return 0;
+    }
+    return Number(comando[1]);
+  }
 
   function afirmarIgual(real, esperado) {
     if (real !== esperado) {
@@ -424,7 +459,7 @@ prompt: |
 
   Durante la semana, cuatro técnicos de Loop escribieron su versión de `velocidadSegura(lecturas)`, la función que decide qué tan rápido va Chasqui según lo que ve su sensor. Una de esas versiones fue la que llegó a la plaza. Los cuatro juran que la suya "pasa todas las pruebas". En la plaza, la gente rodeó al robot y tapó el sensor: llegó una lista **vacía** de lecturas.
 
-  Imprime cada técnico con sus fallas al final, por ejemplo `Yolanda: 0 fallas`. El tablero compara tu número con lo que dijo cada uno.
+  Las cuatro versiones ya están escritas en el código y no necesitas entenderlas por dentro: tú escribes `contarFallas`, que las prueba. Imprime cada técnico con sus fallas al final, por ejemplo `Yolanda: 0 fallas`. El tablero compara tu número con lo que dijo cada uno.
 visual:
   board:
     for: js15-caso-version

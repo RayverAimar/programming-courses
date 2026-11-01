@@ -2,6 +2,8 @@
 
 ## El encargo
 
+> **La vez pasada:** con `while` y `for` Chasqui repite un trabajo sin saber cuántas veces. Ahora el problema es otro: la misma rutina de seis pasos, escrita cuarenta veces.
+
 Sábado, una de la tarde, cevichería La Chalupa en Chorrillos. Hay cola hasta la playa, la señora Delia corta pescado como una máquina y el mozo se fue a ver el partido. Delia llamó a Loop: "Mándenme al robot ese, pero que no me haga perder platos".
 
 Le pusimos a Chasqui un brazo con bandeja. El problema es que servir un plato son seis instrucciones, y un sábado son cuarenta platos. Escribir 240 líneas no es programar: es copiar. Hoy Chasqui aprende a **ponerle nombre a una rutina** y usarla las veces que haga falta.
@@ -27,19 +29,27 @@ program: |
 
 ## Lo mínimo
 
-Una función es un bloque de código con nombre. Recibe datos por sus **parámetros** y entrega un resultado con **`return`**.
+Una función es un bloque de código con nombre: escribes una rutina una vez y la usas las veces que haga falta.
+
+### Parámetros y `return`
+
+La función recibe datos por sus **parámetros** (los nombres entre paréntesis; lo que pasas al llamarla se llama *argumento*) y entrega un resultado con **`return`**. `return` también termina la función.
 
 ```js run
-function subtotal(precio, cantidad = 1) {
+function subtotal(precio, cantidad) {
   return precio * cantidad;
 }
 
-const conIgv = (monto) => monto * 1.18;
-
 console.log(subtotal(35, 2));
-console.log(subtotal(8));
-console.log(conIgv(100).toFixed(2));
 ```
+
+Lo que imprime `console.log` se ve en la consola, pero no vuelve al programa: para usar un resultado, devuélvelo.
+
+<!-- photo: js-mars-climate-orbiter -->
+
+**Historia:** el 23 de septiembre de 1999 se perdió la sonda Mars Climate Orbiter de la NASA: llegó a Marte por una trayectoria demasiado baja y se destruyó en la atmósfera. Un programa calculaba el impulso de los propulsores en libras-fuerza por segundo, y el otro esperaba recibirlo en newton-segundos. Nadie dijo qué unidad entregaba una pieza a la otra. Por eso, al escribir una función, conviene dejar claro qué recibe y qué devuelve.
+
+<!-- /photo -->
 
 Mira qué pasa cuando una función llama a otra: cada llamada abre una caja con sus datos de entrada, y al llegar al `return` la caja se cierra y entrega su resultado.
 
@@ -73,11 +83,38 @@ notes:
   6: "cuenta devuelve 75 a quien la llamó."
 ```
 
-- **`function nombre(params) { … }`** declara una función con nombre. Es la forma natural para las piezas de tu programa.
-- **Funciones flecha**: `(monto) => monto * 1.18`. Si el cuerpo es una sola expresión, se devuelve sola, sin `return`. Ideales para funciones cortas.
-- **Parámetros por defecto**: `cantidad = 1` se usa cuando no te pasan ese argumento.
-- **Desestructuración**: `function atender({ mesa, plato })` saca esas propiedades del objeto que te pasan. Y `...` reparte un array (`Math.max(...precios)`) o junta argumentos (`function sumar(...nums)`).
-- **`return` termina la función.** Lo que imprime `console.log` se ve en la consola, pero no vuelve al programa: para usar un resultado, devuélvelo.
+`function nombre(params) { … }` es la forma natural de declarar las piezas de tu programa. Hay dos ideas más, cortas y muy comunes.
+
+### Funciones flecha
+
+Para una función corta, `(monto) => monto * 1.18`. Si el cuerpo es una sola expresión, se devuelve sola, sin `return`.
+
+```js run
+const conIgv = (monto) => monto * 1.18;
+
+console.log(conIgv(100).toFixed(2));
+```
+
+`.toFixed(2)` muestra el número con dos decimales.
+
+### Parámetros por defecto
+
+`cantidad = 1` se usa cuando no te pasan ese argumento; sin él, `cantidad` llegaría `undefined`.
+
+```js run
+function subtotal(precio, cantidad = 1) {
+  return precio * cantidad;
+}
+
+console.log(subtotal(35, 2));
+console.log(subtotal(8));
+```
+
+### Adelanto: desestructuración y `...`
+
+Dos atajos que verás en código real y que las sesiones 5 y 6 explican con arrays y objetos; en esta sesión no los necesitas. `function atender({ mesa, plato })` saca esos campos del objeto que le pasan. Y `...` reparte un array (`Math.max(...precios)`) o junta argumentos (`function sumar(...nums)`).
+
+### Adelanto: módulos
 
 Cuando un programa crece, sus funciones se reparten en archivos (**módulos**). Uno exporta, otro importa:
 
@@ -175,8 +212,8 @@ prompt: |
 starter: |
   function totalPedido(platos) {
     let total = 0;
-    for (const { precio } of platos) {
-      total += precio;
+    for (const plato of platos) {
+      total += plato.precio;
     }
     console.log(total);
   }
@@ -189,8 +226,8 @@ starter: |
 solution: |
   function totalPedido(platos) {
     let total = 0;
-    for (const { precio } of platos) {
-      total += precio;
+    for (const plato of platos) {
+      total += plato.precio;
     }
     return total;
   }
@@ -215,11 +252,11 @@ id: js4-escribe-ticket
 type: write
 title: La línea del ticket
 prompt: |
-  Escribe la función `lineaTicket(item, cantidad)`, que devuelve la línea del ticket como texto. `item` es un objeto como `{ plato: "ceviche", precio: 35 }`; `cantidad` es **1 si no te la pasan**. Devuelve un texto así:
+  Escribe la función `lineaTicket(item, cantidad)`, que devuelve la línea del ticket como texto. `item` es una ficha como `{ plato: "ceviche", precio: 35 }` (`item.plato` y `item.precio` leen sus campos); `cantidad` es **1 si no te la pasan**. Devuelve un texto así:
 
   `lineaTicket({ plato: "ceviche", precio: 35 }, 2)` → `"2 x ceviche: S/ 70"`
 
-  Desestructura `item` en los parámetros.
+  Dale a `cantidad` su valor por defecto en la firma.
 visual:
   figure:
     input: { label: "lineaTicket(item, 2)", cards: [{ title: item, rows: [["plato", "\"ceviche\""], ["precio", "35"]] }] }
@@ -231,13 +268,13 @@ starter: |
 
   console.log(lineaTicket({ plato: "ceviche", precio: 35 }, 2));
 solution: |
-  function lineaTicket({ plato, precio }, cantidad = 1) {
-    return `${cantidad} x ${plato}: S/ ${precio * cantidad}`;
+  function lineaTicket(item, cantidad = 1) {
+    return `${cantidad} x ${item.plato}: S/ ${item.precio * cantidad}`;
   }
 
   console.log(lineaTicket({ plato: "ceviche", precio: 35 }, 2));
 hints:
-  - "La firma puede ser `function lineaTicket({ plato, precio }, cantidad = 1)`."
+  - "La firma puede ser `function lineaTicket(item, cantidad = 1)`; dentro, usa `item.plato` e `item.precio`."
 tests:
   - name: dos ceviches
     run: 'lineaTicket({ plato: "ceviche", precio: 35 }, 2)'
@@ -245,9 +282,9 @@ tests:
   - name: una chicha, sin pasar la cantidad
     run: 'lineaTicket({ plato: "chicha", precio: 8 })'
     equals: "1 x chicha: S/ 8"
-  - name: desestructura en los parámetros
-    source: 'function\s+lineaTicket\s*\(\s*\{'
-    msg: Escribe { plato, precio } directamente en los parámetros.
+  - name: cantidad tiene valor por defecto
+    source: 'cantidad\s*=\s*1'
+    msg: Escribe cantidad = 1 en los parámetros de la función.
 ```
 
 ## El caso
@@ -258,6 +295,8 @@ type: case
 title: La mesa que se fue sin pagar completo
 prompt: |
   Escribe `totalDeMesa(mesa)`, que suma lo que consumió una mesa, e imprime una línea por mesa para compararla con lo que pagó.
+
+  Los datos ya están en el código: `carta` es un objeto que liga cada plato con su precio (`carta["ceviche"]` da `35`), y `pedidos` es un array de fichas como `{ mesa: 3, plato: "ceviche" }` (`pedido.mesa` lee un campo).
 
   Al cerrar, la caja de La Chalupa no cuadra: falta plata. Delia tiene la carta, la lista de lo que pidió cada mesa (en el orden en que salió de la cocina) y lo que pagó cada una. Una mesa dejó propina, así que pagar *más* no es sospechoso. ¿Qué mesa pagó **menos** de lo que consumió?
 
@@ -361,7 +400,7 @@ title: La cuenta de cada mesa
 prompt: |
   Escribe `cuentaMesa(pedidos, propina)`, que devuelve cuánto paga una mesa, y sus dos ayudantes `precioDe` y `subtotal`.
 
-  Delia quiere que Chasqui cobre. La carta: ceviche 35, chicharron 32, causa 22, chicha 8. Un pedido es un par `[plato, cantidad]`, por ejemplo `["ceviche", 2]`.
+  Delia quiere que Chasqui cobre. La carta: ceviche 35, chicharron 32, causa 22, chicha 8. Un pedido es un par `[plato, cantidad]`, por ejemplo `["ceviche", 2]`: `pedido[0]` es el plato y `pedido[1]` la cantidad.
 
   Escribe tres funciones, y el juez probará las tres:
 
@@ -395,8 +434,8 @@ solution: |
     return CARTA[plato] ?? 0;
   }
 
-  function subtotal([plato, cantidad]) {
-    return precioDe(plato) * cantidad;
+  function subtotal(pedido) {
+    return precioDe(pedido[0]) * pedido[1];
   }
 
   function cuentaMesa(pedidos, propina = 0) {
@@ -407,7 +446,7 @@ solution: |
     return suma + Math.round((suma * propina) / 100);
   }
 hints:
-  - "Desestructura el pedido en los parámetros: `function subtotal([plato, cantidad])`."
+  - "Guarda la carta en un objeto, `const CARTA = { ceviche: 35, … }`: `CARTA[plato]` da el precio, o `undefined` si el plato no está (y `??` lo vuelve 0)."
   - "`cuentaMesa` no necesita saber precios: que use `subtotal`, y `subtotal` que use `precioDe`."
 samples:
   - args: [[["ceviche", 2], ["chicha", 3]], 10]
@@ -485,7 +524,7 @@ prompt: |
   - `robot.preparar(plato)` en la cocina pone el plato en la bandeja (solo cabe uno)
   - `robot.servir()` deja el plato en la mesa de abajo
 
-  `atender` prepara el plato, lo lleva, lo sirve y **vuelve a la cocina mirando al este**. La lista `pedidos` cambia en cada prueba.
+  `atender` prepara el plato, lo lleva, lo sirve y **vuelve a la cocina mirando al este**. La lista `pedidos` cambia en cada prueba; cada pedido es una ficha como `{ mesa: 3, plato: "ceviche" }`, y `pedido.mesa` y `pedido.plato` leen sus campos.
 visual:
   figure:
     title: Cuántos pasos hay hasta cada mesa
@@ -496,23 +535,23 @@ starter: |
   // pedidos llega de la caja, por ejemplo:
   // [{ mesa: 3, plato: "ceviche" }, { mesa: 1, plato: "chicharrón" }]
 
-  const mediaVuelta = () => {
+  function mediaVuelta() {
     robot.girarDerecha();
     robot.girarDerecha();
-  };
+  }
 
   function atender(pedido) {
     // prepara, ve, sirve, vuelve
   }
 solution: |
-  const mediaVuelta = () => {
+  function mediaVuelta() {
     robot.girarDerecha();
     robot.girarDerecha();
-  };
+  }
 
-  function atender({ mesa, plato }) {
-    const pasos = 2 * mesa - 1;
-    robot.preparar(plato);
+  function atender(pedido) {
+    const pasos = 2 * pedido.mesa - 1;
+    robot.preparar(pedido.plato);
     robot.avanzar(pasos);
     robot.servir();
     mediaVuelta();
@@ -524,7 +563,7 @@ solution: |
     atender(pedido);
   }
 hints:
-  - "Dentro de `atender`, calcula los pasos una vez: `const pasos = 2 * mesa - 1;`"
+  - "Dentro de `atender`, calcula los pasos una vez: `const pasos = 2 * pedido.mesa - 1;`"
   - "Fuera de la función, un `for...of` sobre `pedidos` que llame a `atender`."
 world:
   theme: cocina
@@ -574,7 +613,7 @@ id: js4-reto-agrupar
 type: challenge
 title: El resumen para la cocina
 prompt: |
-  Delia quiere saber cuántos platos de cada tipo salieron. Escribe `contarPlatos(pedidos)` que devuelva un objeto `{ plato: cantidad }`, sin modificar el array que recibe. Puntos extra si lo haces con `reduce`.
+  Delia quiere saber cuántos platos de cada tipo salieron. Escribe `contarPlatos(pedidos)` que devuelva un objeto `{ plato: cantidad }`, sin modificar el array que recibe. Para sumar uno a un campo con nombre variable: `cuenta[pedido.plato] = (cuenta[pedido.plato] ?? 0) + 1`.
 starter: |
   function contarPlatos(pedidos) {
     return {};
@@ -582,12 +621,17 @@ starter: |
 
   console.log(contarPlatos([{ mesa: 1, plato: "ceviche" }, { mesa: 2, plato: "ceviche" }]));
 solution: |
-  const contarPlatos = (pedidos) =>
-    pedidos.reduce((cuenta, { plato }) => ({ ...cuenta, [plato]: (cuenta[plato] ?? 0) + 1 }), {});
+  function contarPlatos(pedidos) {
+    const cuenta = {};
+    for (const pedido of pedidos) {
+      cuenta[pedido.plato] = (cuenta[pedido.plato] ?? 0) + 1;
+    }
+    return cuenta;
+  }
 
   console.log(contarPlatos([{ mesa: 1, plato: "ceviche" }, { mesa: 2, plato: "ceviche" }]));
 hints:
-  - "`cuenta[plato] ?? 0` da 0 la primera vez que aparece un plato."
+  - "`cuenta[pedido.plato] ?? 0` da 0 la primera vez que aparece un plato."
 tests:
   - name: dos ceviches y una chicha
     run: 'contarPlatos([{ mesa: 1, plato: "ceviche" }, { mesa: 2, plato: "chicha" }, { mesa: 3, plato: "ceviche" }])'

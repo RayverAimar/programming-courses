@@ -2,7 +2,9 @@
 
 ## The job
 
-Puno, four in the afternoon, three blocks from the pier. Doña Teodora Mamani runs Encomiendas Titicaca: she receives parcels from Juliaca and sends them by boat to the islands. Everything goes through a server that lives on the other side of an antenna on Cerro Azoguini, and the antenna works like her nephew's WhatsApp: it answers late, and sometimes it doesn't answer at all.
+> **Last time:** a recursive function calls itself and gets its result at once. Now the answer takes a while: it travels through an antenna that sometimes doesn't reply.
+
+Puno, four in the afternoon. Doña Teodora Mamani runs Encomiendas Titicaca: she receives parcels from Juliaca and sends them by boat to the islands. Everything goes through a server on the other side of an antenna on Cerro Azoguini, and the antenna works like her nephew's WhatsApp: it answers late, and sometimes not at all.
 
 Doña Teodora hired Chasqui to carry each parcel to the pier, but first it has to **ask the server** which route to take and which label to put on. If Chasqui freezes while it waits for each answer, the five o'clock boat leaves without the parcel. Today it learns to ask for something, get on with its life while the answer travels, and react when the server fails.
 
@@ -37,11 +39,14 @@ program: |
 
 Until now every line finished before the next one started. Asking a server for something isn't like that: the answer takes time. JavaScript doesn't stop to wait; it gives you a **promise**, like the ticket you get at the parcel counter: it isn't your parcel yet, but it says the parcel will come (or that something went wrong).
 
+### `async` and `await`
+
 - **`async function`** declares a function that can wait. It always returns a promise.
 - **`await promise`** pauses *that* function until the promise fulfils, and gives you its value. The rest of the program keeps going.
-- If the promise is **rejected** (the server failed), `await` throws the error: you catch it with **`try { … } catch (error) { … }`**, like any other error.
-- **`Promise.all([p1, p2])`** waits for several promises **at once** and gives you their values in the same order. Two requests in parallel take as long as the slowest one, not the sum.
-- **`setTimeout(fn, ms)`** is the old way to say "call me later": it takes a *callback*, a function the browser puts in the callback queue once the time has passed. You wrap it in a promise with `new Promise((resolve) => setTimeout(resolve, ms))`.
+
+### `setTimeout`: the old way to wait
+
+**`setTimeout(fn, ms)`** is the old way to say "call me later": it takes a *callback*, a function the browser puts in the callback queue once the time has passed. You wrap it in a promise with `new Promise((resolve) => setTimeout(resolve, ms))`, and that way you can use it with `await`. The next example does it with a function called `wait`:
 
 ```exercise
 id: js14-demo-encomienda
@@ -61,6 +66,19 @@ starter: |
 ```
 
 (A bare `await`, outside any function, only works in the Workshop and in modules; inside any other function you need `async`.)
+
+### When the promise fails: `try` and `catch`
+
+If the promise is **rejected** (the server failed), `await` throws the error: you catch it with **`try { … } catch (error) { … }`**. What's inside the `try` is attempted; if something fails, the program jumps to the `catch` instead of crashing. And `throw error` throws an error on purpose, or throws it again if you can't fix it there. Session 15 explains errors in depth; here you only need it for requests that fail.
+
+```js
+try {
+  const route = await workshop.request("route");
+  console.log(route);
+} catch (error) {
+  console.log("The server didn't answer");
+}
+```
 
 In today's exercises the Workshop's server is called `workshop`: `await workshop.request("route")` fetches a resource, and `workshop.now()` says how many milliseconds have gone by. Time is simulated: nothing really waits, but the delays and failures are the same every time you run.
 
@@ -120,6 +138,10 @@ steps:
     note: "The notice goes onto the stack and your function **continues right after the `await`**, with the response in hand. That's how an `await` \"wakes up\". If your code were busy in a huge loop, the notice would wait: nothing interrupts what's running."
     tags: { stack: "your function continues" }
 ```
+
+### `Promise.all`: two requests at once
+
+**`Promise.all([p1, p2])`** waits for several promises **at once** and gives you their values in the same order. Two requests in parallel take as long as the slowest one, not the sum.
 
 Watch two requests in parallel. Each one leaves as a pending promise; `await Promise.all` waits until the last one arrives.
 

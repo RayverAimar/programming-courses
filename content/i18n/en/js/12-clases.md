@@ -2,9 +2,11 @@
 
 ## The job
 
-Arequipa, an old house of white sillar stone two blocks from the Plaza de Armas. That's where Rapidito runs its delivery business, and tomorrow it rents **three** robots from Loop: Chasqui, Misti and Chachani. Valeria Zegarra, its head of technology, asked to see the code before signing. She opened it, scrolled down a little, and sent us a screenshot with no comment: `battery`, `battery2`, `batteryMistiNew`, `positionX_final_v3`.
+> **Last time:** closures gave a function a private memory. With three robots, copying and pasting that memory three times no longer scales: you need a mould.
 
-The code was written for a single robot, and each new robot was added by copy and paste. With three, every change has to be made three times, and one wrong variable drains the wrong robot. Today we tidy up Chasqui's brain: **one mould** (a class) that turns out as many robots as needed, each with its own state, and separate **files** (modules) for each part.
+Arequipa, an old house of white sillar stone two blocks from the Plaza de Armas. That's where Rapidito runs its delivery business, and tomorrow it rents **three** robots from Loop: Chasqui, Misti and Chachani. Valeria Zegarra, its head of technology, asked to see the code before signing, and sent us a screenshot with no comment: `battery`, `battery2`, `batteryMistiNew`, `positionX_final_v3`.
+
+The code was written for a single robot, and each new robot was added by copy and paste. With three, every change has to be made three times, and one wrong variable drains the wrong robot. Today Chasqui gets **one mould** (a class) that turns out as many robots as needed, each with its own state, and separate **files** (modules) for each part.
 
 ```scene
 theme: barranco
@@ -35,17 +37,16 @@ program: |
 
 A **class** is a mould. With `new` you make objects from that mould (**instances**): they all have the same methods, but each keeps its own data.
 
+### `constructor`, `this` and methods
+
 ```js run
 class Robot {
-  #battery = 100;
   constructor(name) {
     this.name = name;
+    this.battery = 100;
   }
   forward(steps) {
-    this.#battery -= steps * 2;
-  }
-  get battery() {
-    return this.#battery;
+    this.battery -= steps * 2;
   }
 }
 
@@ -53,6 +54,17 @@ const bot = new Robot("Chasqui");
 bot.forward(5);
 console.log(bot.name, bot.battery);
 ```
+
+- **`constructor`** runs on every `new` and sets up the object. Inside the class, **`this`** is the object you're working with.
+- **Methods**: the mould's functions, like `forward(steps)`. You call them with a dot: `chasqui.forward(5)`.
+
+
+### `#private` and `get`
+
+With the above, anyone can write `chasqui.battery = 500`. To protect a piece of data:
+
+- **`#private`**: a field with `#` can only be touched from inside the class. Nobody outside can write `chasqui.#battery = 500`; it's an error before anything runs. That way the rule for how the battery is spent lives in one place.
+- **`get`**: a method that's read like a property (`chasqui.battery`). It lets you read private data without letting anyone change it.
 
 ```anim
 title: One mould, two robots, two batteries
@@ -86,11 +98,9 @@ steps:
   - { line: 16, vars: { chasqui: { "#battery": 90, name: "Chasqui" }, misti: { "#battery": 100, name: "Misti" } }, out: "90 100" }
 ```
 
-- **`constructor`** runs on every `new` and sets up the object. Inside the class, **`this`** is the object you're working with.
-- **Methods**: the mould's functions, like `forward(steps)`. You call them with a dot: `chasqui.forward(5)`.
-- **`#private`**: a field with `#` can only be touched from inside the class. Nobody outside can write `chasqui.#battery = 500`; it's an error before anything runs. That way the rule for how the battery is spent lives in one place.
-- **`get`**: a method that's read like a property (`chasqui.battery`). It lets you read private data without letting anyone change it.
-- **`extends`**: a child class inherits everything from its parent and adds or changes what it needs; `super(...)` calls the parent's constructor and `super.method()` its version of a method.
+### Inheritance: `extends` and `super`
+
+A child class **inherits** everything from its parent and adds or changes what it needs (**`extends`**); `super(...)` calls the parent's constructor and `super.method()` its version of a method.
 
 ```js
 class Courier extends Robot {
@@ -100,6 +110,20 @@ class Courier extends Robot {
   }
 }
 ```
+
+```steps
+# What happens on `new Courier("Chasqui", "square")`
+## The object is created and the child's constructor starts
+`new` makes a fresh object and runs `Courier`'s `constructor(name, zone)`, with `name = "Chasqui"` and `zone = "square"`.
+## `super(name)` calls the parent's constructor
+In a child class, **the first thing** is `super(...)`: before it you can't use `this`. `Robot`'s constructor runs with `name` and sets up what every robot has.
+## Back in the child's constructor
+With the `Robot` part ready, the child goes on: `this.zone = zone` adds what only a `Courier` has.
+## The object is complete
+`chasqui` has what the parent set up plus its own `zone`. Without the `super`, JavaScript would throw an error when creating the object.
+```
+
+### Modules
 
 **Modules.** When the brain grows, each class goes in its own file. A file **exports** what it offers and another **imports** it. In the exercises everything lives in one file, but Rapidito's project ends up like this:
 
@@ -775,11 +799,19 @@ solution: |
       const dx = x - position.x;
       const dy = y - position.y;
       const steps = [];
+      let horizontal = "W";
+      if (dx > 0) {
+        horizontal = "E";
+      }
+      let vertical = "N";
+      if (dy > 0) {
+        vertical = "S";
+      }
       for (let i = 0; i < Math.abs(dx); i++) {
-        steps.push(dx > 0 ? "E" : "W");
+        steps.push(horizontal);
       }
       for (let i = 0; i < Math.abs(dy); i++) {
-        steps.push(dy > 0 ? "S" : "N");
+        steps.push(vertical);
       }
       this.#robot.followPath(steps);
     }

@@ -2,6 +2,8 @@
 
 ## The job
 
+> **Last time:** with `Map` and `Set`, Chasqui counted and grouped hundreds of rounds with ease. With 30,000 tickets, the question is no longer whether it answers right, but how long it takes.
+
 Yerbateros bus terminal, 27 July, six in the morning. Half of Lima wants to leave for the provinces for the national holidays, and the Turismo Chaskiñan queue already goes round the block. Mrs Maruja, head of boarding, hired Chasqui for the platform gate: it reads each passenger's ticket, says whether it's valid and sends them to their platform.
 
 The first passenger went through fine. The tenth, too. By passenger two hundred, Chasqui was taking two seconds to answer, and someone at the back started chanting "send the robot home!". The program wasn't wrong: it gave the right answer. It was **slow**. Today Chasqui learns to decide **in under 50 milliseconds**, even on a day with 30 000 tickets sold.
@@ -27,12 +29,22 @@ program: |
 A correct program can be useless if it takes too long. What matters isn't how long it takes with 10 items, but **how its work grows** when the data grows. Count operations:
 
 ```js run
+// Array.from builds the list [0, 1, 2, … 999]: a thousand tickets with different codes
 const queue = Array.from({ length: 1000 }, (_, i) => i);
+
 let withTwoLoops = 0;
-for (let i = 0; i < queue.length; i++) for (let j = 0; j < i; j++) withTwoLoops++;
+for (let i = 0; i < queue.length; i++) {
+  for (let j = 0; j < i; j++) {
+    withTwoLoops++;
+  }
+}
+
 let withSet = 0;
 const seen = new Set();
-for (const code of queue) { withSet++; seen.add(code); }
+for (const code of queue) {
+  withSet++;
+  seen.add(code);
+}
 console.log(withTwoLoops, withSet);
 ```
 
@@ -71,17 +83,33 @@ panes:
 caption: Steps of work, and the time at about 100 million steps per second. With twice the data, one loop does twice the work; a double loop, **four times**. At 4.5 s per turn, the queue riots.
 ```
 
-- **One loop over n items** grows like n. A loop inside another grows like **n × n**: doubling the data quadruples the time.
-- **Hidden loops**: `includes`, `indexOf`, `find`, `filter`, `some`, `slice`, `[...list]` and `new Set(list)` walk the list. Inside a loop, they're a loop inside a loop.
-- **`Set.has` and `Map.get`** find a key almost regardless of how many there are. Build the `Set` or `Map` **once**, outside the loop, and ask it as often as you like.
-- **Exit early**: if you already have the answer, `return` or `break`. `some` and `find` stop by themselves at the first match.
-- **Measure**: `performance.now()` gives the current milliseconds, with decimals. Subtract two readings to know how long something took:
+### How much the work grows
+
+A loop over n items grows like n. A loop inside another grows like **n × n**: doubling the data quadruples the time.
+
+### Hidden loops
+
+`includes`, `indexOf`, `find`, `filter`, `some`, `slice`, `[...list]` and `new Set(list)` walk the list. Inside a loop, they're a loop inside a loop.
+
+### The alternative: `Set.has` and `Map.get`
+
+They find a key almost regardless of how many there are. Build the `Set` or `Map` **once**, outside the loop, and ask it as often as you like.
+
+### Exit early
+
+If you already have the answer, `return` (leaves the function) or `break` (cuts only the loop). `some` and `find` stop by themselves at the first match.
+
+### Measure
+
+`performance.now()` gives the current milliseconds, with decimals. Subtract two readings to know how long something took:
 
 ```js
 const start = performance.now();
 const platform = platformOf(240003);
 const took = performance.now() - start;
-if (took > 50) console.log(`Too slow! ${took.toFixed(1)} ms`);
+if (took > 50) {
+  console.log(`Too slow! ${took.toFixed(1)} ms`);
+}
 ```
 
 Measure before you optimise: often the slow part isn't where you think. And don't chase microseconds: swapping a double loop for a `Set` wins far more than any trick.
@@ -344,7 +372,7 @@ prompt: |
 
   Four vendors offered Mrs Maruja a routine to catch cloned tickets. All four swear the same thing: "with twice the passengers, my routine does twice the work". With 30 000 passengers, whoever is lying will freeze the queue. Loop already fitted all four with an `ops` counter. Which vendor lied?
 
-  Print one line per routine with the rounded factor at the end: `Saeta: factor 2`. The board compares it with what they promised.
+  The four routines are already written in the code and you don't need to understand them inside: you measure them. Print one line per routine with the rounded factor at the end: `Saeta: factor 2`. The board compares it with what they promised.
 visual:
   board:
     for: js17-caso-rutinas
@@ -664,6 +692,7 @@ starter: |
     return tickets.find((t) => t.code === code).platform;
   }
 
+  // It comes ready-made: takes Chasqui to column x of the corridor.
   function walkTo(x) {
     const steps = x - robot.position.x;
     robot.followPath(Array(Math.abs(steps)).fill(steps > 0 ? "E" : "W"));

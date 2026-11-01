@@ -2,6 +2,8 @@
 
 ## El encargo
 
+> **La vez pasada:** Chasqui ya guarda arrays de objetos y los recorre con `for`. Con cientos de eventos, cada pregunta nueva pediría otro bucle escrito a mano.
+
 Ica, plena vendimia. En la bodega Santa Uchuya embotellan pisco de noche, cuando la línea no compite con el calor, y la atienden cinco robots: Kusi, Tupa, Nina, Puma y Chato. Esta madrugada la línea se trabó tres veces y amanecieron 200 botellas sin tapa. La ingeniera Fiorella Uchuya está segura de que no fue la máquina: "Alguien de la flota me está mintiendo".
 
 Cada robot deja su rastro en la **bitácora**: un array de cientos de eventos. Recorrerla con un `for` por cada pregunta es posible, pero lento y fácil de equivocar. Hoy Chasqui aprende los métodos que hacen preguntas a un array en una línea: **filtra, transforma, busca, suma, ordena**. Como un detective con una lupa por cada pista.
@@ -26,16 +28,28 @@ program: |
 
 ## Lo mínimo
 
-Los arrays traen métodos que reciben **una función** (casi siempre una flecha) y la aplican a cada elemento. Ninguno de estos modifica el array original: devuelven algo nuevo.
+Los arrays traen métodos que reciben **una función** (casi siempre una flecha) y la aplican a cada elemento. Ninguno de estos modifica el array original: devuelven algo nuevo. Son varios; te los presento de a uno.
+
+### `map` y `filter`: transformar y elegir
+
+`map(f)` da un array del mismo largo, con `f` aplicada a cada elemento. `filter(f)` da solo los elementos para los que `f` devuelve `true`.
 
 ```js run
 const botellas = [40, 0, 35, 50];
 console.log(botellas.map((b) => b * 2));
 console.log(botellas.filter((b) => b > 30));
-console.log(botellas.find((b) => b > 36), botellas.some((b) => b === 0), botellas.every((b) => b >= 0));
-console.log(botellas.reduce((suma, b) => suma + b, 0));
-console.log(botellas.toSorted((a, b) => b - a), botellas);
 ```
+
+### `find`, `some` y `every`: preguntar
+
+`find(f)` da el **primero** que cumple, o `undefined`. `some(f)` responde si alguno cumple, y `every(f)` si todos cumplen.
+
+```js run
+const botellas = [40, 0, 35, 50];
+console.log(botellas.find((b) => b > 36), botellas.some((b) => b === 0), botellas.every((b) => b >= 0));
+```
+
+### Encadenar
 
 Como cada uno devuelve un array nuevo, se pueden **encadenar**: el resultado de uno entra al siguiente.
 
@@ -55,7 +69,9 @@ notes:
   5: "turnos sigue igual: ningún método lo tocó."
 ```
 
-`reduce` es el que más cuesta. Por dentro es un bucle con un **acumulador** que empieza en el valor inicial (el `0` del final) y pasa de vuelta en vuelta:
+### `reduce`: juntar todo en un valor
+
+`reduce(f, inicial)` junta todo en un valor: una suma, un máximo, un objeto. Pon siempre el valor inicial. Es el que más cuesta. Por dentro es un bucle con un **acumulador** que empieza en el valor inicial (el `0` del final) y pasa de vuelta en vuelta:
 
 ```anima
 title: reduce, vuelta por vuelta
@@ -75,12 +91,15 @@ steps:
   - { line: 5, vars: { total: 125 }, out: "125" }
 ```
 
-- **`map(f)`**: un array del mismo largo, con `f` aplicada a cada elemento.
-- **`filter(f)`**: los elementos para los que `f` da `true`.
-- **`find(f)`**: el **primero** que cumple, o `undefined`. **`some(f)`**: ¿alguno cumple? **`every(f)`**: ¿todos cumplen?
-- **`reduce(f, inicial)`**: junta todo en un valor: una suma, un máximo, un objeto. Pon siempre el valor inicial.
-- **Ordenar**: `toSorted((a, b) => a - b)` devuelve una copia ordenada de menor a mayor; `b - a`, de mayor a menor. Para textos, `a.localeCompare(b)`. El viejo **`sort` ordena el mismo array** (lo modifica) y además lo devuelve.
-- **`join(", ")`** junta los elementos en un texto, con lo que le pases entre cada uno.
+### Ordenar y unir
+
+`toSorted((a, b) => a - b)` devuelve una copia ordenada de menor a mayor; `b - a`, de mayor a menor. Para textos, `a.localeCompare(b)`. El viejo **`sort` ordena el mismo array** (lo modifica) y además lo devuelve. Y `join(", ")` junta los elementos en un texto, con lo que le pases entre cada uno.
+
+```js run
+const botellas = [40, 0, 35, 50];
+console.log(botellas.toSorted((a, b) => b - a), botellas);
+console.log(botellas.join(", "));
+```
 
 > **Trampa común:** `[10, 9, 100].sort()` da `[10, 100, 9]`. Sin función de comparación, `sort` ordena **como textos** ("1" va antes que "9"), y encima cambia el array original. Para números: `toSorted((a, b) => a - b)`.
 
@@ -97,7 +116,7 @@ id: js7-predice-cadena
 type: predict
 title: Los turnos que valen
 prompt: |
-  ¿Qué imprime?
+  ¿Qué imprime? (`console.log(...resultado)` reparte el array en valores sueltos, uno por argumento.)
 code: |
   const turnos = [3, 8, 0, 12];
   const resultado = turnos.filter((n) => n > 2).map((n) => n * 10);
@@ -417,7 +436,7 @@ title: El cuadro de honor
 prompt: |
   Escribe `ranking(registros)`, que devuelve los nombres de los robots ordenados por total de botellas, de mayor a menor, y `totalDe(registros, nombre)`, que devuelve el total de un robot.
 
-  Fiorella quiere un cuadro de honor en la pared de la bodega, sin trampas. Cada registro es un par `[robot, botellas]`, y un robot aparece muchas veces.
+  Fiorella quiere un cuadro de honor en la pared de la bodega, sin trampas. Cada registro es un par `[robot, botellas]` (`r[0]` es el robot y `r[1]` las botellas), y un robot aparece muchas veces.
 
   - `totalDe(registros, nombre)`: la suma de las botellas de ese robot (0 si no aparece).
   - `ranking(registros)`: cada robot **una sola vez**, ordenados por su total de mayor a menor. Si dos empatan, va primero el que va antes en orden alfabético.
@@ -440,8 +459,8 @@ starter: |
 solution: |
   function totalDe(registros, nombre) {
     return registros
-      .filter(([robot]) => robot === nombre)
-      .reduce((suma, [, botellas]) => suma + botellas, 0);
+      .filter((r) => r[0] === nombre)
+      .reduce((suma, r) => suma + r[1], 0);
   }
 
   function ranking(registros) {
@@ -552,6 +571,7 @@ starter: |
   // bitacora: [{ estacion: 4, tipo: "falla", perdidas: 30 }, { estacion: 2, tipo: "ok", perdidas: 0 }, ...]
 
   // Lleva a Chasqui a la columna x de su fila.
+  // Ya viene hecha: úsala sin preocuparte por cómo funciona por dentro.
   function irA(x) {
     if (x === robot.posicion.x) {
       return;
@@ -584,9 +604,9 @@ solution: |
   robot.marcar(fallas.map((e) => [e.estacion, 1]));
 
   const orden = fallas.toSorted((a, b) => b.perdidas - a.perdidas);
-  for (const { estacion } of orden) {
-    irA(estacion);
-    robot.decir(`Reparo ${estacion}`);
+  for (const falla of orden) {
+    irA(falla.estacion);
+    robot.decir(`Reparo ${falla.estacion}`);
   }
 
   irA(oficina);

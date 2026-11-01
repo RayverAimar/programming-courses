@@ -2,6 +2,8 @@
 
 ## The job
 
+> **Last time:** walking a grid square by square was enough to measure the water. Now it isn't enough to visit every square: you have to find the shortest path between two.
+
 Central Lima, a Sunday in October. The procession is out, Jirón de la Unión is a sea of purple, half the streets are closed off with barriers and the rest are full of street vendors selling turrón. At the pharmacy on Plaza San Martín there's a cool box of insulin that has to reach the emergency ward at Hospital Dos de Mayo, and no motorbike can get through.
 
 Dr. Rocío Paredes called Loop. Chasqui has had a siren since session 2, but his battery lasts **exactly** for the shortest route: not one block more. Trying streets at random won't do. Today Chasqui learns to **search**: explore the map in waves, from where he stands, until he finds the shortest way, and then walk it.
@@ -37,11 +39,25 @@ program: |
 
 ## The minimum
 
-**Breadth-first search** (BFS) explores like a ripple in water: first every tile 1 step away, then every tile 2 away, then 3… The first time the ripple touches the goal, it has found it by the shortest way. It needs three pieces:
+**Breadth-first search** (BFS) explores like a ripple in water: first every tile 1 step away, then every tile 2 away, then 3… The first time the ripple touches the goal, it has found it by the shortest way. It needs three pieces, and we'll see them one at a time.
 
-- a **queue**: the list of tiles still to explore. You add at the end (`push`) and take from the front (`shift`): the first one in is the first one out;
-- a **`Set`** of tiles already seen, so the same one never goes in twice;
-- a **`Map`** to remember something about each tile: how many steps away it is, or which tile it came from.
+### A queue: `push` and `shift`
+
+A **queue** is the list of tiles still to explore. You add at the end (`push`) and take from the front with `shift()`, which is like `pop()` but from the other end: the first one in is the first one out, like at a bank.
+
+```js run
+const queue = ["A", "B"];
+queue.push("C");
+console.log(queue.shift(), queue);
+```
+
+### A `Set`: the seen tiles
+
+A **`Set`** is a collection with no repeats, so the same tile never goes in twice. It has `add`, `has` and `size`.
+
+### A `Map`: remembering something about each tile
+
+A **`Map`** links each key to a value: how many steps away a tile is, or which tile it came from. It has `set`, `get` and `has`.
 
 ```js run
 const seen = new Set(["1,1"]);
@@ -87,13 +103,14 @@ notes:
 
 To know **the route**, not just the distance, every tile notes in a `Map` which tile it came from (its *parent*). At the end you walk backwards from the goal, parent to parent, and turn the list round:
 
+### The whole ripple, and the route
+
 ```js
 function shortestRoute(plan, start, goal) {
   const queue = [start];
   const parent = new Map([[start, null]]);
-  while (queue.length > 0) {
+  while (queue.length > 0 && !parent.has(goal)) {
     const current = queue.shift();
-    if (current === goal) break;
     const [x, y] = current.split(",").map(Number);
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
       const next = `${x + dx},${y + dy}`;
@@ -103,9 +120,13 @@ function shortestRoute(plan, start, goal) {
       }
     }
   }
-  if (!parent.has(goal)) return null;
+  if (!parent.has(goal)) {
+    return null;
+  }
   const route = [];
-  for (let t = goal; t !== null; t = parent.get(t)) route.push(t);
+  for (let t = goal; t !== null; t = parent.get(t)) {
+    route.push(t);
+  }
   return route.reverse();
 }
 ```
@@ -477,7 +498,7 @@ starter: |
     { name: "Wilmer", x: 14, y: 5, said: 8 },
   ];
 
-  // The patient is on the "+" tile:
+  // The patient is on the "+" tile (findIndex gives the position of the first row that matches):
   const row = plan.findIndex((r) => r.includes("+"));
   console.log("Patient at", plan[row].indexOf("+"), row);
 
@@ -526,7 +547,11 @@ solution: |
 
   for (const { name, x, y, said } of ambulances) {
     const real = steps.get(`${x},${y}`);
-    console.log(`${name}: said ${said}, ${real === said ? "truth" : "LIED"}, real ${real}`);
+    let verdict = "LIED";
+    if (real === said) {
+      verdict = "truth";
+    }
+    console.log(`${name}: said ${said}, ${verdict}, real ${real}`);
   }
 answer: Wilmer
 answerLabel: Which ambulance lied?
@@ -750,12 +775,11 @@ solution: |
   const parent = new Map([[start, null]]);
   const queue = [start];
   let goal = null;
-  for (let i = 0; i < queue.length; i++) {
+  for (let i = 0; i < queue.length && goal === null; i++) {
     const current = queue[i];
     const [cx, cy] = current.split(",").map(Number);
     if (plan[cy][cx] === "D") {
       goal = current;
-      break;
     }
     for (const [dx, dy] of MOVES) {
       const next = `${cx + dx},${cy + dy}`;
@@ -846,7 +870,9 @@ solution: |
   function locate(plan, letter) {
     for (let y = 0; y < plan.length; y++) {
       const x = plan[y].indexOf(letter);
-      if (x !== -1) return [x, y];
+      if (x !== -1) {
+        return [x, y];
+      }
     }
   }
 
@@ -872,7 +898,10 @@ solution: |
     const [a, f, h] = ["A", "F", "H"].map((letter) => locate(plan, letter));
     const there = distance(plan, a, f);
     const onward = distance(plan, f, h);
-    return there === -1 || onward === -1 ? -1 : there + onward;
+    if (there === -1 || onward === -1) {
+      return -1;
+    }
+    return there + onward;
   }
 
   console.log(viaPharmacy(["A.F", "...", "H.."]));

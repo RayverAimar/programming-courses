@@ -2,6 +2,8 @@
 
 ## El encargo
 
+> **La vez pasada:** recorrer una cuadrícula casilla por casilla sirvió para medir el agua. Ahora no basta con pasar por todas: hay que encontrar el camino más corto entre dos.
+
 Centro de Lima, un domingo de octubre. Sale la procesión, el Jirón de la Unión es un mar morado, la mitad de las calles está cerrada con vallas y en las otras hay ambulantes vendiendo turrón. En la farmacia de la Plaza San Martín hay una conservadora de insulina que tiene que llegar a la emergencia del Hospital Dos de Mayo, y ninguna moto puede pasar.
 
 La doctora Rocío Paredes llamó a Loop. Chasqui tiene sirena desde la sesión 2, pero la batería le alcanza **justo** para la ruta más corta: ni una cuadra de más. Probar calles al azar no sirve. Hoy Chasqui aprende a **buscar**: explorar el mapa en ondas, desde donde está, hasta encontrar el camino más corto, y después recorrerlo.
@@ -37,11 +39,25 @@ program: |
 
 ## Lo mínimo
 
-La **búsqueda en anchura** (BFS, por *breadth-first search*) explora como una onda en el agua: primero todas las casillas a 1 paso, luego todas las que están a 2, luego a 3… La primera vez que la onda toca la meta, la encontró por el camino más corto. Necesita tres piezas:
+La **búsqueda en anchura** (BFS, por *breadth-first search*) explora como una onda en el agua: primero todas las casillas a 1 paso, luego todas las que están a 2, luego a 3… La primera vez que la onda toca la meta, la encontró por el camino más corto. Necesita tres piezas, y las vemos una por una.
 
-- una **cola**: la lista de casillas por explorar. Se agrega al final (`push`) y se saca del inicio (`shift`): la primera que entra es la primera que sale;
-- un **`Set`** de casillas vistas, para no meter dos veces la misma;
-- un **`Map`** para recordar algo de cada casilla: a cuántos pasos está, o de qué casilla vino.
+### Una cola: `push` y `shift`
+
+Una **cola** es la lista de casillas por explorar. Se agrega al final (`push`) y se saca del inicio con `shift()`, que es como `pop()` pero por el otro extremo: la primera que entra es la primera que sale, como en un banco.
+
+```js run
+const cola = ["A", "B"];
+cola.push("C");
+console.log(cola.shift(), cola);
+```
+
+### Un `Set`: las casillas vistas
+
+Un **`Set`** es una colección sin repetidos, para no meter dos veces la misma casilla. Tiene `add`, `has` y `size`.
+
+### Un `Map`: recordar algo de cada casilla
+
+Un **`Map`** liga cada clave con un valor: a cuántos pasos está una casilla, o de qué casilla vino. Tiene `set`, `get` y `has`.
 
 ```js run
 const vistos = new Set(["1,1"]);
@@ -87,13 +103,14 @@ notes:
 
 Para saber **la ruta**, y no solo la distancia, cada casilla anota en un `Map` de qué casilla llegó (su *padre*). Al final se camina hacia atrás desde la meta, de padre en padre, y se da la vuelta:
 
+### La onda completa y la ruta
+
 ```js
 function rutaMasCorta(plano, inicio, meta) {
   const cola = [inicio];
   const padre = new Map([[inicio, null]]);
-  while (cola.length > 0) {
+  while (cola.length > 0 && !padre.has(meta)) {
     const actual = cola.shift();
-    if (actual === meta) break;
     const [x, y] = actual.split(",").map(Number);
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
       const vecina = `${x + dx},${y + dy}`;
@@ -103,9 +120,13 @@ function rutaMasCorta(plano, inicio, meta) {
       }
     }
   }
-  if (!padre.has(meta)) return null;
+  if (!padre.has(meta)) {
+    return null;
+  }
   const ruta = [];
-  for (let c = meta; c !== null; c = padre.get(c)) ruta.push(c);
+  for (let c = meta; c !== null; c = padre.get(c)) {
+    ruta.push(c);
+  }
   return ruta.reverse();
 }
 ```
@@ -477,7 +498,7 @@ starter: |
     { nombre: "Wilmer", x: 14, y: 5, dijo: 8 },
   ];
 
-  // El paciente está en la casilla "+":
+  // El paciente está en la casilla "+" (findIndex da la posición de la primera fila que cumple):
   const fila = plano.findIndex((f) => f.includes("+"));
   console.log("Paciente en", plano[fila].indexOf("+"), fila);
 
@@ -526,7 +547,11 @@ solution: |
 
   for (const { nombre, x, y, dijo } of ambulancias) {
     const reales = pasos.get(`${x},${y}`);
-    console.log(`${nombre}: dijo ${dijo}, ${reales === dijo ? "verdad" : "MINTIÓ"}, reales ${reales}`);
+    let veredicto = "MINTIÓ";
+    if (reales === dijo) {
+      veredicto = "verdad";
+    }
+    console.log(`${nombre}: dijo ${dijo}, ${veredicto}, reales ${reales}`);
   }
 answer: Wilmer
 answerLabel: ¿Qué ambulancia mintió?
@@ -750,12 +775,11 @@ solution: |
   const padre = new Map([[inicio, null]]);
   const cola = [inicio];
   let meta = null;
-  for (let i = 0; i < cola.length; i++) {
+  for (let i = 0; i < cola.length && meta === null; i++) {
     const actual = cola[i];
     const [cx, cy] = actual.split(",").map(Number);
     if (mapa[cy][cx] === "D") {
       meta = actual;
-      break;
     }
     for (const [dx, dy] of PASOS) {
       const vecina = `${cx + dx},${cy + dy}`;
@@ -846,7 +870,9 @@ solution: |
   function buscar(plano, letra) {
     for (let y = 0; y < plano.length; y++) {
       const x = plano[y].indexOf(letra);
-      if (x !== -1) return [x, y];
+      if (x !== -1) {
+        return [x, y];
+      }
     }
   }
 
@@ -872,7 +898,10 @@ solution: |
     const [a, f, h] = ["A", "F", "H"].map((letra) => buscar(plano, letra));
     const ida = distancia(plano, a, f);
     const vuelta = distancia(plano, f, h);
-    return ida === -1 || vuelta === -1 ? -1 : ida + vuelta;
+    if (ida === -1 || vuelta === -1) {
+      return -1;
+    }
+    return ida + vuelta;
   }
 
   console.log(conFarmacia(["A.F", "...", "H.."]));

@@ -2,6 +2,8 @@
 
 ## El encargo
 
+> **La vez pasada:** Chasqui ya limpia y corta texto, y sabe que un array es una fila. Un plano de almacén es una fila de filas: hace falta moverse en dos direcciones a la vez.
+
 Ate, zona industrial, lunes a las siete de la mañana. A la señora Gladys Huamán, dueña de Distribuidora Útiles Huamán, se le reventó una tubería durante el fin de semana. Su almacén está lleno de cajas de cuadernos para la campaña escolar, y papel con agua es engrudo. El perito del seguro llega a las seis de la tarde y quiere un plano: dónde hay agua, cuánta, y qué cajas corren peligro.
 
 Le pusimos a Chasqui un sensor de piso que mide los centímetros de agua de cada casilla del almacén. Lo que devuelve no es una lista: es una **cuadrícula**, filas de casillas, como un tablero de ajedrez lleno de números. Hoy Chasqui aprende a recorrerla, a mirar las casillas vecinas y a no salirse del borde.
@@ -32,6 +34,8 @@ program: |
 
 Una cuadrícula es un **array de arrays**: cada elemento es una fila, y cada fila es un array de casillas. Se lee con dos índices: primero la fila (`y`), luego la columna (`x`).
 
+### Leer una casilla
+
 ```js run
 const agua = [
   [0, 2, 5],
@@ -41,6 +45,8 @@ console.log(agua[1][2]);
 console.log(agua.length, agua[0].length);
 console.log(agua[0].join(" "));
 ```
+
+### Recorrerla con dos bucles
 
 Para recorrerla entera hacen falta **dos bucles, uno dentro del otro**: el de afuera baja fila por fila y el de adentro recorre cada casilla de esa fila. Mira cómo Chasqui junta las casillas mojadas:
 
@@ -66,6 +72,8 @@ notes:
   6: "Una casilla mojada se anota con su clave \"x,y\" y se pinta en el plano."
 ```
 
+### Las vecinas de una casilla
+
 Muchas veces no importa una casilla sola sino sus **vecinas**. Las cuatro vecinas de `(x, y)` están a un paso: derecha, izquierda, abajo y arriba. Una lista de desplazamientos evita escribir cuatro `if` casi iguales:
 
 ```js
@@ -87,7 +95,9 @@ panes:
 caption: "En el borde, algunas vecinas no existen. Por eso se revisa que `nx` y `ny` estén dentro antes de leer."
 ```
 
-- **Crear**: con el literal, como arriba, o vacía con `Array.from({ length: alto }, () => Array(ancho).fill(0))`.
+### Detalles útiles
+
+- **Crear**: con el literal, como arriba, o vacía con `Array.from({ length: alto }, () => Array(ancho).fill(0))`: `Array(ancho).fill(0)` es una fila de `ancho` ceros, y `Array.from` la repite `alto` veces, una fila nueva cada vez.
 - **Tamaño**: `agua.length` es el alto (cuántas filas) y `agua[0].length` el ancho (cuántas columnas).
 - **Los textos también son filas**: un plano como `["#..", ".#."]` se lee igual, `plano[y][x]`, porque un texto se indexa como un array.
 - **Las diagonales** se suman agregando `[1, 1]`, `[1, -1]`, `[-1, 1]` y `[-1, -1]` a la lista de pasos: ocho vecinas.
@@ -496,17 +506,17 @@ solution: |
       for (let x = 0; x < plano[y].length; x++) {
         if (plano[y][x] === "~") {
           fila += "~";
-          continue;
-        }
-        let cuenta = 0;
-        for (let dy = -1; dy <= 1; dy++) {
-          for (let dx = -1; dx <= 1; dx++) {
-            if (plano[y + dy]?.[x + dx] === "~") {
-              cuenta++;
+        } else {
+          let cuenta = 0;
+          for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+              if (plano[y + dy]?.[x + dx] === "~") {
+                cuenta++;
+              }
             }
           }
+          fila += cuenta;
         }
-        fila += cuenta;
       }
       resultado.push(fila);
     }
@@ -605,13 +615,12 @@ solution: |
   let enPeligro = 0;
   for (let y = 0; y < mapa.length; y++) {
     for (let x = 0; x < mapa[y].length; x++) {
-      if (mapa[y][x] !== "a") {
-        continue;
-      }
-      const mojada = PASOS.some(([dx, dy]) => (agua[y + dy]?.[x + dx] ?? 0) > 0);
-      if (mojada) {
-        robot.marcar([x, y]);
-        enPeligro++;
+      if (mapa[y][x] === "a") {
+        const mojada = PASOS.some(([dx, dy]) => (agua[y + dy]?.[x + dx] ?? 0) > 0);
+        if (mojada) {
+          robot.marcar([x, y]);
+          enPeligro++;
+        }
       }
     }
   }

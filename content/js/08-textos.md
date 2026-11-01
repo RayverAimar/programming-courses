@@ -2,6 +2,8 @@
 
 ## El encargo
 
+> **La vez pasada:** Chasqui filtró y ordenó arrays de datos que ya venían limpios. Lo que llega por la radio es texto sucio, y hay que limpiarlo antes de preguntarle nada.
+
 Muelle de pescadores de Chucuito, en el Callao, cinco de la mañana. Don Eusebio Chumpitaz lleva cuarenta años en la radio del muelle: los botes le avisan por dónde andan, qué pescaron y a qué hora vuelven, y él lo apunta en una pizarra. Esta semana la radio vieja empezó a meter estática: los mensajes llegan con `~` por todas partes, con espacios de sobra y mitad en mayúsculas, mitad en minúsculas. Y Don Eusebio no encuentra sus lentes desde el martes.
 
 Loop le prestó a Chasqui. Lo que llega por la radio es **texto**, y hoy Chasqui aprende a limpiarlo, cortarlo, buscar dentro de él y armar uno nuevo. Al final llevará él mismo las órdenes de la radio hasta el muelle.
@@ -28,15 +30,38 @@ program: |
 
 ## Lo mínimo
 
-Un texto (en inglés, *string*) es una fila de caracteres. Como un array, tiene `length` y se lee por posición desde **0**. Sus métodos **no lo cambian**: devuelven un texto nuevo.
+Un texto (en inglés, *string*) es una fila de caracteres. Como un array, tiene `length` y se lee por posición desde **0**. Sus métodos **no lo cambian**: devuelven un texto nuevo. Son varios; te los presento por grupos.
+
+### Leer y limpiar
+
+Lo que llega por radio trae estática y espacios sobrantes. `texto.length` cuenta los caracteres, `texto[0]` es el primero y `texto.at(-1)` el último. Para limpiar: `trim()` quita los espacios de los extremos (no los de adentro), `replaceAll("~", "")` cambia todas las apariciones de `~` por nada, y `toUpperCase()` y `toLowerCase()` cambian las mayúsculas.
 
 ```js run
 const llegada = "  mayday~ VIRGEN del carmen~  ";
 const limpio = llegada.replaceAll("~", "").trim().toUpperCase();
 console.log(limpio);
-console.log(limpio.length, limpio[0], limpio.includes("CARMEN"));
+console.log(limpio.length, limpio[0]);
+```
+
+<!-- photo: js-ascii-chart -->
+
+**Historia:** para la computadora, cada carácter de un texto es un número. El estándar ASCII, de Estados Unidos, le dio un número de 0 a 127 a 128 caracteres: 95 que se ven (letras, dígitos, signos) y 33 de control. La `i` es el 105, y en JavaScript `"i".charCodeAt(0)` te lo muestra. Los primeros 128 códigos de Unicode, el sistema que usan los textos de hoy, son los mismos de ASCII.
+
+<!-- /photo -->
+
+### Preguntar y rellenar
+
+`includes("x")`, `startsWith("x")` y `endsWith("x")` devuelven `true` o `false`. `"7".padStart(2, "0")` rellena por la izquierda hasta tener 2 caracteres y da `"07"`: ideal para horas y códigos. Y las *template literals* (`` `Bote ${nombre}: ${cajas} cajas` ``) aceptan cualquier expresión dentro de `${ }`.
+
+```js run
+const limpio = "MAYDAY VIRGEN DEL CARMEN";
+console.log(limpio.includes("CARMEN"), limpio.startsWith("SOS"));
 console.log(`Llegó a las ${String(7).padStart(2, "0")}:05`);
 ```
+
+### Cortar, partir y unir
+
+`texto.slice(inicio, fin)` va desde `inicio` hasta *antes* de `fin`; sin `fin`, hasta el final; con negativos, cuenta desde atrás: `"MAYDAY".slice(-3)` es `"DAY"`. `"a/b/c".split("/")` da `["a", "b", "c"]`, y `partes.join(" ")` hace lo contrario.
 
 Mira cómo Chasqui lee una orden de la radio: la parte en trozos con `split`, revisa con qué empieza cada trozo y saca el número con `slice`.
 
@@ -61,13 +86,7 @@ notes:
   7: "slice(3) es el texto desde la posición 3 hasta el final: \"3\". Number lo vuelve número."
 ```
 
-- **Leer**: `texto.length`, `texto[0]`, `texto.at(-1)` (el último).
-- **Cortar**: `texto.slice(inicio, fin)` va desde `inicio` hasta *antes* de `fin`; sin `fin`, hasta el final; con negativos, cuenta desde atrás: `"MAYDAY".slice(-3)` es `"DAY"`.
-- **Partir y unir**: `"a/b/c".split("/")` da `["a", "b", "c"]`; `partes.join(" ")` hace lo contrario.
-- **Limpiar**: `trim()` quita los espacios de los extremos (no los de adentro); `replaceAll("~", "")` cambia todas las apariciones; `toUpperCase()` y `toLowerCase()`.
-- **Preguntar**: `includes("x")`, `startsWith("x")`, `endsWith("x")` devuelven `true` o `false`.
-- **Rellenar**: `"7".padStart(2, "0")` da `"07"`. Ideal para horas y códigos.
-- **Armar**: las *template literals* (`` `Bote ${nombre}: ${cajas} cajas` ``) aceptan cualquier expresión dentro de `${ }`.
+### Expresiones regulares
 
 Para patrones que un texto fijo no alcanza, JavaScript tiene **expresiones regulares**, escritas entre barras. Tres que vas a usar mucho: `/\d+/g` (cada grupo de dígitos), `/\s+/` (uno o más espacios) y `/^SOS/i` (empieza con SOS, sin importar mayúsculas).
 
@@ -349,7 +368,10 @@ solution: |
   for (const transmision of transmisiones) {
     const [bote, mensaje, declarado] = transmision.split("|");
     const largo = limpiar(mensaje).length;
-    const marca = largo === Number(declarado) ? "" : "  <- no cuadra, declaró " + declarado;
+    let marca = "";
+    if (largo !== Number(declarado)) {
+      marca = "  <- no cuadra, declaró " + declarado;
+    }
     console.log(`${limpiar(bote).toUpperCase()}: ${largo}${marca}`);
   }
 answer: MI CHABELITA
@@ -489,7 +511,11 @@ solution: |
     }
     let resultado = "";
     for (const palabra of limpio.split(/\s+/)) {
-      resultado += palabra.toLowerCase() === "stop" ? " " : palabra[0].toUpperCase();
+      if (palabra.toLowerCase() === "stop") {
+        resultado += " ";
+      } else {
+        resultado += palabra[0].toUpperCase();
+      }
     }
     return resultado;
   }

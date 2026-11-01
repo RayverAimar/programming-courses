@@ -2,6 +2,8 @@
 
 ## El encargo
 
+> **La vez pasada:** Chasqui aprendió a buscar el camino más corto, pero cada función que escribió olvida todo al terminar. Contar llamas exige recordar de un turno al siguiente.
+
 Machu Picchu, cinco y cuarenta de la mañana. La neblina sube del río Urubamba y tapa los andenes; desde un andén no se ve el de abajo. Yeny Huillca, guardaparque del santuario, tiene un problema con nombre de animal: el veterinario sube hoy a desparasitar a las llamas y va a traer **exactamente** tantas dosis como llamas le reporten.
 
 El año pasado lo hizo un robot de otra empresa. Reportó 47 llamas. En Machu Picchu viven doce. El robot veía una llama, daba un paso, la volvía a ver entre la niebla y la volvía a contar. Hoy Chasqui tiene que **recordar lo que ya vio** de un turno al siguiente, y esa memoria tiene que ser suya, no de cualquiera que pase por el código.
@@ -32,6 +34,8 @@ program: |
 
 ## Lo mínimo
 
+### Alcance: cada bloque es un cuarto
+
 Una variable vive en el bloque `{ }` donde se declaró: eso es su **alcance** (*scope*). El código de adentro ve las variables de afuera; el de afuera no ve las de adentro. Piensa en cuartos: cada bloque es un cuarto, y desde uno puedes asomarte a los cuartos que lo rodean, nunca a los que están dentro de él.
 
 ```alcance
@@ -47,6 +51,8 @@ rooms:
         up: "Si falta un nombre, lo busca en el cuarto de afuera: global."
 note: "Desde adentro lees `tarifa`, que vive afuera. Desde global, `km` no existe: su cuarto es solo de la función."
 ```
+
+### Closure: la mochila de variables
 
 Una función creada dentro de otra se lleva consigo las variables del lugar donde nació, y las sigue usando aunque esa otra función ya terminó. Esa mochila de variables se llama **closure**. Sirve para darle a una función **memoria entre llamadas**:
 
@@ -64,6 +70,8 @@ contarLlamas();
 console.log(contarLlamas());
 console.log(crearContador()());
 ```
+
+### Fábricas: una memoria por llamada
 
 `crearContador` es una **fábrica**: cada vez que la llamas, nace una `cuenta` nueva y una función que es la única que puede tocarla. Mira la animación, y debajo la misma película dibujando **dónde vive cada cosa**.
 
@@ -150,6 +158,8 @@ function crearBitacora() {
   };
 }
 ```
+
+### El bug de `var` en los bucles
 
 El mismo mecanismo explica el bug más famoso de los bucles. Cada aviso es una función que recuerda **el cuarto donde nació**; lo que cambia es cuántos cuartos hay:
 

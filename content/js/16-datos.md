@@ -2,9 +2,11 @@
 
 ## El encargo
 
+> **La vez pasada:** Chasqui aprendió a avisar con errores claros y a probar su código. Ahora hay que probarlo contra cientos de rondas reales de otro robot.
+
 Arequipa, coliseo del colegio Independencia, a dos días de la final del Torneo Escolar de Robótica del Sur. El juego es "captura el banderín": cada ronda, los robots salen de la misma esquina y el primero que levanta un banderín gana el punto. La profesora Yolanda Quispe llegó a Loop con una USB y cara de pocos amigos: "Nuestro rival es Rocoto, el robot del colegio de Cayma. Nos ganó dos veces. Aquí están sus videos de todo el año, pasados a texto".
 
-Son cientos de rondas, cada una una fila de movimientos: `"EEESSSEEN"`. Rocoto no improvisa: tiene costumbres. Pero nadie las ve leyendo cientos de filas. Hoy Chasqui aprende a **contar, agrupar y resumir un historial** con `Map` y `Set`, para adivinar qué hará Rocoto antes de que lo haga.
+Son cientos de rondas, cada una una fila de movimientos: `"EEESSSEEN"`. Rocoto tiene costumbres, pero nadie las ve leyendo cientos de filas. Hoy Chasqui aprende a **contar, agrupar y resumir un historial** con `Map` y `Set`, para adivinar qué hará Rocoto antes de que lo haga.
 
 ```escena
 theme: museo
@@ -59,13 +61,25 @@ notes:
   7: "E salió 4 veces."
 ```
 
-Con ese patrón y dos más tienes casi todo lo que pide un historial:
+### Valores distintos
 
-- **Distintos**: `new Set(lista)` quita repetidos; `.size` dice cuántos quedan y `[...conjunto]` los vuelve array.
-- **Contar**: `conteo.set(k, (conteo.get(k) ?? 0) + 1)`. Al final, recorre `for (const [clave, veces] of conteo)` para encontrar la más frecuente. Un `Map` recuerda el orden en que entraron las claves, así que "la primera en aparecer" sale gratis en los empates.
-- **Agrupar**: un `Map` de listas. Crea la lista la primera vez y luego agrega: `if (!grupos.has(k)) grupos.set(k, []); grupos.get(k).push(x);`. Hoy también existe `Map.groupBy(lista, (x) => clave)`, que hace lo mismo en una línea.
-- **Ventanas**: las últimas `k` jugadas son `historial.slice(-k)`. Para recorrer todas las ventanas de `k` seguidas, no vuelvas a sumar todo: **suma la que entra y resta la que sale**.
-- **Claves compuestas**: para contar "qué hizo en la casilla (2, 3)" o "qué vino después de 3, 1", junta las partes en un texto: `` `${x},${y}` ``, `ventana.join(",")`.
+`new Set(lista)` quita repetidos; `.size` dice cuántos quedan y `[...conjunto]` los vuelve array.
+
+### Contar y hallar el más frecuente
+
+`conteo.set(k, (conteo.get(k) ?? 0) + 1)`. Al final, recorre `for (const [clave, veces] of conteo)` para encontrar la más frecuente. Un `Map` recuerda el orden en que entraron las claves, así que "la primera en aparecer" sale gratis en los empates.
+
+### Agrupar
+
+un `Map` de listas. Crea la lista la primera vez y luego agrega: `if (!grupos.has(k)) grupos.set(k, []); grupos.get(k).push(x);`. Hoy también existe `Map.groupBy(lista, (x) => clave)`, que hace lo mismo en una línea.
+
+### Ventanas
+
+las últimas `k` jugadas son `historial.slice(-k)`. Para recorrer todas las ventanas de `k` seguidas, no vuelvas a sumar todo: **suma la que entra y resta la que sale**.
+
+### Claves compuestas
+
+para contar "qué hizo en la casilla (2, 3)" o "qué vino después de 3, 1", junta las partes en un texto: `` `${x},${y}` ``, `ventana.join(",")`.
 
 > **Trampa común:** un array como clave no funciona. `vistas.add([2, 3])` y luego `vistas.has([2, 3])` da `false`, porque son **dos arrays distintos** que solo se parecen. Los `Map` y `Set` comparan los objetos por identidad, no por contenido. Usa una clave de texto: `"2,3"`.
 
@@ -399,7 +413,10 @@ solution: |
   const espias = { Tacna: ["Fiorella", 4], Moquegua: ["Brayan", 3], Puno: ["Ximena", 5], Cusco: ["Edwin", 4], Ica: ["Milagros", 2] };
   for (const [torneo, puertas] of porTorneo) {
     const [espia, reporto] = espias[torneo];
-    const nota = reporto === puertas.size ? "bien" : `mal: ${espia} reportó ${reporto}`;
+    let nota = "bien";
+    if (reporto !== puertas.size) {
+      nota = `mal: ${espia} reportó ${reporto}`;
+    }
     console.log(`${torneo} (${nota}): ${puertas.size}`);
   }
 answer: Edwin

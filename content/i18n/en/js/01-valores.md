@@ -206,11 +206,27 @@ steps:
 
 What existed wasn't enough: HTML can't decide anything, applets were heavy and aimed at professional programmers, and server programs meant a round trip for every little thing.
 
-**Netscape**, the company behind the most used browser of the time, wanted a small language that lived *inside* the page, for designers and hobbyists: check a form, work out a total, react to a click without asking the server. In May 1995 the job went to **Brendan Eich**, who wrote the first prototype in about **ten days**. Management's condition: it had to *look like* Java, the fashionable language. That's why it has braces and semicolons; on the inside, though, Eich borrowed ideas from **Scheme** (functions you pass around like any other value) and **Self** (objects that inherit from other objects).
+**Netscape**, the company behind the most used browser of the time, wanted a small language that lived *inside* the page, for designers and hobbyists: check a form, work out a total, react to a click without asking the server.
+
+<!-- /photo -->
+
+### How long does a language take to be born?
+
+<!-- photo: js-brendan-eich -->
+
+In May 1995 Netscape gave the job to **Brendan Eich**. Before reading on, bet: months? A year?
+
+It took about **ten days**: that was how long Eich needed to write the first prototype. Management's condition was that it had to *look like* Java, the fashionable language.
+
+### Why does it look like Java without being Java?
+
+On the outside it complied: it has braces and semicolons. On the inside, Eich borrowed ideas from **Scheme** (functions you pass around like any other value) and **Self** (objects that inherit from other objects).
+
+### And why is it called JavaScript?
 
 It was called **Mocha**, then **LiveScript** and, in December 1995, **JavaScript**, thanks to a marketing deal with Sun, the owner of Java. Java and JavaScript are about as related as *car* and *carpet*: they share letters, not a recipe.
 
-<!-- /photo -->
+> **Takeaway:** JavaScript was born in 1995, in about ten days, so that a page could react without going to the server. It looks like Java on the outside and thinks like Scheme and Self on the inside.
 
 ```figure
 title: JavaScript over time
@@ -267,13 +283,27 @@ notes:
   5: The template literal drops the values into the text.
 ```
 
-Three ideas, and that's enough for today:
+Three ideas, and that's enough for today.
 
-- **`const` by default.** Declare with `const` everything that won't change. If the value changes, like the battery, use `let`. If you try to change a `const`, JavaScript stops you with an error (`TypeError: Assignment to constant variable.`), and that's good: it protects you from changes you didn't mean.
-- **Template literals.** Inside backticks (`` ` ``) you can drop in any value with `${…}`. That's how you build text without fighting over spaces.
-- **`console.log` takes several things** separated by commas and prints them separated by a space.
+### `const` by default
+
+Declare with `const` everything that won't change. If the value changes, like the battery, use `let`. If you try to change a `const`, JavaScript stops you with an error (`TypeError: Assignment to constant variable.`), and that's good: it protects you from changes you didn't mean.
+
+### Template literals
+
+Inside backticks (`` ` ``) you can drop in any value with `${…}`, as in the example above. That's how you build text without fighting over spaces.
+
+### Several things in one `console.log`
+
+`console.log` takes several things separated by commas and prints them separated by a space.
 
 > **Common trap:** `+` adds numbers but *glues* strings. `"3" + 2` is `"32"`, not `5`. If a number reaches you as text (from a form, from a sensor), convert it first with `Number("3")`.
+
+<!-- photo: js-ariane-501 -->
+
+**Story:** on 4 June 1996 the first Ariane 5 rocket lifted off from French Guiana and, 37 seconds later, veered off its path until it destroyed itself. Its navigation program came from the Ariane 4 and tried to store a number bigger than a 16-bit integer can hold: the system failed and shut down. More than 370 million dollars were lost over a value that did not fit its type. That is why, in JavaScript, it pays to always know what type of value you are holding.
+
+<!-- /photo -->
 
 <!-- legacy: let-const -->
 
@@ -288,6 +318,8 @@ For the curious: how it grew, what it compares with and where it's used. If a wo
 ### From toy to everything
 
 During the **browser wars**, Microsoft made its own copy, **JScript**, for Internet Explorer (1996). Two versions that behaved differently were a nightmare, so Netscape took the language to Ecma International to standardise it: the standard is called **ECMAScript** (ECMA-262, first edition in 1997) and a committee, **TC39**, looks after it; browser makers and other companies sit on it today.
+
+### From little effects to servers
 
 For years JavaScript was "the language for little effects". That changed in 2004–2005, when **Gmail** and **Google Maps** showed pages that ask the server for data without reloading; Jesse James Garrett gave the technique a name: **Ajax**. In 2008 Chrome's **V8** engine made it much faster, and in 2009 Ryan Dahl used it to build **Node.js**: JavaScript outside the browser, on servers. In 2015, **ES2015** brought `let`, `const`, arrow functions, classes and modules, which is what you learn here.
 

@@ -2,6 +2,8 @@
 
 ## The job
 
+> **Last time:** with `while` and `for`, Chasqui repeats a job without knowing how many times. Now the problem is different: the same six-step routine, written out forty times.
+
 Saturday, one in the afternoon, La Chalupa cevichería in Chorrillos. The queue reaches the beach, Señora Delia slices fish like a machine and the waiter went off to watch the match. Delia called Loop: "Send me that robot of yours, but don't let it lose me any plates."
 
 We gave Chasqui an arm with a tray. The trouble is that serving one dish takes six instructions, and a Saturday is forty dishes. Writing 240 lines isn't programming: it's copying. Today Chasqui learns to **give a routine a name** and use it as many times as needed.
@@ -27,19 +29,27 @@ program: |
 
 ## The minimum
 
-A function is a block of code with a name. It receives data through its **parameters** and hands back a result with **`return`**.
+A function is a block of code with a name: you write a routine once and use it as many times as you need.
+
+### Parameters and `return`
+
+The function receives data through its **parameters** (the names in parentheses; what you pass when you call it is called an *argument*) and hands back a result with **`return`**. `return` also ends the function.
 
 ```js run
-function subtotal(price, quantity = 1) {
+function subtotal(price, quantity) {
   return price * quantity;
 }
 
-const withTax = (amount) => amount * 1.18;
-
 console.log(subtotal(35, 2));
-console.log(subtotal(8));
-console.log(withTax(100).toFixed(2));
 ```
+
+What `console.log` prints shows up in the console, but it doesn't go back to the program: to use a result, return it.
+
+<!-- photo: js-mars-climate-orbiter -->
+
+**Story:** on 23 September 1999 NASA's Mars Climate Orbiter was lost: it reached Mars on a path that was too low and was destroyed in the atmosphere. One program calculated the thrusters' impulse in pound-force seconds, and the other expected to receive it in newton-seconds. Nobody made clear which unit one piece handed to the other. That is why, when you write a function, it pays to make clear what it receives and what it returns.
+
+<!-- /photo -->
 
 Watch what happens when one function calls another: each call opens a box with its inputs, and when it reaches `return` the box closes and hands back its result.
 
@@ -73,11 +83,38 @@ notes:
   6: "bill returns 75 to whoever called it."
 ```
 
-- **`function name(params) { … }`** declares a named function. It's the natural form for the pieces of your program.
-- **Arrow functions**: `(amount) => amount * 1.18`. If the body is a single expression, it's returned on its own, no `return`. Ideal for short functions.
-- **Default parameters**: `quantity = 1` is used when that argument isn't passed.
-- **Destructuring**: `function serveOrder({ table, dish })` pulls those properties out of the object you're given. And `...` spreads an array (`Math.max(...prices)`) or gathers arguments (`function sum(...nums)`).
-- **`return` ends the function.** What `console.log` prints shows up in the console, but it doesn't go back to the program: to use a result, return it.
+`function name(params) { … }` is the natural way to declare the pieces of your program. Two more ideas, short and very common.
+
+### Arrow functions
+
+For a short function, `(amount) => amount * 1.18`. If the body is a single expression, it's returned on its own, no `return`.
+
+```js run
+const withTax = (amount) => amount * 1.18;
+
+console.log(withTax(100).toFixed(2));
+```
+
+`.toFixed(2)` shows the number with two decimals.
+
+### Default parameters
+
+`quantity = 1` is used when that argument isn't passed; without it, `quantity` would arrive as `undefined`.
+
+```js run
+function subtotal(price, quantity = 1) {
+  return price * quantity;
+}
+
+console.log(subtotal(35, 2));
+console.log(subtotal(8));
+```
+
+### Preview: destructuring and `...`
+
+Two shortcuts you'll see in real code, which sessions 5 and 6 explain with arrays and objects; you don't need them in this session. `function serveOrder({ table, dish })` pulls those fields out of the object you're given. And `...` spreads an array (`Math.max(...prices)`) or gathers arguments (`function sum(...nums)`).
+
+### Preview: modules
 
 As a program grows, its functions get split across files (**modules**). One exports, another imports:
 
@@ -175,8 +212,8 @@ prompt: |
 starter: |
   function orderTotal(dishes) {
     let total = 0;
-    for (const { price } of dishes) {
-      total += price;
+    for (const dish of dishes) {
+      total += dish.price;
     }
     console.log(total);
   }
@@ -189,8 +226,8 @@ starter: |
 solution: |
   function orderTotal(dishes) {
     let total = 0;
-    for (const { price } of dishes) {
-      total += price;
+    for (const dish of dishes) {
+      total += dish.price;
     }
     return total;
   }
@@ -215,11 +252,11 @@ id: js4-escribe-ticket
 type: write
 title: The receipt line
 prompt: |
-  Write the function `receiptLine(item, quantity)`, which returns the receipt line as a string. `item` is an object like `{ dish: "ceviche", price: 35 }`; `quantity` is **1 if it isn't passed**. Return a string like this:
+  Write the function `receiptLine(item, quantity)`, which returns the receipt line as a string. `item` is a card like `{ dish: "ceviche", price: 35 }` (`item.dish` and `item.price` read its fields); `quantity` is **1 if it isn't passed**. Return a string like this:
 
   `receiptLine({ dish: "ceviche", price: 35 }, 2)` → `"2 x ceviche: S/ 70"`
 
-  Destructure `item` in the parameters.
+  Give `quantity` its default value in the signature.
 visual:
   figure:
     input: { label: "receiptLine(item, 2)", cards: [{ title: item, rows: [["dish", "\"ceviche\""], ["price", "35"]] }] }
@@ -231,13 +268,13 @@ starter: |
 
   console.log(receiptLine({ dish: "ceviche", price: 35 }, 2));
 solution: |
-  function receiptLine({ dish, price }, quantity = 1) {
-    return `${quantity} x ${dish}: S/ ${price * quantity}`;
+  function receiptLine(item, quantity = 1) {
+    return `${quantity} x ${item.dish}: S/ ${item.price * quantity}`;
   }
 
   console.log(receiptLine({ dish: "ceviche", price: 35 }, 2));
 hints:
-  - "The signature can be `function receiptLine({ dish, price }, quantity = 1)`."
+  - "The signature can be `function receiptLine(item, quantity = 1)`; inside, use `item.dish` and `item.price`."
 tests:
   - name: two ceviches
     run: 'receiptLine({ dish: "ceviche", price: 35 }, 2)'
@@ -245,9 +282,9 @@ tests:
   - name: one chicha, without passing the quantity
     run: 'receiptLine({ dish: "chicha", price: 8 })'
     equals: "1 x chicha: S/ 8"
-  - name: destructures in the parameters
-    source: 'function\s+receiptLine\s*\(\s*\{'
-    msg: Write { dish, price } directly in the parameters.
+  - name: quantity has a default value
+    source: 'quantity\s*=\s*1'
+    msg: Write quantity = 1 in the function's parameters.
 ```
 
 ## The case
@@ -258,6 +295,8 @@ type: case
 title: The table that didn't pay in full
 prompt: |
   Write `tableTotal(table)`, which adds up what a table ate, and print one line per table to compare it with what it paid.
+
+  The data is already in the code: `menu` is an object that links each dish to its price (`menu["ceviche"]` gives `35`), and `orders` is an array of cards like `{ table: 3, dish: "ceviche" }` (`order.table` reads a field).
 
   At closing time La Chalupa's till doesn't add up: money is missing. Delia has the menu, the list of what each table ordered (in the order it left the kitchen) and what each one paid. One table left a tip, so paying *more* isn't suspicious. Which table paid **less** than it ate?
 
@@ -361,7 +400,7 @@ title: Each table's bill
 prompt: |
   Write `tableBill(orders, tip)`, which returns how much a table pays, and its two helpers `priceOf` and `subtotal`.
 
-  Delia wants Chasqui to take payments. The menu: ceviche 35, chicharron 32, causa 22, chicha 8. An order is a pair `[dish, quantity]`, for example `["ceviche", 2]`.
+  Delia wants Chasqui to take payments. The menu: ceviche 35, chicharron 32, causa 22, chicha 8. An order is a pair `[dish, quantity]`, for example `["ceviche", 2]`: `order[0]` is the dish and `order[1]` the quantity.
 
   Write three functions, and the judge will test all three:
 
@@ -395,8 +434,8 @@ solution: |
     return MENU[dish] ?? 0;
   }
 
-  function subtotal([dish, quantity]) {
-    return priceOf(dish) * quantity;
+  function subtotal(order) {
+    return priceOf(order[0]) * order[1];
   }
 
   function tableBill(orders, tip = 0) {
@@ -407,7 +446,7 @@ solution: |
     return sum + Math.round((sum * tip) / 100);
   }
 hints:
-  - "Destructure the order in the parameters: `function subtotal([dish, quantity])`."
+  - "Keep the menu in an object, `const MENU = { ceviche: 35, … }`: `MENU[dish]` gives the price, or `undefined` if the dish isn't there (and `??` turns it into 0)."
   - "`tableBill` doesn't need to know prices: let it use `subtotal`, and `subtotal` use `priceOf`."
 samples:
   - args: [[["ceviche", 2], ["chicha", 3]], 10]
@@ -485,7 +524,7 @@ prompt: |
   - `robot.cook(dish)` in the kitchen puts the dish on the tray (only one fits)
   - `robot.serve()` leaves the dish on the table below
 
-  `serveOrder` cooks the dish, carries it, serves it and **comes back to the kitchen facing east**. The `orders` list changes on every test.
+  `serveOrder` cooks the dish, carries it, serves it and **comes back to the kitchen facing east**. The `orders` list changes on every test; each order is a card like `{ table: 3, dish: "ceviche" }`, and `order.table` and `order.dish` read its fields.
 visual:
   figure:
     title: How many steps to each table
@@ -496,23 +535,23 @@ starter: |
   // orders comes from the till, for example:
   // [{ table: 3, dish: "ceviche" }, { table: 1, dish: "chicharrón" }]
 
-  const turnAround = () => {
+  function turnAround() {
     robot.turnRight();
     robot.turnRight();
-  };
+  }
 
   function serveOrder(order) {
     // cook, go, serve, come back
   }
 solution: |
-  const turnAround = () => {
+  function turnAround() {
     robot.turnRight();
     robot.turnRight();
-  };
+  }
 
-  function serveOrder({ table, dish }) {
-    const steps = 2 * table - 1;
-    robot.cook(dish);
+  function serveOrder(order) {
+    const steps = 2 * order.table - 1;
+    robot.cook(order.dish);
     robot.forward(steps);
     robot.serve();
     turnAround();
@@ -524,7 +563,7 @@ solution: |
     serveOrder(order);
   }
 hints:
-  - "Inside `serveOrder`, work out the steps once: `const steps = 2 * table - 1;`"
+  - "Inside `serveOrder`, work out the steps once: `const steps = 2 * order.table - 1;`"
   - "Outside the function, a `for...of` over `orders` that calls `serveOrder`."
 world:
   theme: cocina
@@ -574,7 +613,7 @@ id: js4-reto-agrupar
 type: challenge
 title: The summary for the kitchen
 prompt: |
-  Delia wants to know how many dishes of each kind went out. Write `countDishes(orders)` that returns an object `{ dish: count }`, without modifying the array it receives. Bonus points if you do it with `reduce`.
+  Delia wants to know how many dishes of each kind went out. Write `countDishes(orders)` that returns an object `{ dish: count }`, without modifying the array it receives. To add one to a field whose name varies: `count[order.dish] = (count[order.dish] ?? 0) + 1`.
 starter: |
   function countDishes(orders) {
     return {};
@@ -582,12 +621,17 @@ starter: |
 
   console.log(countDishes([{ table: 1, dish: "ceviche" }, { table: 2, dish: "ceviche" }]));
 solution: |
-  const countDishes = (orders) =>
-    orders.reduce((count, { dish }) => ({ ...count, [dish]: (count[dish] ?? 0) + 1 }), {});
+  function countDishes(orders) {
+    const count = {};
+    for (const order of orders) {
+      count[order.dish] = (count[order.dish] ?? 0) + 1;
+    }
+    return count;
+  }
 
   console.log(countDishes([{ table: 1, dish: "ceviche" }, { table: 2, dish: "ceviche" }]));
 hints:
-  - "`count[dish] ?? 0` gives 0 the first time a dish shows up."
+  - "`count[order.dish] ?? 0` gives 0 the first time a dish shows up."
 tests:
   - name: two ceviches and one chicha
     run: 'countDishes([{ table: 1, dish: "ceviche" }, { table: 2, dish: "chicha" }, { table: 3, dish: "ceviche" }])'

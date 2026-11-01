@@ -2,6 +2,8 @@
 
 ## El encargo
 
+> **La vez pasada:** con `Map` y `Set` Chasqui contó y agrupó cientos de rondas sin esfuerzo. Con 30 000 boletos, la pregunta ya no es si responde bien, sino cuánto tarda.
+
 Terminal de buses de Yerbateros, 27 de julio, seis de la mañana. Media Lima quiere salir a provincias por Fiestas Patrias y la cola de Turismo Chaskiñan ya da la vuelta a la manzana. La señora Maruja, jefa de embarque, alquiló a Chasqui para la puerta de los andenes: lee el boleto de cada pasajero, dice si vale y lo manda a su andén.
 
 El primer pasajero pasó bien. El décimo, también. Con el pasajero doscientos, Chasqui ya tardaba dos segundos en contestar, y alguien atrás empezó a cantar "¡que se vaya el robot!". El programa no estaba mal: daba la respuesta correcta. Era **lento**. Hoy Chasqui aprende a decidir **en menos de 50 milisegundos**, aunque el día tenga 30 000 boletos vendidos.
@@ -27,12 +29,22 @@ program: |
 Un programa correcto puede ser inútil si tarda demasiado. Lo que importa no es cuánto tarda con 10 datos, sino **cómo crece** su trabajo cuando los datos crecen. Cuenta operaciones:
 
 ```js run
+// Array.from arma la lista [0, 1, 2, … 999]: mil boletos con código distinto
 const cola = Array.from({ length: 1000 }, (_, i) => i);
+
 let conDosBucles = 0;
-for (let i = 0; i < cola.length; i++) for (let j = 0; j < i; j++) conDosBucles++;
+for (let i = 0; i < cola.length; i++) {
+  for (let j = 0; j < i; j++) {
+    conDosBucles++;
+  }
+}
+
 let conSet = 0;
 const vistos = new Set();
-for (const codigo of cola) { conSet++; vistos.add(codigo); }
+for (const codigo of cola) {
+  conSet++;
+  vistos.add(codigo);
+}
 console.log(conDosBucles, conSet);
 ```
 
@@ -71,17 +83,33 @@ panes:
 caption: Pasos de trabajo, y el tiempo a unos 100 millones de pasos por segundo. Con el doble de datos, un bucle hace el doble de trabajo; un bucle doble, **el cuádruple**. A 4,5 s por turno, la cola se amotina.
 ```
 
-- **Un bucle sobre n datos** crece igual que n. Un bucle dentro de otro crece como **n × n**: duplicar los datos cuadruplica el tiempo.
-- **Bucles escondidos**: `includes`, `indexOf`, `find`, `filter`, `some`, `slice`, `[...lista]` y `new Set(lista)` recorren la lista. Dentro de un bucle, son un bucle dentro de otro.
-- **`Set.has` y `Map.get`** encuentran una clave casi sin importar cuántas haya. Arma el `Set` o el `Map` **una vez**, fuera del bucle, y pregúntale todas las veces que quieras.
-- **Salir temprano**: si ya tienes la respuesta, `return` o `break`. `some` y `find` paran solos en el primero que cumple.
-- **Medir**: `performance.now()` da los milisegundos actuales, con decimales. Resta dos lecturas para saber cuánto tardó algo:
+### Cuánto crece el trabajo
+
+Un bucle sobre n datos crece igual que n. Un bucle dentro de otro crece como **n × n**: duplicar los datos cuadruplica el tiempo.
+
+### Bucles escondidos
+
+`includes`, `indexOf`, `find`, `filter`, `some`, `slice`, `[...lista]` y `new Set(lista)` recorren la lista. Dentro de un bucle, son un bucle dentro de otro.
+
+### La alternativa: `Set.has` y `Map.get`
+
+Encuentran una clave casi sin importar cuántas haya. Arma el `Set` o el `Map` **una vez**, fuera del bucle, y pregúntale todas las veces que quieras.
+
+### Salir temprano
+
+Si ya tienes la respuesta, `return` (sale de la función) o `break` (corta solo el bucle). `some` y `find` paran solos en el primero que cumple.
+
+### Medir
+
+`performance.now()` da los milisegundos actuales, con decimales. Resta dos lecturas para saber cuánto tardó algo:
 
 ```js
 const inicio = performance.now();
 const anden = andenDe(240003);
 const tardo = performance.now() - inicio;
-if (tardo > 50) console.log(`¡Muy lento! ${tardo.toFixed(1)} ms`);
+if (tardo > 50) {
+  console.log(`¡Muy lento! ${tardo.toFixed(1)} ms`);
+}
 ```
 
 Mide antes de optimizar: muchas veces lo lento no es donde crees. Y no persigas microsegundos: cambiar un bucle doble por un `Set` gana mucho más que cualquier truco.
@@ -344,7 +372,7 @@ prompt: |
 
   Cuatro proveedores le ofrecieron a la señora Maruja una rutina para detectar boletos clonados. Los cuatro juran lo mismo: "con el doble de pasajeros, mi rutina hace el doble de trabajo". Con 30 000 pasajeros, la que mienta va a parar la cola. Loop ya les puso un contador `ops` a las cuatro. ¿Qué proveedor mintió?
 
-  Imprime una línea por rutina con el factor redondeado al final: `Saeta: factor 2`. El tablero lo compara con lo que prometió.
+  Las cuatro rutinas ya están escritas en el código y no necesitas entenderlas por dentro: tú las mides. Imprime una línea por rutina con el factor redondeado al final: `Saeta: factor 2`. El tablero lo compara con lo que prometió.
 visual:
   board:
     for: js17-caso-rutinas
@@ -664,6 +692,7 @@ starter: |
     return boletos.find((b) => b.codigo === codigo).anden;
   }
 
+  // Ya viene hecha: lleva a Chasqui hasta la columna x del pasillo.
   function caminarHasta(x) {
     const pasos = x - robot.posicion.x;
     robot.seguirRuta(Array(Math.abs(pasos)).fill(pasos > 0 ? "E" : "O"));

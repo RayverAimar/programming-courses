@@ -2,9 +2,11 @@
 
 ## The job
 
-Gamarra, in La Victoria, a week before the Christmas rush. At stall 214 of the Los Telares arcade, Señora Nélida Paucar sells t-shirts by the bale to wholesalers who come down from Huancayo and Huánuco. Her stock lives in her head and in a notebook with coffee stains. Yesterday she sold the same bale of jackets twice and had to refund the money with a very forced smile.
+> **Last time:** functions gave Chasqui named routines, but each one takes loose values. A whole stock doesn't fit in one variable per bale.
 
-Nélida doesn't need a robot to carry things: she has her nephew Brayan. She needs one that **keeps count**. And the stock isn't one number or two: it's a row of bales that grows when goods arrive and shrinks with every sale. One variable per bale won't do. Today Chasqui learns to keep **a whole list** in a single variable.
+Gamarra, in La Victoria, a week before the Christmas rush. At stall 214 of the Los Telares arcade, Señora Nélida Paucar sells t-shirts by the bale to wholesalers from Huancayo and Huánuco. Her stock lives in her head and in a notebook with coffee stains. Yesterday she sold the same bale of jackets twice and had to refund the money with a very forced smile.
+
+Nélida doesn't need a robot to carry things: she has her nephew Brayan. She needs one that **keeps count**. The stock isn't one number or two: it's a row of bales that grows when goods arrive and shrinks with every sale. Today Chasqui learns to keep **a whole list** in a single variable.
 
 ```scene
 theme: barranco
@@ -28,18 +30,20 @@ program: |
 
 ## The minimum
 
-An **array** is an ordered list of values in a single variable. Each value has a position, its **index**, which starts at **0**.
+An **array** is an ordered list of values in a single variable. Each value has a position, its **index**, which starts at **0**. You saw it in passing in session 3; today you see it in full, one tool at a time.
+
+### Create and read
+
+`const list = [a, b, c]` creates the array; `list[0]` is the first and `list[list.length - 1]` the last. An index that doesn't exist gives `undefined`, not an error.
 
 ```js run
 const bales = ["t-shirt", "jeans", "jacket"];
 console.log(bales[0], bales.length);
-bales.push("sweater");
-console.log(bales.includes("jeans"), bales.indexOf("cap"));
-const [first, ...rest] = bales;
-console.log(first, rest);
 ```
 
-At the stall, bales get stacked: the last one to arrive ends up on top and is the first one sold. That's exactly what `push` and `pop` do with the end of the array. (In the picture below the array is a row; imagine its end as the top of the pile.)
+### Add and remove: `push` and `pop`
+
+`push(x)` adds at the end; `pop()` removes the last one and returns it (on an empty array it returns `undefined`). At the stall, bales get stacked: the last one to arrive ends up on top and is the first one sold. That's exactly what `push` and `pop` do with the end of the array. (In the picture below the array is a row; imagine its end as the top of the pile.)
 
 ```anim
 title: push adds at the end, pop takes from the end
@@ -58,14 +62,34 @@ notes:
   5: "length counts how many are left: 3."
 ```
 
-- **Create and read**: `const list = [a, b, c]`, `list[0]` is the first, `list[list.length - 1]` the last. An index that doesn't exist gives `undefined`, not an error.
-- **`push(x)`** adds at the end; **`pop()`** removes the last one and returns it (on an empty array it returns `undefined`).
-- **Search**: `list.includes(x)` says `true` or `false`; `list.indexOf(x)` gives the position, or **`-1`** if it isn't there.
-- **Walk through**: `for (const bale of bales)` visits each value, in order (you saw it in session 3).
-- **Destructure**: `const [a, b] = list` takes the first positions; `const [first, ...rest] = list` splits the first from the rest.
-- **Copy**: `const copy = [...list]` makes a new array with the same values.
+### Search: `includes` and `indexOf`
 
-That last point matters more than it seems. An array isn't copied with `=`: `=` gives **the same array another name**.
+To find out whether an item is in the list: `list.includes(x)` says `true` or `false`; `list.indexOf(x)` gives the position, or **`-1`** if it isn't there.
+
+```js run
+const bales = ["t-shirt", "jeans", "jacket"];
+console.log(bales.includes("jeans"), bales.indexOf("cap"));
+```
+
+### Walk through
+
+`for (const bale of bales)` visits each value, in order (you saw it in session 3).
+
+### Taking pieces out and copying with `...`
+
+Two shortcuts with the same symbol. `const [first, ...rest] = list` splits the first from the rest (`const [a, b] = list` takes the first two positions). And `const copy = [...list]` makes a new array with the same values.
+
+```js run
+const bales = ["t-shirt", "jeans", "jacket", "sweater"];
+const [first, ...rest] = bales;
+console.log(first, rest);
+const copy = [...bales];
+console.log(copy);
+```
+
+### Two names, one array
+
+Copying matters more than it seems. An array isn't copied with `=`: `=` gives **the same array another name**.
 
 ```anim
 title: Two names, one array

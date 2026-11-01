@@ -2,9 +2,11 @@
 
 ## The job
 
-Arequipa, the Independencia school's sports hall, two days before the final of the Southern Schools Robotics Tournament. The game is "capture the pennant": every round, the robots leave from the same corner and the first to pick up a pennant wins the point. Ms Yolanda Quispe walked into Loop with a USB stick and a stern face: "Our rival is Rocoto, the robot from the Cayma school. It beat us twice. Here are its videos from the whole year, turned into text."
+> **Last time:** Chasqui learned to report clear errors and to test its code. Now it has to be tested against hundreds of real rounds from another robot.
 
-It's hundreds of rounds, each one a row of moves: `"EEESSSEEN"`. Rocoto doesn't improvise: it has habits. But nobody spots them by reading hundreds of rows. Today Chasqui learns to **count, group and summarise a history** with `Map` and `Set`, to guess what Rocoto will do before it does it.
+Arequipa, the Independencia school's sports hall, two days before the final of the Southern Schools Robotics Tournament. The game is "capture the pennant": the first robot to pick up a pennant wins the point. Ms Yolanda Quispe walked into Loop with a USB stick and a stern face: "Our rival is Rocoto, the robot from the Cayma school. It beat us twice. Here are its videos from the whole year, turned into text."
+
+It's hundreds of rounds, each one a row of moves: `"EEESSSEEN"`. Rocoto has habits, but nobody spots them by reading hundreds of rows. Today Chasqui learns to **count, group and summarise a history** with `Map` and `Set`, to guess what Rocoto will do before it does it.
 
 ```scene
 theme: museo
@@ -59,13 +61,25 @@ notes:
   7: "E came up 4 times."
 ```
 
-With that pattern and two more you have almost everything a history asks for:
+### Distinct values
 
-- **Distinct**: `new Set(list)` drops repeats; `.size` says how many are left and `[...set]` turns them back into an array.
-- **Count**: `count.set(k, (count.get(k) ?? 0) + 1)`. At the end, loop `for (const [key, times] of count)` to find the most frequent. A `Map` remembers the order its keys arrived in, so "the first one to appear" comes for free in ties.
-- **Group**: a `Map` of lists. Create the list the first time, then add: `if (!groups.has(k)) groups.set(k, []); groups.get(k).push(x);`. Today there's also `Map.groupBy(list, (x) => key)`, which does the same in one line.
-- **Windows**: the last `k` moves are `history.slice(-k)`. To go through every window of `k` in a row, don't add everything up again: **add the one coming in and subtract the one going out**.
-- **Compound keys**: to count "what it did on tile (2, 3)" or "what came after 3, 1", join the parts into a string: `` `${x},${y}` ``, `window.join(",")`.
+`new Set(list)` drops repeats; `.size` says how many are left and `[...set]` turns them back into an array.
+
+### Counting and finding the most frequent
+
+`count.set(k, (count.get(k) ?? 0) + 1)`. At the end, loop `for (const [key, times] of count)` to find the most frequent. A `Map` remembers the order its keys arrived in, so "the first one to appear" comes for free in ties.
+
+### Grouping
+
+a `Map` of lists. Create the list the first time, then add: `if (!groups.has(k)) groups.set(k, []); groups.get(k).push(x);`. Today there's also `Map.groupBy(list, (x) => key)`, which does the same in one line.
+
+### Windows
+
+the last `k` moves are `history.slice(-k)`. To go through every window of `k` in a row, don't add everything up again: **add the one coming in and subtract the one going out**.
+
+### Compound keys
+
+to count "what it did on tile (2, 3)" or "what came after 3, 1", join the parts into a string: `` `${x},${y}` ``, `window.join(",")`.
 
 > **Common trap:** an array as a key doesn't work. `seen.add([2, 3])` and then `seen.has([2, 3])` gives `false`, because they are **two different arrays** that only look alike. `Map` and `Set` compare objects by identity, not by content. Use a string key: `"2,3"`.
 
@@ -399,7 +413,10 @@ solution: |
   const spies = { Tacna: ["Fiorella", 4], Moquegua: ["Brayan", 3], Puno: ["Ximena", 5], Cusco: ["Edwin", 4], Ica: ["Milagros", 2] };
   for (const [tournament, gates] of byTournament) {
     const [spy, reported] = spies[tournament];
-    const note = reported === gates.size ? "right" : `wrong: ${spy} reported ${reported}`;
+    let note = "right";
+    if (reported !== gates.size) {
+      note = `wrong: ${spy} reported ${reported}`;
+    }
     console.log(`${tournament} (${note}): ${gates.size}`);
   }
 answer: Edwin

@@ -2,6 +2,8 @@
 
 ## The job
 
+> **Last time:** Chasqui learned to keep values in variables and show them with `console.log`. Keeping is not deciding: at night, every room needs a different answer.
+
 The Sarmiento House Museum, in Pueblo Libre, keeps Paracas mantles and a night watchman who falls asleep at eleven. The director hired Loop so Chasqui can do the night round. We put a siren on its head and a sensor that reads each room: whether the door was left open and whether something is moving inside.
 
 The problem: every night is different. A robot that always does the same thing closes doors that were already shut and sounds the alarm on the watchman's cat. Chasqui has to **decide**.
@@ -60,14 +62,33 @@ notes:
   6: This block runs and the chain ends; the else isn't even looked at.
 ```
 
-To compare: `===` (equal), `!==` (different), `<`, `>`, `<=`, `>=`. To combine: `&&` (and), `||` (or), `!` (not).
+### Comparing and combining
 
-What's particular to JavaScript:
+For an `if` to decide, it needs a yes-or-no question. To compare: `===` (equal), `!==` (different), `<`, `>`, `<=`, `>=`. To combine questions: `&&` (and), `||` (or), `!` (not).
 
-- **Always use `===`**. The old `==` converts types before comparing, so `"0" == 0` is `true`.
-- **Truthy and falsy.** An `if` accepts any value, not just booleans. The *falsy* ones are `false`, `0`, `""`, `null`, `undefined` and `NaN`; everything else is *truthy*, even the string `"0"`.
-- **`null` and `undefined`.** `undefined` means "never had a value" (a property that doesn't exist, a variable never assigned). `null` means "empty on purpose": someone put it there.
-- **`??` and `?.`** for incomplete data. `a ?? 18` gives `18` only if `a` is `null` or `undefined`. `camera?.motion` doesn't crash if `camera` doesn't exist.
+**Always use `===`.** The old `==` converts types before comparing, so `"0" == 0` is `true`.
+
+### Reading the fields of a reading
+
+Chasqui's sensor doesn't return a single number but a card with named fields, like `{ door: "open", motion: false }`. It's called an *object*; session 6 explains it in depth. For now you only need to read one field with a dot: if `reading` is that card, `reading.door` is `"open"` and `reading.motion` is `false`.
+
+### Truthy and falsy
+
+An `if` accepts any value, not just booleans. The *falsy* ones (they behave like `false`) are these six: `false`, `0`, `""`, `null`, `undefined` and `NaN`. Everything else is *truthy*, even the string `"0"`.
+
+### `null` and `undefined`
+
+`undefined` means "never had a value" (a field that doesn't exist, a variable never assigned). `null` means "empty on purpose": someone put it there.
+
+### `??` and `?.` for incomplete data
+
+`a ?? 18` gives `18` only if `a` is `null` or `undefined`. `camera?.motion` reads the `motion` field of `camera`, but doesn't crash if `camera` doesn't exist: it gives `undefined`.
+
+<!-- photo: js-tony-hoare -->
+
+**Story:** the British computer scientist Tony Hoare invented the null reference in 1965, while designing the ALGOL W language. In 2009 he apologised: he called it his "billion-dollar mistake", because he could not resist adding it simply because it was so easy to implement, and it has since caused countless errors and crashes. That is why `null` is handled with care, and that is what `??` and `?.` are for.
+
+<!-- /photo -->
 
 > **Common trap:** `if (x = 5)` doesn't compare, it *assigns* 5 to `x`, and since 5 is truthy the block always runs. Comparing is `===`.
 
@@ -140,7 +161,7 @@ title: Close it or move on?
 prompt: |
   Fill the gaps so `action` is `"close"` when the door is open, and `"move on"` otherwise.
 
-  `reading` comes from the sensor, for example `{ door: "open", motion: false }`. It's tested with two different readings.
+  `let action;` creates the variable with no value yet; the `if` gives it one. `reading` comes from the sensor, for example `{ door: "open", motion: false }`. It's tested with two different readings.
 visual:
   figure:
     title: What the sensor reads and what to decide
@@ -337,6 +358,8 @@ prompt: |
   **318, 427, 294, 568, 746, 836, 952, 583**
 
   Clues: the code is **even**; the **sum of its three digits is greater than 15**; and the **hundreds digit is smaller than the units digit**.
+
+  To get the digits, the program already has three lines written: `%` gives the **remainder** of a division (`318 % 10` is `8`, the last digit; `candidate % 2` is `0` if it's even) and `Math.floor` rounds down (`Math.floor(318 / 100)` is `3`). You just use `hundreds`, `tens` and `units`.
 
   Write the condition with the three clues and try each candidate by changing `candidate`. (In session 3 you'll do this without changing the number by hand.)
 visual:

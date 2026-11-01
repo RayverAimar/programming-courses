@@ -2,6 +2,8 @@
 
 ## The job
 
+> **Last time:** with `if`, Chasqui can decide, but only once. In the tunnel it has to decide again and again, until the rock says stop.
+
 The Santa Clotilde mine, an hour from Huancayo climbing up toward the puna, found a vein of quartz in an old tunnel. Nobody knows how long the tunnel is: the plans got soaked in 1987. Engineer Ccori wants Chasqui to walk all of it, pick up the crystals and report how many there are, without crashing into the rock at the end.
 
 We gave it a headlamp. What we can't give it is a fixed number of steps, because nobody knows it. Chasqui has to **repeat** until the tunnel runs out.
@@ -28,31 +30,21 @@ program: |
 
 ## The minimum
 
-A loop repeats a block. There are three you'll use all the time:
+A loop repeats a block. There are three you'll use all the time; I'll introduce them one at a time.
+
+### The classic `for`: when you need the counter
+
+To walk the tunnel's veins you need a list. An *array* is a list of values in square brackets: `[3, 0, 5, 2]` holds the crystals of four veins. `veins[0]` is the first one (counting starts at **0**) and `veins.length` is how many there are; session 5 explains them in depth.
 
 ```js run
-const veins = [3, 0, 5, 2];        // an array: a list of values
+const veins = [3, 0, 5, 2];
 
 for (let i = 0; i < veins.length; i++) {
   console.log(`vein ${i}: ${veins[i]} crystals`);
 }
-
-let total = 0;
-for (const vein of veins) {
-  total += vein;
-}
-console.log("total", total);
-
-let lamp = 3;
-while (lamp > 0) {
-  lamp--;
-}
-console.log("lamp", lamp);
 ```
 
-- **The classic `for`** when you need the counter `i`: start at `0`, keep going *while* `i < veins.length`, add one each pass.
-- **`for...of`** when you only need each value, one after another. It's the clearest way to walk an array.
-- **`while`** when you don't know how many passes there will be: it repeats *while* the condition is true. If it never becomes false, the loop never ends (here the Workshop cuts it off after two seconds).
+The classic `for` has three parts: `let i = 0` (the counter starts at `0`), `i < veins.length` (keep going *while* this is true) and `i++` (after each pass, add one; short for `i = i + 1`).
 
 Watch the classic `for` step by step: the counter `i` moves from cell to cell and `total` grows on every pass.
 
@@ -72,9 +64,35 @@ notes:
   6: "i is now 4 and 4 < 4 is false: the loop is over."
 ```
 
-Arrays start counting at **0**: the first element is `veins[0]` and the last is `veins[veins.length - 1]`. `total += vein` is short for `total = total + vein`, and `i++` for `i = i + 1`.
+The last element is `veins[veins.length - 1]`.
 
 > **Common trap:** the *off-by-one*. `i <= veins.length` takes one pass too many and reads `veins[4]`, which doesn't exist: it's `undefined`, and `total + undefined` is `NaN`.
+
+### `for...of`: when you only need each value
+
+If you don't care about the position, `for...of` hands you each value, one after another. It's the clearest way to walk an array. Here `total += vein` is short for `total = total + vein`.
+
+```js run
+const veins = [3, 0, 5, 2];
+
+let total = 0;
+for (const vein of veins) {
+  total += vein;
+}
+console.log("total", total);
+```
+
+### `while`: when you don't know how many passes there will be
+
+`while` repeats *while* the condition is true, and it doesn't need an array. If it never becomes false, the loop never ends (here the Workshop cuts it off after two seconds). `lamp--` subtracts one, as `i++` adds one.
+
+```js run
+let lamp = 3;
+while (lamp > 0) {
+  lamp--;
+}
+console.log("lamp", lamp);
+```
 
 <!-- legacy: for-of -->
 
@@ -109,7 +127,7 @@ id: js3-predice-lampara
 type: predict
 title: The carbide lamp
 prompt: |
-  Each trip uses 3 battery and Chasqui only sets out if it has at least 3 left. What does it print?
+  Each trip uses 3 battery and Chasqui only sets out if it has at least 3 left. (`battery -= 3` is `battery = battery - 3`.) What does it print?
 code: |
   let battery = 10;
   let trips = 0;
@@ -194,7 +212,7 @@ title: All the way down
 prompt: |
   Make Chasqui move forward until it's facing the wall at the end, without crashing.
 
-  The tunnel's length is unknown. `robot.wallAhead()` returns `true` if the tile in front is rock. It's tested in three tunnels.
+  `robot.forward()` with no number moves one tile. The tunnel's length is unknown. `robot.wallAhead()` returns `true` if the tile in front is rock. It's tested in three tunnels.
 starter: |
   robot.forward();
 solution: |
@@ -501,10 +519,7 @@ starter: |
     robot.forward();
   }
 solution: |
-  const boxedIn = () =>
-    robot.wallAhead() && robot.wallAhead("left") && robot.wallAhead("right");
-
-  while (!boxedIn()) {
+  while (!(robot.wallAhead() && robot.wallAhead("left") && robot.wallAhead("right"))) {
     if (!robot.wallAhead()) {
       robot.forward();
     } else if (!robot.wallAhead("left")) {

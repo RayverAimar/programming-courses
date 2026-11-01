@@ -2,6 +2,8 @@
 
 ## El encargo
 
+> **La vez pasada:** un array guarda una fila de cosas y las encuentra por su posición. Pero en Objetos Perdidos `[2]` no dice si ese dato es un color o una puerta: hacen falta nombres.
+
 Aeropuerto Jorge Chávez, Callao, oficina de Objetos Perdidos del hall de llegadas. La señorita Milagros Chumpitaz tiene ahí 1 340 cosas: maletas, charangos, un ataúd de utilería (de una tuna universitaria), una dentadura y 212 cargadores de celular. Todo está en una hoja de cálculo donde alguien ordenó una sola columna y desde entonces el color de cada objeto es el de otro.
 
 Milagros quiere que Chasqui atienda el mostrador de noche. Pero un objeto perdido no es un número ni una lista: tiene **tipo, color, dónde y a qué hora se encontró, y a veces una etiqueta con dueño**. Cada dato con su nombre, y todos juntos. Hoy Chasqui aprende a guardar **cosas con propiedades**: objetos.
@@ -33,15 +35,18 @@ program: |
 
 ## Lo mínimo
 
-Un **objeto** agrupa valores con nombre: cada uno es una **propiedad**, `clave: valor`. Se lee con punto o con corchetes.
+Un **objeto** agrupa valores con nombre: cada uno es una **propiedad**, `clave: valor`. Lo viste de pasada en la sesión 2; hoy lo ves completo, una herramienta a la vez.
+
+### Leer propiedades
+
+Se lee con punto o con corchetes. Un objeto puede tener objetos (y arrays) adentro, y se entra con otro punto.
 
 ```js run
 const objeto = { tipo: "charango", color: "marrón", hallazgo: { puerta: 14, hora: 15 } };
 console.log(objeto.tipo, objeto["color"], objeto.hallazgo.puerta);
-console.log(Object.keys(objeto));
-console.log(objeto.etiqueta?.nombre ?? "sin etiqueta");
-console.log(JSON.stringify(objeto.hallazgo));
 ```
+
+### Forma corta, clave en una variable y desestructurar
 
 Mira cómo se arma un objeto y cómo se lee con una clave que viene en una variable:
 
@@ -65,23 +70,27 @@ notes:
 
 - **Leer**: `objeto.tipo` cuando conoces el nombre al escribir el código; `objeto[campo]` cuando el nombre está en una variable (o tiene espacios: `objeto["fecha de ingreso"]`). Una propiedad que no existe da `undefined`.
 - **Forma corta**: `{ tipo, color }` si las variables se llaman como las propiedades.
-- **Anidados**: un objeto puede tener objetos (y arrays) adentro: `objeto.hallazgo.puerta`.
-- **Recorrer**: `Object.keys(o)` da las claves y `Object.entries(o)` los pares `[clave, valor]`, que se recorren con `for (const [clave, valor] of Object.entries(o))`.
-- **Desestructurar**: `const { tipo, color } = objeto`, también en parámetros, como en la sesión 4.
-- **Encadenamiento opcional**: `objeto.etiqueta?.nombre` da `undefined` en vez de romperse si no hay etiqueta (lo viste en la sesión 2; aquí lo vas a necesitar de verdad).
-- **JSON**: el formato de texto en que viajan los objetos entre sistemas. `JSON.stringify(objeto)` lo convierte en texto y `JSON.parse(texto)` lo devuelve a objeto.
+- **Desestructurar**: `const { tipo, color } = objeto`, también en parámetros, como adelantamos en la sesión 4.
 
-```figura
-title: El mismo dato, como objeto y como texto
-input: { label: Objeto en tu programa, cards: [{ title: lectura, rows: [["distancia", "40"], ["unidad", "\"cm\""]] }] }
-arrow: stringify → ← parse
-output: { label: Texto JSON (lo que viaja), text: "{\"distancia\": 40, \"unidad\": \"cm\"}" }
-steps:
-  - "JSON exige comillas dobles también en las claves; por eso `{distancia: 40}` falla al leerlo (lo verás en la sesión 15)."
-  - "Las funciones y los `undefined` no viajan: `stringify` los deja fuera."
+### Datos que faltan: `?.`
+
+Leer una propiedad de algo que es `undefined` rompe el programa. El encadenamiento opcional `objeto.etiqueta?.nombre` da `undefined` en vez de romperse si no hay etiqueta (lo viste en la sesión 2; aquí lo vas a necesitar de verdad).
+
+```js run
+const objeto = { tipo: "paraguas" };
+console.log(objeto.etiqueta?.nombre ?? "sin etiqueta");
 ```
 
-Recorrer un objeto con `Object.entries`, paso a paso:
+### Recorrer un objeto
+
+`Object.keys(o)` da las claves y `Object.entries(o)` los pares `[clave, valor]`, que se recorren con `for (const [clave, valor] of Object.entries(o))`.
+
+```js run
+const objeto = { tipo: "charango", color: "marrón" };
+console.log(Object.keys(objeto));
+```
+
+`Object.entries`, paso a paso:
 
 ```anima
 title: Object.entries da los pares clave-valor
@@ -96,6 +105,27 @@ notes:
   3: "Cada vuelta trae un par: la clave en tipo, el valor en cantidad."
   6: "3 + 1 + 7: once objetos en total."
 ```
+
+### JSON
+
+Es el formato de texto en que viajan los objetos entre sistemas. `JSON.stringify(objeto)` lo convierte en texto y `JSON.parse(texto)` lo devuelve a objeto.
+
+```js run
+const objeto = { tipo: "charango", hallazgo: { puerta: 14 } };
+console.log(JSON.stringify(objeto.hallazgo));
+```
+
+```figura
+title: El mismo dato, como objeto y como texto
+input: { label: Objeto en tu programa, cards: [{ title: lectura, rows: [["distancia", "40"], ["unidad", "\"cm\""]] }] }
+arrow: stringify → ← parse
+output: { label: Texto JSON (lo que viaja), text: "{\"distancia\": 40, \"unidad\": \"cm\"}" }
+steps:
+  - "JSON exige comillas dobles también en las claves; por eso `{distancia: 40}` falla al leerlo (lo verás en la sesión 15)."
+  - "Las funciones y los `undefined` no viajan: `stringify` los deja fuera."
+```
+
+### Copiar un objeto
 
 Como los arrays, un objeto no se copia con `=`: dos nombres apuntan a la misma ficha. Una copia es `{ ...objeto }`.
 
@@ -441,7 +471,7 @@ solution: |
     return mejor;
   }
 hints:
-  - "Empieza con una copia de `a` (`{ ...a }`) y suma encima cada par de `b`. `juntos[destino] ?? 0` da 0 si ese destino aún no estaba."
+  - "Empieza con una copia de `a` (`{ ...a }`) y suma encima cada par de `b`. `juntos[destino] ?? 0` da 0 si ese destino aún no estaba, y `juntos[destino] = …` también asigna con corchetes."
   - "En `destinoMayor`, guarda el mejor código visto; cámbialo si el nuevo tiene más, o si empata y su código es menor (`\"AQP\" < \"CUZ\"` es `true`)."
 samples:
   - args: [{ CUZ: 3, AQP: 1 }, { CUZ: 2, PIU: 4 }]
@@ -552,10 +582,10 @@ starter: |
   // deposito: { "A-17": { objeto: "charango", estante: 2 }, ... }
   // reclamos: [{ ticket: "B-02", pasajero: { nombre: "Kevin Ríos" } }, ...]
 
-  const mediaVuelta = () => {
+  function mediaVuelta() {
     robot.girarDerecha();
     robot.girarDerecha();
-  };
+  }
 
   // Va al estante, toma el objeto y queda sobre el mostrador (D).
   function traer(estante) {
@@ -578,10 +608,10 @@ starter: |
 
   // TODO: atiende cada reclamo
 solution: |
-  const mediaVuelta = () => {
+  function mediaVuelta() {
     robot.girarDerecha();
     robot.girarDerecha();
-  };
+  }
 
   function traer(estante) {
     const pasos = 2 * estante - 1;
@@ -604,11 +634,11 @@ solution: |
     const guardado = deposito[ticket];
     if (guardado === undefined) {
       robot.decir(`${ticket}: no está`);
-      continue;
+    } else {
+      traer(guardado.estante);
+      robot.entregar(pasajero.nombre);
+      alPuesto();
     }
-    traer(guardado.estante);
-    robot.entregar(pasajero.nombre);
-    alPuesto();
   }
 hints:
   - "Recorre `reclamos` desestructurando: `for (const { ticket, pasajero } of reclamos)`."

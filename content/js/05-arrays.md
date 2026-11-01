@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Gamarra, La Victoria, una semana antes de la campaña navideña. En el puesto 214 de la galería Los Telares, la señora Nélida Paucar vende polos por fardo a los mayoristas que bajan de Huancayo y de Huánuco. Su stock vive en su cabeza y en un cuaderno con manchas de café. Ayer vendió dos veces el mismo fardo de casacas y tuvo que devolver la plata con una sonrisa muy forzada.
+> **La vez pasada:** las funciones le dieron a Chasqui rutinas con nombre, pero cada una recibe valores sueltos. Un stock entero no cabe en una variable por fardo.
 
-Nélida no necesita un robot que cargue: tiene a su sobrino Brayan. Necesita uno que **lleve la cuenta**. Y el stock no es un número ni dos: es una fila de fardos que crece cuando llega mercadería y se achica con cada venta. Una variable por fardo no alcanza. Hoy Chasqui aprende a guardar **una lista entera** en una sola variable.
+Gamarra, La Victoria, una semana antes de la campaña navideña. En el puesto 214 de la galería Los Telares, la señora Nélida Paucar vende polos por fardo a mayoristas de Huancayo y Huánuco. Su stock vive en su cabeza y en un cuaderno con manchas de café. Ayer vendió dos veces el mismo fardo de casacas y tuvo que devolver la plata con una sonrisa muy forzada.
+
+Nélida no necesita un robot que cargue: tiene a su sobrino Brayan. Necesita uno que **lleve la cuenta**. El stock no es un número ni dos: es una fila de fardos que crece cuando llega mercadería y se achica con cada venta. Hoy Chasqui aprende a guardar **una lista entera** en una sola variable.
 
 ```escena
 theme: barranco
@@ -28,18 +30,20 @@ program: |
 
 ## Lo mínimo
 
-Un **array** es una lista ordenada de valores en una sola variable. Cada valor tiene una posición, su **índice**, que empieza en **0**.
+Un **array** es una lista ordenada de valores en una sola variable. Cada valor tiene una posición, su **índice**, que empieza en **0**. Lo viste de pasada en la sesión 3; hoy lo ves completo, una herramienta a la vez.
+
+### Crear y leer
+
+`const lista = [a, b, c]` crea el array; `lista[0]` es el primero y `lista[lista.length - 1]` el último. Un índice que no existe da `undefined`, no un error.
 
 ```js run
 const fardos = ["polo", "jean", "casaca"];
 console.log(fardos[0], fardos.length);
-fardos.push("chompa");
-console.log(fardos.includes("jean"), fardos.indexOf("gorro"));
-const [primero, ...resto] = fardos;
-console.log(primero, resto);
 ```
 
-En el puesto, los fardos se apilan: el último que llega queda encima y es el primero que se vende. Eso es justo lo que hacen `push` y `pop` con el final del array. (En el dibujo de abajo el array es una fila; imagina el final como la cima de la pila.)
+### Agregar y quitar: `push` y `pop`
+
+`push(x)` agrega al final; `pop()` saca el último y lo devuelve (en un array vacío devuelve `undefined`). En el puesto, los fardos se apilan: el último que llega queda encima y es el primero que se vende. Eso es justo lo que hacen `push` y `pop` con el final del array. (En el dibujo de abajo el array es una fila; imagina el final como la cima de la pila.)
 
 ```anima
 title: push pone al final, pop saca del final
@@ -58,14 +62,34 @@ notes:
   5: "length cuenta cuántos quedan: 3."
 ```
 
-- **Crear y leer**: `const lista = [a, b, c]`, `lista[0]` es el primero, `lista[lista.length - 1]` el último. Un índice que no existe da `undefined`, no un error.
-- **`push(x)`** agrega al final; **`pop()`** saca el último y lo devuelve (en un array vacío devuelve `undefined`).
-- **Buscar**: `lista.includes(x)` dice `true` o `false`; `lista.indexOf(x)` da la posición, o **`-1`** si no está.
-- **Recorrer**: `for (const fardo of fardos)` visita cada valor, en orden (lo viste en la sesión 3).
-- **Desestructurar**: `const [a, b] = lista` saca las primeras posiciones; `const [primero, ...resto] = lista` separa el primero del resto.
-- **Copiar**: `const copia = [...lista]` hace un array nuevo con los mismos valores.
+### Buscar: `includes` e `indexOf`
 
-Ese último punto importa más de lo que parece. Un array no se copia con `=`: el `=` le pone **otro nombre al mismo array**.
+Para saber si una prenda está en la lista: `lista.includes(x)` dice `true` o `false`; `lista.indexOf(x)` da la posición, o **`-1`** si no está.
+
+```js run
+const fardos = ["polo", "jean", "casaca"];
+console.log(fardos.includes("jean"), fardos.indexOf("gorro"));
+```
+
+### Recorrer
+
+`for (const fardo of fardos)` visita cada valor, en orden (lo viste en la sesión 3).
+
+### Sacar piezas y copiar con `...`
+
+Dos atajos con el mismo símbolo. `const [primero, ...resto] = lista` separa el primero del resto (`const [a, b] = lista` saca las dos primeras posiciones). Y `const copia = [...lista]` hace un array nuevo con los mismos valores.
+
+```js run
+const fardos = ["polo", "jean", "casaca", "chompa"];
+const [primero, ...resto] = fardos;
+console.log(primero, resto);
+const copia = [...fardos];
+console.log(copia);
+```
+
+### Dos nombres, un solo array
+
+Copiar importa más de lo que parece. Un array no se copia con `=`: el `=` le pone **otro nombre al mismo array**.
 
 ```anima
 title: Dos nombres, un solo array

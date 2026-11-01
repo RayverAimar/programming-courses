@@ -2,9 +2,11 @@
 
 ## The job
 
-Arequipa, 15 August, the city's anniversary. The municipality invited Loop to the Plaza de Armas: Chasqui was to cross the square and hand a queso helado to the mayor, in front of two thousand people and the local TV. It moved four tiles, stopped dead and stayed there, motionless in the sun, while the queso helado melted. Loop's screen said: `TypeError: Reduce of empty array with no initial value`.
+> **Last time:** Chasqui learned to ask for something and carry on while it arrives, and to react if the server fails. But a failure inside its own code still freezes it, and it has to learn to read it.
 
-Nobody got hurt, but the video already has more views than Arequipa's anthem. On Sunday there's a rematch at the Mirador de Yanahuara. Before that, it's time to do what serious teams do after a crash: a **post-mortem**. Find what failed, make the program **report clear errors** instead of freezing, and write **tests** so that bug never comes back.
+Arequipa, 15 August, the city's anniversary. The municipality invited Loop to the Plaza de Armas: Chasqui was to cross the square and hand a queso helado to the mayor, in front of two thousand people and the local TV. It moved four tiles, stopped dead and stayed there in the sun while the queso helado melted. Loop's screen said: `TypeError: Reduce of empty array with no initial value`.
+
+Nobody got hurt, but the video already has more views than Arequipa's anthem. On Sunday there's a rematch at Yanahuara. Before that, it's time for a **post-mortem**: find what failed, make the program **report clear errors** instead of freezing, and write **tests** so that bug never comes back.
 
 ```scene
 theme: barranco
@@ -26,12 +28,23 @@ program: |
 
 An error isn't a tragedy: it's a message. What's serious is a program that falls over without saying anything useful, or carries on as if nothing happened with bad data.
 
-- **`throw new Error("message")`** stops the function on that line and throws the error to whoever called it. Some error types come built in: `TypeError` (a value of the wrong type), `RangeError` (a number out of range), `SyntaxError`…
-- **`try { … } catch (error) { … }`** catches the error: if something inside the `try` throws, the program jumps to the `catch` and carries on from there. `error.name` and `error.message` say what happened.
-- **`finally { … }`** always runs, error or not: the place to leave the robot in safe mode.
-- **Validate the input**: check the data *before* using it and throw a clear error if it's wrong. Better "Invalid command: F0" at the office than a robot frozen in the square.
-- **Your own errors**: `class CommandError extends Error { … }` creates a new type; with `error instanceof CommandError` the `catch` knows whether it's an error you expected or a real bug.
-- **A test** is code that calls your function with known data and throws an error if the result isn't the expected one. Before handing in, you run them all: they tell you, in one second, what you broke.
+<!-- photo: js-first-computer-bug -->
+
+**Story:** on 9 September 1947, in the Harvard Mark II computer, the operators found a moth trapped in a relay that kept it from working. They taped it into the logbook and wrote: "First actual case of bug being found". Admiral Grace Hopper popularized the story, although the word *bug* for a fault was already used in other trades.
+
+<!-- /photo -->
+
+### Throwing an error: `throw`
+
+**`throw new Error("message")`** stops the function on that line and throws the error to whoever called it. Some error types come built in: `TypeError` (a value of the wrong type), `RangeError` (a number out of range), `SyntaxError`…
+
+### Catching it: `try` and `catch`
+
+**`try { … } catch (error) { … }`** catches the error (you saw it in session 14 with the requests): if something inside the `try` throws, the program jumps to the `catch` and carries on from there. `error.name` and `error.message` say what happened.
+
+### Always cleaning up: `finally`
+
+**`finally { … }`** always runs, error or not: the place to leave the robot in safe mode.
 
 ```js run
 try {
@@ -123,6 +136,18 @@ steps:
   - { line: 6, vars: {}, stack: [{ name: serve, args: 'order = "F0"', err: 'keeps rising' }], note: "It climbs to `serve`, which doesn't catch it either." }
   - { line: 8, vars: {}, stack: [], out: "Uncaught Error: Invalid command\n    at stepsOf\n    at serve", note: "The stack emptied without finding a `catch`: the program **stops**, and the error message lists the calls the error went through. Line 9 never runs." }
 ```
+
+### Validating the input
+
+Check the data *before* using it and throw a clear error if it's wrong. Better "Invalid command: F0" at the office than a robot frozen in the square.
+
+### Your own errors
+
+`class CommandError extends Error { … }` creates a new type (it uses the inheritance from session 12); with `error instanceof CommandError` the `catch` knows whether it's an error you expected or a real bug.
+
+### Tests
+
+A **test** is code that calls your function with known data and throws an error if the result isn't the expected one. Before handing in, you run them all: they tell you, in one second, what you broke.
 
 And this is what a hand-made test looks like. You don't need a library to start: a function that compares and throws.
 
@@ -365,7 +390,12 @@ visual:
       - { cards: [{ title: "F3 is 3 steps", rows: [["stepsOf gives", "3"], ["expected", "3"], ["prints", "✓ F3 is 3 steps"]] }, { title: "F10 is 10 steps", rows: [["stepsOf gives", "1"], ["expected", "10"], ["prints", "✗ F10 is 10 steps: got 1, expected 10"]] }, { title: "L doesn't move", rows: [["stepsOf gives", "0"], ["expected", "0"], ["prints", "✓ L doesn't move"]] }] }
 starter: |
   // The function we're going to test (it has a bug):
-  const stepsOf = (command) => (command === "L" || command === "R" ? 0 : Number(command[1]));
+  function stepsOf(command) {
+    if (command === "L" || command === "R") {
+      return 0;
+    }
+    return Number(command[1]);
+  }
 
   function assertEqual(actual, expected) {
     // TODO: if they differ, throw an Error: "got X, expected Y"
@@ -379,7 +409,12 @@ starter: |
   runTest("F10 is 10 steps", () => assertEqual(stepsOf("F10"), 10));
   runTest("L doesn't move", () => assertEqual(stepsOf("L"), 0));
 solution: |
-  const stepsOf = (command) => (command === "L" || command === "R" ? 0 : Number(command[1]));
+  function stepsOf(command) {
+    if (command === "L" || command === "R") {
+      return 0;
+    }
+    return Number(command[1]);
+  }
 
   function assertEqual(actual, expected) {
     if (actual !== expected) {
@@ -424,7 +459,7 @@ prompt: |
 
   During the week, four of Loop's technicians each wrote their version of `safeSpeed(readings)`, the function that decides how fast Chasqui goes from what its sensor sees. One of those versions was the one that reached the square. All four swear theirs "passes every test". In the square, the crowd surrounded the robot and covered the sensor: an **empty** list of readings came in.
 
-  Print each technician with their failures at the end, for example `Yolanda: 0 failures`. The board compares your number with what each one said.
+  The four versions are already written in the code and you don't need to understand them inside: you write `countFailures`, which tests them. Print each technician with their failures at the end, for example `Yolanda: 0 failures`. The board compares your number with what each one said.
 visual:
   board:
     for: js15-caso-version

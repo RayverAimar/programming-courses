@@ -2,6 +2,8 @@
 
 ## El encargo
 
+> **La vez pasada:** con `if` Chasqui ya decide, pero decide una sola vez. En el túnel tiene que decidir una y otra vez, hasta que la roca diga basta.
+
 La mina Santa Clotilde, a una hora de Huancayo subiendo hacia la puna, encontró una veta de cuarzo en un túnel viejo. Nadie sabe cuánto mide el túnel: los planos se mojaron en 1987. El ingeniero Ccori quiere que Chasqui lo recorra entero, recoja los cristales y reporte cuántos hay, sin chocar con la roca del fondo.
 
 Le pusimos una lámpara en la cabeza. Lo que no le podemos poner es un número de pasos fijo, porque nadie lo sabe. Chasqui tiene que **repetir** hasta que el túnel se acabe.
@@ -28,31 +30,21 @@ program: |
 
 ## Lo mínimo
 
-Un bucle repite un bloque. Hay tres que vas a usar siempre:
+Un bucle repite un bloque. Hay tres que vas a usar siempre; te los presento de a uno.
+
+### `for` clásico: cuando necesitas el contador
+
+Para recorrer las vetas del túnel necesitas una lista. Un *array* es una lista de valores entre corchetes: `[3, 0, 5, 2]` guarda los cristales de cuatro vetas. `vetas[0]` es el primero (se cuenta desde **0**) y `vetas.length` es cuántos hay; la sesión 5 los explica a fondo.
 
 ```js run
-const vetas = [3, 0, 5, 2];        // un array: una lista de valores
+const vetas = [3, 0, 5, 2];
 
 for (let i = 0; i < vetas.length; i++) {
   console.log(`veta ${i}: ${vetas[i]} cristales`);
 }
-
-let total = 0;
-for (const veta of vetas) {
-  total += veta;
-}
-console.log("total", total);
-
-let lampara = 3;
-while (lampara > 0) {
-  lampara--;
-}
-console.log("lámpara", lampara);
 ```
 
-- **`for` clásico** cuando necesitas el contador `i`: empieza en `0`, sigue *mientras* `i < vetas.length`, suma uno en cada vuelta.
-- **`for...of`** cuando solo necesitas cada valor, uno tras otro. Es el más claro para recorrer un array.
-- **`while`** cuando no sabes cuántas vueltas habrá: repite *mientras* la condición sea verdadera. Si nunca se vuelve falsa, el bucle no termina (aquí el Taller lo corta a los dos segundos).
+El `for` clásico tiene tres partes: `let i = 0` (el contador empieza en `0`), `i < vetas.length` (sigue *mientras* esto sea verdadero) e `i++` (al terminar cada vuelta suma uno; es corto para `i = i + 1`).
 
 Mira el `for` clásico paso a paso: el contador `i` avanza de casilla en casilla y `total` crece en cada vuelta.
 
@@ -72,9 +64,35 @@ notes:
   6: "i ya vale 4 y 4 < 4 es falso: el bucle terminó."
 ```
 
-Los arrays empiezan a contar en **0**: el primer elemento es `vetas[0]` y el último es `vetas[vetas.length - 1]`. `total += veta` es una forma corta de `total = total + veta`, y `i++` de `i = i + 1`.
+El último elemento es `vetas[vetas.length - 1]`.
 
 > **Trampa común:** el *off-by-one*. `i <= vetas.length` da una vuelta de más y lee `vetas[4]`, que no existe: vale `undefined`, y `total + undefined` es `NaN`.
+
+### `for...of`: cuando solo necesitas cada valor
+
+Si no te importa la posición, `for...of` te entrega cada valor, uno tras otro. Es el más claro para recorrer un array. Aquí `total += veta` es una forma corta de `total = total + veta`.
+
+```js run
+const vetas = [3, 0, 5, 2];
+
+let total = 0;
+for (const veta of vetas) {
+  total += veta;
+}
+console.log("total", total);
+```
+
+### `while`: cuando no sabes cuántas vueltas habrá
+
+`while` repite *mientras* la condición sea verdadera, y no necesita un array. Si nunca se vuelve falsa, el bucle no termina (aquí el Taller lo corta a los dos segundos). `lampara--` resta uno, como `i++` suma uno.
+
+```js run
+let lampara = 3;
+while (lampara > 0) {
+  lampara--;
+}
+console.log("lámpara", lampara);
+```
 
 <!-- legacy: for-of -->
 
@@ -109,7 +127,7 @@ id: js3-predice-lampara
 type: predict
 title: La lámpara de carburo
 prompt: |
-  Cada viaje gasta 3 de batería y Chasqui solo sale si le quedan al menos 3. ¿Qué imprime?
+  Cada viaje gasta 3 de batería y Chasqui solo sale si le quedan al menos 3. (`bateria -= 3` es `bateria = bateria - 3`.) ¿Qué imprime?
 code: |
   let bateria = 10;
   let viajes = 0;
@@ -194,7 +212,7 @@ title: Hasta el fondo
 prompt: |
   Haz que Chasqui avance hasta quedar frente a la pared del fondo, sin chocar.
 
-  El túnel tiene un largo desconocido. `robot.hayPared()` devuelve `true` si la casilla de enfrente es roca. Se prueba en tres túneles.
+  `robot.avanzar()` sin número avanza una casilla. El túnel tiene un largo desconocido. `robot.hayPared()` devuelve `true` si la casilla de enfrente es roca. Se prueba en tres túneles.
 starter: |
   robot.avanzar();
 solution: |
@@ -501,10 +519,7 @@ starter: |
     robot.avanzar();
   }
 solution: |
-  const encerrado = () =>
-    robot.hayPared() && robot.hayPared("izquierda") && robot.hayPared("derecha");
-
-  while (!encerrado()) {
+  while (!(robot.hayPared() && robot.hayPared("izquierda") && robot.hayPared("derecha"))) {
     if (!robot.hayPared()) {
       robot.avanzar();
     } else if (!robot.hayPared("izquierda")) {

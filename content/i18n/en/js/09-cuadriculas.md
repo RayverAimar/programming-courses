@@ -2,6 +2,8 @@
 
 ## The job
 
+> **Last time:** Chasqui can already clean and slice text, and knows an array is a row. A warehouse plan is a row of rows: you have to move in two directions at once.
+
 Ate, the industrial district, Monday at seven in the morning. Señora Gladys Huamán, owner of Distribuidora Útiles Huamán, had a pipe burst over the weekend. Her warehouse is full of boxes of exercise books for the back-to-school season, and paper plus water is papier-mâché. The insurance assessor arrives at six in the evening and wants a plan: where there's water, how much, and which boxes are at risk.
 
 We gave Chasqui a floor sensor that measures the centimetres of water on every tile of the warehouse. What it returns isn't a list: it's a **grid**, rows of tiles, like a chessboard full of numbers. Today Chasqui learns to walk through it, to look at neighbouring tiles and not to fall off the edge.
@@ -32,6 +34,8 @@ program: |
 
 A grid is an **array of arrays**: each element is a row, and each row is an array of tiles. You read it with two indexes: first the row (`y`), then the column (`x`).
 
+### Reading a tile
+
 ```js run
 const water = [
   [0, 2, 5],
@@ -41,6 +45,8 @@ console.log(water[1][2]);
 console.log(water.length, water[0].length);
 console.log(water[0].join(" "));
 ```
+
+### Walking it with two loops
 
 To walk the whole grid you need **two loops, one inside the other**: the outer one goes down row by row and the inner one walks every tile of that row. Watch Chasqui gather the wet tiles:
 
@@ -66,6 +72,8 @@ notes:
   6: "A wet tile is noted with its key \"x,y\" and painted on the plan."
 ```
 
+### A tile's neighbours
+
 Often what matters isn't one tile on its own but its **neighbours**. The four neighbours of `(x, y)` are one step away: right, left, down and up. A list of offsets saves you writing four nearly identical `if`s:
 
 ```js
@@ -87,7 +95,9 @@ panes:
 caption: "At the edge, some neighbours don't exist. That's why you check that `nx` and `ny` are inside before reading."
 ```
 
-- **Create**: with the literal, as above, or empty with `Array.from({ length: height }, () => Array(width).fill(0))`.
+### Useful details
+
+- **Create**: with the literal, as above, or empty with `Array.from({ length: height }, () => Array(width).fill(0))`: `Array(width).fill(0)` is a row of `width` zeros, and `Array.from` repeats it `height` times, a new row each time.
 - **Size**: `water.length` is the height (how many rows) and `water[0].length` the width (how many columns).
 - **Strings are rows too**: a plan like `["#..", ".#."]` reads the same way, `plan[y][x]`, because a string is indexed like an array.
 - **Diagonals** come in by adding `[1, 1]`, `[1, -1]`, `[-1, 1]` and `[-1, -1]` to the list of steps: eight neighbours.
@@ -496,17 +506,17 @@ solution: |
       for (let x = 0; x < plan[y].length; x++) {
         if (plan[y][x] === "~") {
           row += "~";
-          continue;
-        }
-        let count = 0;
-        for (let dy = -1; dy <= 1; dy++) {
-          for (let dx = -1; dx <= 1; dx++) {
-            if (plan[y + dy]?.[x + dx] === "~") {
-              count++;
+        } else {
+          let count = 0;
+          for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+              if (plan[y + dy]?.[x + dx] === "~") {
+                count++;
+              }
             }
           }
+          row += count;
         }
-        row += count;
       }
       result.push(row);
     }
@@ -605,13 +615,12 @@ solution: |
   let atRisk = 0;
   for (let y = 0; y < plan.length; y++) {
     for (let x = 0; x < plan[y].length; x++) {
-      if (plan[y][x] !== "a") {
-        continue;
-      }
-      const wet = STEPS.some(([dx, dy]) => (water[y + dy]?.[x + dx] ?? 0) > 0);
-      if (wet) {
-        robot.mark([x, y]);
-        atRisk++;
+      if (plan[y][x] === "a") {
+        const wet = STEPS.some(([dx, dy]) => (water[y + dy]?.[x + dx] ?? 0) > 0);
+        if (wet) {
+          robot.mark([x, y]);
+          atRisk++;
+        }
       }
     }
   }

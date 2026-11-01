@@ -204,13 +204,29 @@ steps:
 
 <!-- photo: netscape-navigator-2 -->
 
-Lo que había no alcanzaba: el HTML no puede decidir nada, los applets eran pesados y pensados para programadores profesionales, y los programas del servidor obligaban a ir y volver por cada cosita.
+Lo que había no alcanzaba: el HTML no decide nada, los applets eran pesados y pensados para programadores profesionales, y los programas del servidor obligaban a ir y volver por cada cosita.
 
-**Netscape**, la empresa del navegador más usado de entonces, quería un lenguaje pequeño que viviera *dentro* de la página, para diseñadores y aficionados: validar un formulario, calcular un total, reaccionar a un clic sin preguntarle nada al servidor. En mayo de 1995 le encargaron el trabajo a **Brendan Eich**, que escribió el primer prototipo en unos **diez días**. La condición de la gerencia: que *se pareciera* a Java, el lenguaje de moda. Por eso tiene llaves y punto y coma; por dentro, en cambio, Eich tomó ideas de **Scheme** (funciones que se pasan como cualquier valor) y de **Self** (objetos que heredan de otros objetos).
+**Netscape**, la empresa del navegador más usado de entonces, quería un lenguaje pequeño que viviera *dentro* de la página, para diseñadores y aficionados: validar un formulario, calcular un total, reaccionar a un clic sin preguntarle al servidor.
+
+<!-- /photo -->
+
+### ¿Cuánto tarda en nacer un lenguaje?
+
+<!-- photo: js-brendan-eich -->
+
+En mayo de 1995 Netscape le encargó el trabajo a **Brendan Eich**. Antes de seguir, apuesta: ¿meses?, ¿un año?
+
+Fueron unos **diez días**: ese fue el tiempo que Eich tardó en escribir el primer prototipo. La condición de la gerencia era que *se pareciera* a Java, el lenguaje de moda.
+
+### ¿Por qué se parece a Java y no lo es?
+
+Por fuera cumplió: tiene llaves y punto y coma. Por dentro, Eich tomó ideas de **Scheme** (funciones que se pasan como cualquier valor) y de **Self** (objetos que heredan de otros objetos).
+
+### ¿Y por qué se llama JavaScript?
 
 Se llamó **Mocha**, luego **LiveScript** y, en diciembre de 1995, **JavaScript**, por un acuerdo de marketing con Sun, la dueña de Java. Java y JavaScript se parecen tanto como *papa* y *papaya*: comparten letras, no receta.
 
-<!-- /photo -->
+> **Para llevar:** JavaScript nació en 1995, en unos diez días, para que una página reaccione sin ir al servidor. Parece Java por fuera y piensa como Scheme y Self por dentro.
 
 ```figura
 title: JavaScript en el tiempo
@@ -267,13 +283,27 @@ notes:
   5: El template literal mete los valores dentro del texto.
 ```
 
-Tres ideas, y con eso basta para hoy:
+Tres ideas, y con eso basta para hoy.
 
-- **`const` por defecto.** Declara con `const` todo lo que no va a cambiar. Si el valor cambia, como la batería, usa `let`. Si intentas cambiar una `const`, JavaScript te avisa con un error (`TypeError: Assignment to constant variable.`), y eso es bueno: te protege de cambios que no querías.
-- **Template literals.** Entre comillas invertidas (`` ` ``) puedes meter cualquier valor con `${…}`. Así armas textos sin pelearte con los espacios.
-- **`console.log` acepta varias cosas** separadas por comas y las imprime separadas por un espacio.
+### `const` por defecto
+
+Declara con `const` todo lo que no va a cambiar. Si el valor cambia, como la batería, usa `let`. Si intentas cambiar una `const`, JavaScript te avisa con un error (`TypeError: Assignment to constant variable.`), y eso es bueno: te protege de cambios que no querías.
+
+### Template literals
+
+Entre comillas invertidas (`` ` ``) puedes meter cualquier valor con `${…}`, como en el ejemplo de arriba. Así armas textos sin pelearte con los espacios.
+
+### Varias cosas en un `console.log`
+
+`console.log` acepta varias cosas separadas por comas y las imprime separadas por un espacio.
 
 > **Trampa común:** `+` suma números pero *pega* textos. `"3" + 2` da `"32"`, no `5`. Si un número te llega como texto (de un formulario, de un sensor), conviértelo primero con `Number("3")`.
+
+<!-- photo: js-ariane-501 -->
+
+**Historia:** el 4 de junio de 1996, el primer cohete Ariane 5 despegó de la Guayana Francesa y a los 37 segundos se salió de su ruta hasta autodestruirse. El programa de navegación venía del Ariane 4 y quiso guardar un número más grande de lo que cabe en un entero de 16 bits: el sistema falló y se apagó. Se perdieron más de 370 millones de dólares por un valor que no cabía en su tipo. Por eso en JavaScript conviene saber siempre qué tipo de valor tienes entre manos.
+
+<!-- /photo -->
 
 <!-- legacy: let-const -->
 
@@ -288,6 +318,8 @@ Para curiosos: cómo creció, con qué se compara y dónde se usa. Si una palabr
 ### De juguete a lenguaje de todo
 
 En la **guerra de navegadores**, Microsoft hizo su propia copia, **JScript**, para Internet Explorer (1996). Dos versiones que se portaban distinto eran una pesadilla, así que Netscape llevó el lenguaje a Ecma International para estandarizarlo: el estándar se llama **ECMAScript** (ECMA-262, primera edición en 1997) y lo mantiene un comité, el **TC39**, donde hoy se sientan los fabricantes de navegadores y otras empresas.
+
+### De efectitos a servidores
 
 Durante años JavaScript fue "el lenguaje de los efectitos". Cambió en 2004–2005, cuando **Gmail** y **Google Maps** mostraron páginas que piden datos al servidor sin recargarse; Jesse James Garrett le puso nombre a la técnica: **Ajax**. En 2008, el motor **V8** de Chrome lo hizo mucho más rápido, y en 2009 Ryan Dahl lo usó para crear **Node.js**: JavaScript fuera del navegador, en servidores. En 2015, **ES2015** trajo `let`, `const`, funciones flecha, clases y módulos, que es lo que aprendes aquí.
 

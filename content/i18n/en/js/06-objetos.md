@@ -2,6 +2,8 @@
 
 ## The job
 
+> **Last time:** an array keeps a row of things and finds them by position. But at Lost Property `[2]` doesn't say whether that item is a colour or a gate: names are needed.
+
 Jorge Chávez Airport, Callao, the Lost and Found office in the arrivals hall. Miss Milagros Chumpitaz has 1,340 things in there: suitcases, charangos, a prop coffin (from a university *tuna* band), a set of dentures and 212 phone chargers. It's all in a spreadsheet where someone once sorted a single column, and ever since then every item's colour is somebody else's.
 
 Milagros wants Chasqui to run the counter at night. But a lost item isn't a number or a list: it has **a kind, a colour, where and when it was found, and sometimes a tag with an owner**. Each piece of data with its name, all of them together. Today Chasqui learns to keep **things with properties**: objects.
@@ -33,15 +35,18 @@ program: |
 
 ## The minimum
 
-An **object** groups named values: each one is a **property**, `key: value`. You read it with a dot or with square brackets.
+An **object** groups named values: each one is a **property**, `key: value`. You saw it in passing in session 2; today you see it in full, one tool at a time.
+
+### Reading properties
+
+You read it with a dot or with square brackets. An object can hold objects (and arrays) inside, and you go in with another dot.
 
 ```js run
 const item = { kind: "charango", color: "brown", found: { gate: 14, hour: 15 } };
 console.log(item.kind, item["color"], item.found.gate);
-console.log(Object.keys(item));
-console.log(item.tag?.name ?? "no tag");
-console.log(JSON.stringify(item.found));
 ```
+
+### Shorthand, a key in a variable, and destructuring
 
 Watch how an object is built, and how it's read with a key that comes in a variable:
 
@@ -65,23 +70,27 @@ notes:
 
 - **Read**: `item.kind` when you know the name as you write the code; `item[field]` when the name is in a variable (or has spaces: `item["date in"]`). A property that doesn't exist gives `undefined`.
 - **Shorthand**: `{ kind, color }` if the variables are named like the properties.
-- **Nested**: an object can hold objects (and arrays): `item.found.gate`.
-- **Walk through**: `Object.keys(o)` gives the keys and `Object.entries(o)` the `[key, value]` pairs, which you walk with `for (const [key, value] of Object.entries(o))`.
-- **Destructure**: `const { kind, color } = item`, in parameters too, as in session 4.
-- **Optional chaining**: `item.tag?.name` gives `undefined` instead of breaking when there's no tag (you saw it in session 2; here you'll really need it).
-- **JSON**: the text format objects travel in between systems. `JSON.stringify(item)` turns it into text and `JSON.parse(text)` turns it back into an object.
+- **Destructure**: `const { kind, color } = item`, in parameters too, as previewed in session 4.
 
-```figure
-title: The same data, as an object and as text
-input: { label: Object in your program, cards: [{ title: reading, rows: [["distance", "40"], ["unit", "\"cm\""]] }] }
-arrow: stringify → ← parse
-output: { label: JSON text (what travels), text: "{\"distance\": 40, \"unit\": \"cm\"}" }
-steps:
-  - "JSON requires double quotes on the keys too; that's why `{distance: 40}` fails to parse (you'll see it in session 15)."
-  - "Functions and `undefined` don't travel: `stringify` leaves them out."
+### Missing data: `?.`
+
+Reading a property of something that is `undefined` breaks the program. Optional chaining `item.tag?.name` gives `undefined` instead of breaking when there's no tag (you saw it in session 2; here you'll really need it).
+
+```js run
+const item = { kind: "umbrella" };
+console.log(item.tag?.name ?? "no tag");
 ```
 
-Walking an object with `Object.entries`, step by step:
+### Walking an object
+
+`Object.keys(o)` gives the keys and `Object.entries(o)` the `[key, value]` pairs, which you walk with `for (const [key, value] of Object.entries(o))`.
+
+```js run
+const item = { kind: "charango", color: "brown" };
+console.log(Object.keys(item));
+```
+
+`Object.entries`, step by step:
 
 ```anim
 title: Object.entries gives the key-value pairs
@@ -96,6 +105,27 @@ notes:
   3: "Each pass brings a pair: the key in kind, the value in count."
   6: "3 + 1 + 7: eleven items in all."
 ```
+
+### JSON
+
+The text format objects travel in between systems. `JSON.stringify(item)` turns it into text and `JSON.parse(text)` turns it back into an object.
+
+```js run
+const item = { kind: "charango", found: { gate: 14 } };
+console.log(JSON.stringify(item.found));
+```
+
+```figure
+title: The same data, as an object and as text
+input: { label: Object in your program, cards: [{ title: reading, rows: [["distance", "40"], ["unit", "\"cm\""]] }] }
+arrow: stringify → ← parse
+output: { label: JSON text (what travels), text: "{\"distance\": 40, \"unit\": \"cm\"}" }
+steps:
+  - "JSON requires double quotes on the keys too; that's why `{distance: 40}` fails to parse (you'll see it in session 15)."
+  - "Functions and `undefined` don't travel: `stringify` leaves them out."
+```
+
+### Copying an object
 
 Like arrays, an object isn't copied with `=`: two names point to the same record. A copy is `{ ...item }`.
 
@@ -441,7 +471,7 @@ solution: |
     return best;
   }
 hints:
-  - "Start with a copy of `a` (`{ ...a }`) and add each pair of `b` on top. `merged[destination] ?? 0` gives 0 if that destination wasn't there yet."
+  - "Start with a copy of `a` (`{ ...a }`) and add each pair of `b` on top. `merged[destination] ?? 0` gives 0 if that destination wasn't there yet, and `merged[destination] = …` also assigns with brackets."
   - "In `topDestination`, keep the best code seen so far; replace it if the new one has more, or if it ties and its code is smaller (`\"AQP\" < \"CUZ\"` is `true`)."
 samples:
   - args: [{ CUZ: 3, AQP: 1 }, { CUZ: 2, PIU: 4 }]
@@ -552,10 +582,10 @@ starter: |
   // storeroom: { "A-17": { item: "charango", shelf: 2 }, ... }
   // claims: [{ ticket: "B-02", passenger: { name: "Kevin Ríos" } }, ...]
 
-  const uTurn = () => {
+  function uTurn() {
     robot.turnRight();
     robot.turnRight();
-  };
+  }
 
   // Goes to the shelf, takes the item and ends up on the counter (D).
   function bring(shelf) {
@@ -578,10 +608,10 @@ starter: |
 
   // TODO: handle each claim
 solution: |
-  const uTurn = () => {
+  function uTurn() {
     robot.turnRight();
     robot.turnRight();
-  };
+  }
 
   function bring(shelf) {
     const steps = 2 * shelf - 1;
@@ -604,11 +634,11 @@ solution: |
     const stored = storeroom[ticket];
     if (stored === undefined) {
       robot.say(`${ticket}: not here`);
-      continue;
+    } else {
+      bring(stored.shelf);
+      robot.deliver(passenger.name);
+      backToPost();
     }
-    bring(stored.shelf);
-    robot.deliver(passenger.name);
-    backToPost();
   }
 hints:
   - "Walk through `claims` destructuring: `for (const { ticket, passenger } of claims)`."

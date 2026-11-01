@@ -2,9 +2,11 @@
 
 ## The job
 
-Ica, in the middle of the grape harvest. At the Santa Uchuya winery they bottle pisco at night, when the line doesn't have to fight the heat, and five robots run it: Kusi, Tupa, Nina, Puma and Chato. In the small hours the line jammed three times and dawn found 200 bottles with no cap. The engineer, Fiorella Uchuya, is sure it wasn't the machine: "Someone in the fleet is lying to me."
+> **Last time:** Chasqui can already keep arrays of objects and walk them with `for`. With hundreds of events, every new question would need another hand-written loop.
 
-Every robot leaves its trail in the **log**: an array of hundreds of events. Walking it with a `for` for every question is possible, but slow and easy to get wrong. Today Chasqui learns the methods that ask an array questions in one line: **filter, transform, find, add up, sort**. Like a detective with a magnifying glass for each clue.
+Ica, in the middle of the grape harvest. At the Santa Uchuya winery they bottle pisco at night, when it is cooler, and five robots run the line: Kusi, Tupa, Nina, Puma and Chato. In the small hours it jammed three times and dawn found 200 bottles with no cap. The engineer, Fiorella Uchuya, is sure it wasn't the machine: "Someone in the fleet is lying to me."
+
+Every robot leaves its trail in the **log**: an array of hundreds of events. Walking it with a `for` for every question is slow and easy to get wrong. Today Chasqui learns the methods that ask an array questions in one line: **filter, transform, find, add up, sort**. Like a detective with a magnifying glass for each clue.
 
 ```scene
 theme: cocina
@@ -26,16 +28,28 @@ program: |
 
 ## The minimum
 
-Arrays come with methods that take **a function** (almost always an arrow) and apply it to each element. None of these modifies the original array: they return something new.
+Arrays come with methods that take **a function** (almost always an arrow) and apply it to each element. None of these modifies the original array: they return something new. There are several; I'll introduce them one at a time.
+
+### `map` and `filter`: transform and choose
+
+`map(f)` gives an array of the same length, with `f` applied to each element. `filter(f)` gives only the elements for which `f` returns `true`.
 
 ```js run
 const bottles = [40, 0, 35, 50];
 console.log(bottles.map((b) => b * 2));
 console.log(bottles.filter((b) => b > 30));
-console.log(bottles.find((b) => b > 36), bottles.some((b) => b === 0), bottles.every((b) => b >= 0));
-console.log(bottles.reduce((sum, b) => sum + b, 0));
-console.log(bottles.toSorted((a, b) => b - a), bottles);
 ```
+
+### `find`, `some` and `every`: asking
+
+`find(f)` gives the **first** one that passes, or `undefined`. `some(f)` says whether any passes, and `every(f)` whether all pass.
+
+```js run
+const bottles = [40, 0, 35, 50];
+console.log(bottles.find((b) => b > 36), bottles.some((b) => b === 0), bottles.every((b) => b >= 0));
+```
+
+### Chaining
 
 Since each one returns a new array, they can be **chained**: one's result goes into the next.
 
@@ -55,7 +69,9 @@ notes:
   5: "shifts is unchanged: no method touched it."
 ```
 
-`reduce` is the hardest one. Inside, it's a loop with an **accumulator** that starts at the initial value (the `0` at the end) and is passed from pass to pass:
+### `reduce`: combine everything into one value
+
+`reduce(f, initial)` combines everything into one value: a sum, a maximum, an object. Always give the initial value. It's the hardest one. Inside, it's a loop with an **accumulator** that starts at the initial value (the `0` at the end) and is passed from pass to pass:
 
 ```anim
 title: reduce, pass by pass
@@ -75,12 +91,15 @@ steps:
   - { line: 5, vars: { total: 125 }, out: "125" }
 ```
 
-- **`map(f)`**: an array of the same length, with `f` applied to each element.
-- **`filter(f)`**: the elements for which `f` gives `true`.
-- **`find(f)`**: the **first** one that passes, or `undefined`. **`some(f)`**: does any pass? **`every(f)`**: do all pass?
-- **`reduce(f, initial)`**: combines everything into one value: a sum, a maximum, an object. Always give the initial value.
-- **Sorting**: `toSorted((a, b) => a - b)` returns a copy sorted from smallest to largest; `b - a`, largest to smallest. For strings, `a.localeCompare(b)`. The old **`sort` sorts the array itself** (it modifies it) and also returns it.
-- **`join(", ")`** joins the elements into a string, with whatever you pass between each one.
+### Sorting and joining
+
+`toSorted((a, b) => a - b)` returns a copy sorted from smallest to largest; `b - a`, largest to smallest. For strings, `a.localeCompare(b)`. The old **`sort` sorts the array itself** (it modifies it) and also returns it. And `join(", ")` joins the elements into a string, with whatever you pass between each one.
+
+```js run
+const bottles = [40, 0, 35, 50];
+console.log(bottles.toSorted((a, b) => b - a), bottles);
+console.log(bottles.join(", "));
+```
 
 > **Common trap:** `[10, 9, 100].sort()` gives `[10, 100, 9]`. Without a compare function, `sort` sorts **as strings** ("1" comes before "9"), and on top of that it changes the original array. For numbers: `toSorted((a, b) => a - b)`.
 
@@ -97,7 +116,7 @@ id: js7-predice-cadena
 type: predict
 title: The shifts that count
 prompt: |
-  What does it print?
+  What does it print? (`console.log(...result)` spreads the array into separate values, one per argument.)
 code: |
   const shifts = [3, 8, 0, 12];
   const result = shifts.filter((n) => n > 2).map((n) => n * 10);
@@ -417,7 +436,7 @@ title: The honour board
 prompt: |
   Write `ranking(records)`, which returns the robots' names sorted by total bottles, largest to smallest, and `totalOf(records, name)`, which returns one robot's total.
 
-  Fiorella wants an honour board on the winery wall, with no cheating. Each record is a pair `[robot, bottles]`, and a robot appears many times.
+  Fiorella wants an honour board on the winery wall, with no cheating. Each record is a pair `[robot, bottles]` (`r[0]` is the robot and `r[1]` the bottles), and a robot appears many times.
 
   - `totalOf(records, name)`: the sum of that robot's bottles (0 if it doesn't appear).
   - `ranking(records)`: each robot **only once**, sorted by its total from largest to smallest. If two tie, the one that comes first alphabetically goes first.
@@ -440,8 +459,8 @@ starter: |
 solution: |
   function totalOf(records, name) {
     return records
-      .filter(([robot]) => robot === name)
-      .reduce((sum, [, bottles]) => sum + bottles, 0);
+      .filter((r) => r[0] === name)
+      .reduce((sum, r) => sum + r[1], 0);
   }
 
   function ranking(records) {
@@ -552,6 +571,7 @@ starter: |
   // log: [{ station: 4, kind: "failure", lost: 30 }, { station: 2, kind: "ok", lost: 0 }, ...]
 
   // Takes Chasqui to column x of its row.
+  // It comes ready-made: use it without worrying about how it works inside.
   function goTo(x) {
     if (x === robot.position.x) {
       return;
@@ -584,9 +604,9 @@ solution: |
   robot.mark(failures.map((e) => [e.station, 1]));
 
   const order = failures.toSorted((a, b) => b.lost - a.lost);
-  for (const { station } of order) {
-    goTo(station);
-    robot.say(`Repairing ${station}`);
+  for (const failure of order) {
+    goTo(failure.station);
+    robot.say(`Repairing ${failure.station}`);
   }
 
   goTo(office);
