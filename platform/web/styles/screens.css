@@ -290,3 +290,13 @@
 .profile .field:first-of-type { border-top: 1px solid var(--hair); }
 .prog-goalcard { margin-top: 16px; }
 .prog-goal { display: flex; gap: 8px; align-items: center; margin: 0 0 4px; }
+
+/* Focus mode (F): only the lesson; the side panels fold away and the text stays centred. */
+.ltoc, .lrail, .lgrid { transition: opacity var(--base, 220ms) var(--ease); }
+@media (min-width: 1100px) {
+  body.zen .lgrid { grid-template-columns: minmax(0, 1fr); }
+  body.zen .ltoc, body.zen .lrail { display: none; }
+}
+.lbar-zen[aria-pressed="true"] { color: var(--accent); }
+.lbar-zen { display: none; }
+@media (min-width: 1100px) { .lbar-zen { display: inline-flex; } }

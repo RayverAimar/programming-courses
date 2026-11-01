@@ -10,6 +10,7 @@ import { searchButton } from "../search.js";
 import { adapter } from "../adapter.js";
 import { moduleLabel, loadPayload } from "./parts.js";
 import { moduleToc } from "./lesson.js";
+import { watchDecorate } from "../decorate.js";
 
 const listeners = new Set();
 P.onProgress((e) => listeners.forEach((fn) => fn(e)));
@@ -78,6 +79,7 @@ export async function render(view, route, l, { keep } = {}) {
     { task: view.querySelector(".ws-task-in"), tool: view.querySelector(".ws-tool-in") },
     { lesson: l, item: it, index: n - 1, items, payload, data: payload.lessons[l.slug] }
   ) || {};
+  const undecorate = watchDecorate(view.querySelector(".ws-grid"));
   // The lesson to go back to: the one this step came from, if the adapter says, else the reading before.
   const source = mounted.source || lastReading(l);
   if (source) view.querySelector(".ws-help").innerHTML = `<a class="link" href="${esc(P.lessonHref(source))}">${icon("book-open", "ic-s")}${esc(t("workshop.backToLesson", { title: mdPlain(source.title) }))}</a>`;
@@ -87,6 +89,7 @@ export async function render(view, route, l, { keep } = {}) {
   return {
     cleanup() {
       listeners.delete(onEvent);
+      undecorate();
       if (mounted.cleanup) mounted.cleanup();
     },
   };

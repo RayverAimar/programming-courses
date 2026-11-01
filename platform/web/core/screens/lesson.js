@@ -10,6 +10,7 @@ import { searchButton } from "../search.js";
 import { adapter } from "../adapter.js";
 import { moduleLabel, lessonChips, lessonNumber, loadPayload, lockText, pctText } from "./parts.js";
 import * as workshop from "./workshop.js";
+import { watchDecorate } from "../decorate.js";
 
 export function moduleToc(l, { inSheet = false } = {}) {
   const c = l.course;
@@ -35,12 +36,25 @@ export function lessonBar(l, { right = "" } = {}) {
     <button type="button" class="toc-btn" aria-haspopup="dialog">${esc(tc("lesson.ofModule", c.id, { i, n }))}${icon("chevron-down", "ic-s")}</button>
     <span class="lbar-sp"></span>
     ${right}
+    ${button({ label: t("lesson.zen"), kind: "icon", icon: "maximize-2", cls: "lbar-zen", pressed: zenOn() })}
     ${searchButton()}
     ${button({ label: t("theme.toggle"), kind: "icon", icon: "sun-moon", cls: "lbar-theme" })}
   </div><div class="readbar" aria-hidden="true"><i></i></div></header>`;
 }
 
+// Focus mode: only the lesson, no module contents or section rail; remembered between lessons.
+const zenKey = () => `${P.site().prefix}.zen`;
+const zenOn = () => localStorage.getItem(zenKey()) === "1";
+export function setZen(on) {
+  localStorage.setItem(zenKey(), on ? "1" : "0");
+  document.body.classList.toggle("zen", on);
+  for (const b of document.querySelectorAll(".lbar-zen")) b.setAttribute("aria-pressed", String(on));
+}
+
 export function wireBar(root, l) {
+  document.body.classList.toggle("zen", zenOn());
+  const z = root.querySelector(".lbar-zen");
+  if (z) z.addEventListener("click", () => setZen(!zenOn()));
   root.querySelector(".toc-btn").addEventListener("click", () => sheet({ title: `${moduleLabel(l.module)} · ${l.module.title}`, body: moduleToc(l, { inSheet: true }) }));
   root.querySelector(".lbar-theme").addEventListener("click", cycleTheme);
 }
@@ -107,6 +121,7 @@ export async function render(view, route, { keep } = {}) {
 
   const prose = view.querySelector("#prose");
   const mounted = adapter().mountLesson(prose, { lesson: l, data, payload }) || {};
+  const undecorate = watchDecorate(prose);
   notesBox(view.querySelector(".lnotes"), { value: P.note(l), onSave: (v) => P.saveNote(l, v) });
 
   const markBtn = view.querySelector(".mark");
@@ -176,6 +191,8 @@ export async function render(view, route, { keep } = {}) {
     if (/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) || document.activeElement.closest(".cm-editor") || e.metaKey || e.ctrlKey || e.altKey) return;
     if (e.key === "ArrowRight" && next) location.hash = P.lessonHref(next);
     if (e.key === "ArrowLeft" && prev) location.hash = P.lessonHref(prev);
+    if (e.key === "f" || e.key === "F") setZen(!zenOn());
+    if (e.key === "Escape" && zenOn()) setZen(false);
   };
   document.addEventListener("keydown", key);
 
@@ -193,6 +210,8 @@ export async function render(view, route, { keep } = {}) {
       track.flush();
       removeEventListener("scroll", onScroll);
       document.removeEventListener("keydown", key);
+      undecorate();
+      document.body.classList.remove("zen");
       if (mounted.cleanup) mounted.cleanup();
     },
   };

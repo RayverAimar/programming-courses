@@ -19,6 +19,7 @@ import { figureProblems } from "./lib/figures.mjs";
 import { mdPlain } from "../platform/web/core/inline.js";
 import { highlightHtml, lexerFor, escHtml, unescHtml } from "../platform/web/core/highlight.js";
 import { loadPhotos, injectPhotos, copyPhotos } from "../platform/build/photos.mjs";
+import { injectSteps } from "../platform/build/steps.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CONTENT = join(ROOT, "content");
@@ -104,7 +105,7 @@ const usedPhotos = new Set();
 function renderMarkdown(md, pageId, modern, where) {
   // Real photos, "<!-- photo: id -->" before the text they illustrate (platform/build/photos.mjs);
   // the English page sits one folder down.
-  let html = marked.parse(injectPhotos(md, PHOTOS, { lang: L, root: L === DEFAULT_LANG ? "" : "../", zoom: ui("photo.zoom") }, usedPhotos));
+  let html = marked.parse(injectPhotos(injectSteps(md, { labels: { step: ui("steps.step"), prev: ui("steps.prev"), next: ui("steps.next") } }), PHOTOS, { lang: L, root: L === DEFAULT_LANG ? "" : "../", zoom: ui("photo.zoom") }, usedPhotos));
   html = codeBlocks(html);
   html = html.replace(/<!--\s*legacy:\s*([\w-]+)\s*-->/g, (_m, k) => modernBox(modern, k, where));
   html = html.replace(/<!--\s*mdn:\s*([\w\s-]+?)\s*-->/g, (_m, ks) => mdnRow(modern, ks.split(/\s+/), where));
