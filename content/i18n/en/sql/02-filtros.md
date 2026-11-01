@@ -6,6 +6,8 @@ case: surquillo
 
 ## The job
 
+> **Last time:** with `SELECT` and `WHERE` you found Marleny Quispe, the night guard, and the clue in the police report: the gyroscope stopped responding at 22:41 and someone left through Gate 3. Five people left that way; a single condition no longer tells them apart.
+
 Sunday 15 March. On Loop's case board there are five person numbers: **731, 905, 1046, 412 and 377**, the five exits through Gate 3 after Wayra's gyroscope stopped responding. Five suspects are too many for the police. Chasqui found that the guard, **Marleny Quispe**, gave a statement on Saturday: it's in the `interviews` table, word for word.
 
 Today you'll filter more precisely: several conditions at once, lists of values, text that looks alike, and SQL's most treacherous value, the one that means **"we don't know"**: `NULL`.
@@ -73,7 +75,7 @@ title: True, false and unknown
 caption: "`WHERE` only lets through the rows where the condition is **TRUE**. Those that come out FALSE **or NULL** go."
 ```
 
-That's why, to ask about missing data, you use **`IS NULL`** (or `IS NOT NULL`), never `= NULL`. See how many cars each condition finds:
+That's why, to ask about missing data, you use **`IS NULL`** (or `IS NOT NULL`), never `= NULL`. To count the cars in each case we use `count(*)`, which counts rows (you'll meet it properly in session 4), and `UNION ALL`, which stacks several results one under another:
 
 ```sql run
 SELECT 'white' AS label, count(*) FROM vehicles
@@ -88,7 +90,7 @@ UNION ALL
 SELECT 'all', count(*) FROM vehicles;
 ```
 
-`count(*)` counts rows (you'll meet it properly in session 4) and `UNION ALL` stacks several results. Add them up: the white ones plus the not-white ones **don't** make the total. The missing ones are exactly those with a `NULL` colour: they're neither white nor not white, they're unknown.
+Add them up: the white ones plus the not-white ones **don't** make the total. The missing ones are exactly those with a `NULL` colour: they're neither white nor not white, they're unknown.
 
 ```result
 title: The cars of the five who went out

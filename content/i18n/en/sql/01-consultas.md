@@ -6,9 +6,9 @@ case: surquillo
 
 ## The job
 
-Saturday 14 March 2026, seven in the morning. Loop's phone rings: it's **Carmen Ríos**, the technician who runs our repair stall, **number 47 at Surquillo Market No. 1**. Last night she left **Wayra**, our delivery robot, charging at the stall as always. This morning she found it switched off and **missing its gyroscope**, the part that tells it which way it's leaning. Without it, Wayra can't even stand up straight.
+Saturday 14 March 2026, seven in the morning. **Carmen Ríos** calls, the technician at our repair stall, **number 47 at Surquillo Market No. 1**. Last night she left **Wayra**, our delivery robot, charging at the stall. This morning she found it switched off and **missing its gyroscope**, the part that tells it which way it's leaning.
 
-Surquillo's police station has few officers and many cases. The municipality has given Loop read access to its database, **Lima's case files**: the register of people, vehicles, the cards swiped at the market gates, the cameras that read plates, police reports, phone calls. Thousands of rows. **Chasqui**, Loop's first robot, will be your assistant; you ask the questions. And in a database, questions are asked in **SQL**.
+The municipality has given Loop read access to the Surquillo police station's database, **Lima's case files**: the register of people, the cards swiped at the market gates, the cameras that read plates, police reports, phone calls. **Chasqui**, Loop's first robot, will be your assistant; you ask the questions. And in a database, questions are asked in **SQL**.
 
 ```setting
 case: surquillo
@@ -120,9 +120,21 @@ The program knew the path by heart, and when the path changed, the programs brok
 
 **Edgar F. Codd**, a British mathematician at IBM's San José lab, published *A Relational Model of Data for Large Shared Data Banks* in June 1970. His idea: store data as **relations** (tables of rows and columns, no visible pointers) and ask for it by **describing what you want**, not how to find it. The system picks the path. That's what being **declarative** means.
 
-Codd wrote mathematics, not a language. In 1974 **Donald Chamberlin** and **Raymond Boyce**, also at IBM, designed one that read almost like English for the **System R** prototype: they called it **SEQUEL** (*Structured English Query Language*). Since "SEQUEL" was already a trademark of a British aircraft company, they dropped the vowels: **SQL**. That's why some people say "ess-cue-ell" and others say "sequel"; both are fine.
+<!-- /photo -->
+
+### What do you call a language that reads like English?
+
+Codd wrote mathematics, not a language. Someone still had to turn it into something a person could type. Before reading on, bet: if you had to name a query language meant to read almost like English, what would you call it?
+
+<!-- photo: sql-don-chamberlin -->
+
+In 1974 **Donald Chamberlin** and **Raymond Boyce**, also at IBM, designed one for the **System R** prototype and called it **SEQUEL** (*Structured English Query Language*). But "SEQUEL" was already a trademark of a British aircraft company, so they dropped the vowels: **SQL**.
 
 <!-- /photo -->
+
+That's why some people say "ess-cue-ell" and others say "sequel"; both are fine.
+
+> **Takeaway:** SQL joins two ideas from IBM: Codd's (1970), ask for what you want and not how to find it, and a language that reads almost like English (1974). Its name is SEQUEL without the vowels.
 
 ```figure
 title: SQL through time
@@ -163,6 +175,8 @@ SQL was born so you ask for data by saying what you want, not how to go and get 
 ### SQLite, this course's database
 
 In spring 2000, **D. Richard Hipp** was writing software for US Navy destroyers as a contractor for General Dynamics. The program depended on a separate database server, and whenever that server was unavailable, the program couldn't do anything. Hipp wondered why a database needed a server and wrote one that didn't: **SQLite**, a library that keeps the whole database in **a single file** and runs inside the program that uses it. Version 1.0 came out in August 2000, and its code is in the **public domain**.
+
+### Today it is everywhere
 
 Today SQLite is inside every phone, every browser and thousands of apps. The project itself estimates there are **over a trillion** SQLite databases in use. This course uses it because it runs in your browser with nothing to install (compiled to WebAssembly) and because it's real SQL: what you learn here works in PostgreSQL or MySQL, and every session points out where they differ.
 
@@ -353,7 +367,7 @@ id: sql1-predice-division
 type: predict
 title: Dividing in SQLite
 prompt: |
-  Chasqui wants to share 7 batteries between 2 robots. What does this query return? (A `SELECT` without `FROM` computes a single row.)
+  Chasqui wants to share 7 batteries between 2 robots. What does this query return? (A `SELECT` without `FROM` computes a single row, and `%` is the remainder of a division.)
 code: |
   SELECT 7 / 2, 7 / 2.0, 7 % 2;
 options:
@@ -522,8 +536,7 @@ solution: |
   FROM reports
   WHERE report_date = '2026-03-14'
     AND district = 'Surquillo'
-    AND kind = 'theft'
-    AND place LIKE '%47%';
+    AND kind = 'theft';
 answer: Marleny Quispe
 answerLabel: What's the guard's name?
 reveal: |

@@ -6,7 +6,9 @@ case: sensores
 
 ## El encargo
 
-Lunes 30 de marzo. Ya sabes **cuándo**: los robots se callaron 40 minutos las madrugadas del 24 y del 26, mientras alguien usaba la tarjeta perdida de Wilmer. Falta **quién**. Carmen está segura de que para descalibrar así a un robot hay que cambiarle el firmware, y eso deja huella.
+> **La vez pasada:** los marcos midieron las visitas: la tarjeta T-0412 hizo dos visitas de 38 y 39 minutos, y su dueño, Wilmer, la había denunciado perdida antes de la primera. Ya sabes cuándo; falta quién.
+
+Lunes 30 de marzo. Ya sabes **cuándo**: los robots se callaron 40 minutos las madrugadas del 24 y del 26. Falta **quién**. Carmen está segura de que para descalibrar así a un robot hay que cambiarle el firmware, y eso deja huella.
 
 La huella está en la columna `datos` de `lecturas`: cada lectura lleva un texto en **JSON** con la versión de firmware que la produjo, y cuando un robot se actualiza, guarda una fila del sensor `'sistema'` con quién lo actualizó, desde qué equipo y qué cambió. SQL no ve adentro de un texto… salvo con las funciones de JSON. Y para leer las lecturas como lo que son, una **serie de tiempo**, vas a agruparlas por hora y compararlas con la hora o el día anterior.
 

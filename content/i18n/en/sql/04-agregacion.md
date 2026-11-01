@@ -6,6 +6,8 @@ case: surquillo
 
 ## The job
 
+> **Last time:** the functions cleaned up the camera's plate and UTC time: Renzo Huamaní's car was there at 22:48, and he said he left at ten past eleven. Lying is not a motive; to look for one you have to summarise thousands of rows.
+
 Tuesday 17 March. You already know **Renzo Huamaní lied**: his card logged the exit at 22:46 and the camera saw his car two minutes later, not at ten past eleven. But lying doesn't prove he took the gyroscope. The **why** is missing: a delivery robot's gyroscope is worth more than a thousand soles, and someone had to buy it.
 
 The prosecutor's office gave Loop two more tables: **`calls`** and **`transfers`** (phone-to-phone payments): thousands of rows each. Nobody is going to read them one by one. Today you'll **summarise** them: count, add up and average by groups, so the pattern jumps out.
@@ -82,7 +84,13 @@ Three different counts on the same table: `COUNT(*)` counts **rows**, `COUNT(col
 
 ### Inside: each function keeps a tally
 
+<!-- photo: sql-hollerith-census-machine -->
+
 The engine doesn't gather every row in memory and calculate afterwards. Each aggregate is an **accumulator**: it starts empty, looks at the rows one at a time and updates a couple of numbers. At the end it hands over the result.
+
+> **History:** This idea of going through each record once and keeping a running count is old. Herman Hollerith patented a punched-card tabulating machine in 1884, and the US Census Office used his machines for the 1890 census.
+
+<!-- /photo -->
 
 | function | what it keeps while it goes through (and hands over) | no rows or all `NULL` |
 |---|---|---|
@@ -94,6 +102,20 @@ The engine doesn't gather every row in memory and calculate afterwards. Each agg
 | `MIN` / `MAX` | the smallest (or largest) seen so far | `NULL` |
 
 That's why `AVG` **ignores** `NULL`s: it neither adds nor counts them. If three payments are 100, 200 and `NULL`, the average is 150, not 100.
+
+```steps
+# AVG walking over 100, 200 and NULL
+## It starts empty
+`AVG` keeps **two** numbers: `sum = 0` and `count = 0`. It hasn't seen any row yet.
+## First row: 100
+It isn't `NULL`, so the sum goes up to **100** and the count to **1**.
+## Second row: 200
+The sum goes up to **300** and the count to **2**.
+## Third row: NULL
+A `NULL` is neither added nor counted: the sum stays at **300** and the count at **2**.
+## At the end it divides
+It hands back `300 / 2 = 150`. If it had counted the `NULL`, it would give `300 / 3 = 100`.
+```
 
 ### GROUP BY: one accumulator per group
 

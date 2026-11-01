@@ -6,6 +6,8 @@ case: taller
 
 ## El encargo
 
+> **La vez pasada:** el planificador te ayudó a probar que Teodoro decía la verdad: llamó a Rosa Ugarte esa noche y nadie contestó. Hasta ahora solo leías datos; desde hoy la municipalidad te deja escribirlos.
+
 Lunes 6 de abril de 2026. Con cuatro expedientes cerrados, la Municipalidad de Surquillo confía en Loop. **Edith Choque**, la gerenta de Mercados, llama temprano: la oficina que administra las licencias del Mercado N.º 1 funciona con una app vieja que escribe en una base de datos, el **padrón de puestos**, y quiere que Loop la reemplace. Hasta hoy solo leías la base; desde hoy **escribes en ella**.
 
 Esa misma mañana, **Carmen** recibe una notificación rara: según la municipalidad, el puesto 47, el de Loop, **ya no está a su nombre**. Ella nunca firmó nada. Antes de tocar una sola fila vas a aprender a escribir datos sin romper nada: un `UPDATE` sin `WHERE` cambia los 120 puestos de un golpe.
@@ -60,7 +62,7 @@ caption: "`padron_puestos` tiene una fila por puesto: su titular, su licencia y 
 - **Sin `WHERE`, `UPDATE` y `DELETE` tocan todas las filas.** El hábito que salva carreras: escribe primero `SELECT * FROM tabla WHERE …`, mira qué filas salen, y recién entonces cambia `SELECT *` por `UPDATE … SET …` o `DELETE`.
 - **`RETURNING`** al final de cualquiera de las tres devuelve las filas que tocó, como un `SELECT`: `DELETE FROM … WHERE … RETURNING id, puesto;`.
 
-Por dentro, el motor hace lo mismo que con un `SELECT`: recorre la tabla, evalúa el `WHERE` fila por fila y, en cada fila que pasa, calcula los valores nuevos y la reescribe. Si **una sola** fila rompe una regla de la tabla, SQLite **deshace la sentencia entera**: nunca quedan cambios a medias. Dale a ▶:
+Por dentro, el motor hace lo mismo que con un `SELECT`: recorre la tabla, evalúa el `WHERE` fila por fila y, en cada fila que pasa, calcula los valores nuevos y la reescribe. Si **una sola** fila rompe una regla de la tabla, SQLite **deshace la sentencia entera**: nunca quedan cambios a medias. Dale a ▶ (la tabla de ejemplo se creó con unas reglas, `PRIMARY KEY`, `NOT NULL` y `CHECK`, que explico justo después):
 
 ```cambio
 title: Tres sentencias sobre una tabla chiquita
@@ -81,7 +83,9 @@ notes:
 caption: "La segunda sentencia trae dos filas: la del puesto 121 estaba bien, pero el 47 ya existía (es la **clave primaria**). SQLite no inserta ni la buena: la sentencia es **atómica**."
 ```
 
-**Las reglas de la tabla** se escriben al crearla y la base las hace cumplir en cada `INSERT` y `UPDATE`:
+### Las reglas de la tabla
+
+Se escriben al crearla y la base las hace cumplir en cada `INSERT` y `UPDATE`:
 
 | restricción | qué impide |
 |---|---|
@@ -94,7 +98,23 @@ caption: "La segunda sentencia trae dos filas: la del puesto 121 estaba bien, pe
 
 Dos rarezas de SQLite que conviene saber. Las claves foráneas **vienen apagadas**: hay que encenderlas en cada conexión con `PRAGMA foreign_keys = ON;`. Y los tipos son **flexibles**: en una columna `INTEGER` puedes guardar `'doce'` y SQLite lo acepta como texto. Si quieres tipos estrictos, como en PostgreSQL, crea la tabla con **`STRICT`** al final: `CREATE TABLE t (…) STRICT;`.
 
-**UPSERT.** Con una restricción `UNIQUE` o `PRIMARY KEY`, un `INSERT` que choca puede convertirse en un `UPDATE`: `INSERT … ON CONFLICT (columna) DO UPDATE SET col = excluded.col`. `excluded` es la fila que intentabas insertar. Con `DO NOTHING`, la fila que choca simplemente no entra.
+### UPSERT
+
+Con una restricción `UNIQUE` o `PRIMARY KEY`, un `INSERT` que choca puede convertirse en un `UPDATE`: `INSERT … ON CONFLICT (columna) DO UPDATE SET col = excluded.col`. `excluded` es la fila que intentabas insertar. Con `DO NOTHING`, la fila que choca simplemente no entra.
+
+```steps
+# Un INSERT que choca se vuelve UPDATE
+## Intentas insertar
+`INSERT INTO licencias VALUES (47, 'Carmen', '2027-03-31', 120) ON CONFLICT (puesto) DO UPDATE SET vence = excluded.vence;`
+## SQLite revisa la clave
+Busca el puesto **47** en la tabla. Si no existe, la fila entra y ahí acaba todo.
+## Hay choque
+El puesto 47 ya existe, y `PRIMARY KEY` no permite dos. Sin `ON CONFLICT`, la sentencia fallaría entera.
+## Entra la cláusula
+`excluded` es la fila que intentabas insertar: `excluded.vence` vale `'2027-03-31'`. `DO UPDATE` aplica el `SET` sobre la fila que **ya estaba**.
+## Resultado
+La tabla sigue con una sola fila del puesto 47, con la fecha nueva. Con `DO NOTHING` la fila que choca simplemente no entra.
+```
 
 ```sql run
 SELECT pp.puesto, p.nombre AS titular, pp.vence, pp.actualizado, pp.actualizado_por

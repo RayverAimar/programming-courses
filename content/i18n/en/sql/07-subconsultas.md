@@ -6,6 +6,8 @@ case: pagos
 
 ## The job
 
+> **Last time:** the `LEFT JOIN` showed you an unregistered chip collecting deposits: that made four numbers, and all the money ends up with Milagros Tello. To know what she does with it you need a query with another one inside.
+
 Wednesday 25 March. All the deposit money ends up on the phone of **Milagros Tello**, a cashier from Surquillo. She gave her statement this morning: she says Kevin and Brenda were **paying back money she lent them**. Chasqui doesn't believe her, but a hunch isn't proof. You need to know **what Milagros does with the money** and **how much** she got in total.
 
 Today's questions have a question inside them: "Milagros's payments **bigger than her own average**", "what she got **from the numbers that collected deposits**". To write them as a single query, you put one query inside another: a **subquery**.
@@ -65,7 +67,9 @@ subLabel: its payer's average
 caption: "Each row compares its amount with **its own payer's** average: A averages 50, B 200 and C 40. The subquery runs six times, once per row. With six rows it doesn't matter; with six thousand, in session 14 you'll see how the planner turns it into a join."
 ```
 
-**A derived table** is useful when you first want to group and then filter or join the result:
+### Derived table
+
+A derived table is useful when you first want to group and then filter or join the result:
 
 ```sql run
 SELECT r.to_phone, r.total
@@ -78,7 +82,9 @@ WHERE r.total > 4000
 ORDER BY r.total DESC;
 ```
 
-**`NOT IN` and `NULL`, again.** In session 2 you saw that `3 NOT IN (1, 2, NULL)` is `NULL`. With a subquery it's worse, because you can't see the list. Some phones in `people` are `NULL`, so this returns **zero rows**, even though some numbers belong to nobody:
+### `NOT IN` and `NULL`, again
+
+In session 2 you saw that `3 NOT IN (1, 2, NULL)` is `NULL`. With a subquery it's worse, because you can't see the list. Some phones in `people` are `NULL`, so this returns **zero rows**, even though some numbers belong to nobody:
 
 ```sql run
 SELECT DISTINCT to_phone
@@ -128,7 +134,7 @@ id: sql7-predice-null
 type: predict
 title: The NULL in the subquery
 prompt: |
-  `SELECT 1 UNION ALL SELECT NULL` is a list with two values: 1 and `NULL`. What does it return?
+  `SELECT 1 UNION ALL SELECT NULL` is a list with two values: 1 and `NULL`. A `SELECT` without `FROM` can have a `WHERE`: it returns its row only if the condition is true. What does it return?
 code: |
   SELECT 5 NOT IN (SELECT 1 UNION ALL SELECT NULL),
          1 IN (SELECT 1 UNION ALL SELECT NULL),
@@ -431,7 +437,7 @@ reveal: |
   **S/ 4806**, **90%** of the S/ 5340 the 14 victims paid. What they were "paying back" can't be loans: it's exactly the share of the deposits the collectors didn't keep. And almost all of it goes out again. **Milagros is the till.** We still need to know who she works for.
 hints:
   - "The query above adds up **everything** Milagros received. Add `AND from_phone IN (SELECT to_phone FROM transfers WHERE note LIKE 'deposit%')`."
-  - "The deposit total goes as a column: `(SELECT SUM(amount) FROM transfers WHERE note LIKE 'deposit%') AS deposits`. Multiply by `100.0`, not `100`, to avoid integer division."
+  - "The deposit total goes as a column: `(SELECT SUM(amount) FROM transfers WHERE note LIKE 'deposit%') AS deposits`. Multiply by `100.0`, not `100`, to avoid integer division. And `round(value, 1)` rounds to one decimal."
 tests:
   - name: received, deposits and percentage in one row
     same: SELECT SUM(amount), (SELECT SUM(amount) FROM transfers WHERE note LIKE 'deposit%'), round(100.0 * SUM(amount) / (SELECT SUM(amount) FROM transfers WHERE note LIKE 'deposit%'), 1) FROM transfers WHERE to_phone = (SELECT phone FROM people WHERE name = 'Milagros Tello Benavides') AND from_phone IN (SELECT to_phone FROM transfers WHERE note LIKE 'deposit%')

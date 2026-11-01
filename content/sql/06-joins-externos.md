@@ -6,6 +6,8 @@ case: pagos
 
 ## El encargo
 
+> **La vez pasada:** con `JOIN` uniste denuncias, padrón y pagos y llegaste a Brenda Salazar Cusi, que cobró el adelanto de Sonia. Pero un `JOIN` descarta las filas que no encuentran pareja, y por eso nueve denuncias dieron siete filas.
+
 Martes 24 de marzo. Ayer quedaron tres cobradores con nombre, pero también una cuenta que no cierra: **nueve denuncias** de estafa hablan de un adelanto y tu consulta devolvió **siete filas**. Las denuncias de **Edwin Condori** e **Iván Choque** se perdieron en el camino. Y hay algo más: Chasqui cree que hubo víctimas que pagaron y **nunca denunciaron**, por vergüenza o porque eran apenas 300 soles.
 
 Para ver lo que falta necesitas joins que no descarten filas: el **LEFT JOIN**. Para seguir la plata de un celular al siguiente, una tabla unida **consigo misma**. Y para encontrar a quien nunca hizo algo, un **antijoin**.
@@ -56,7 +58,9 @@ caption: "El 977000003 no está en `personas`: con `JOIN` desaparecería; con `L
 
 **`RIGHT JOIN`** es lo mismo mirado desde la otra tabla (conserva toda la derecha) y **`FULL JOIN`** conserva las dos. SQLite los tiene desde la versión 3.39 (2022); en código viejo verás que se daban vuelta las tablas para escribir un `LEFT JOIN`.
 
-**El filtro en `ON` o en `WHERE`.** Con `JOIN` da lo mismo. Con `LEFT JOIN`, no: una condición en el `ON` decide **con quién se empareja** cada fila (y si no encuentra a nadie, sale con `NULL`); una condición en el `WHERE` se aplica **después** y tacha filas, también las rellenadas con `NULL`.
+### El filtro en `ON` o en `WHERE`
+
+Con `JOIN` da lo mismo. Con `LEFT JOIN`, no: una condición en el `ON` decide **con quién se empareja** cada fila (y si no encuentra a nadie, sale con `NULL`); una condición en el `WHERE` se aplica **después** y tacha filas, también las rellenadas con `NULL`.
 
 ```resultado
 title: La condición en el ON
@@ -81,7 +85,9 @@ query: |
 caption: "`WHERE e.cargo = 'técnico'` es `NULL` en las filas rellenadas, así que las tacha: el `LEFT JOIN` se volvió un `JOIN` común sin avisar."
 ```
 
-**Una tabla consigo misma (autojoin).** Para preguntar "A le pagó a B, ¿y B le pagó a alguien después?", unes `transferencias` con `transferencias`, con dos alias: `t1` es el primer pago y `t2` el siguiente, y el `ON` dice cómo se encadenan: lo que recibió `t1` es lo que paga `t2`.
+### Una tabla consigo misma (autojoin)
+
+Para preguntar "A le pagó a B, ¿y B le pagó a alguien después?", unes `transferencias` con `transferencias`, con dos alias: `t1` es el primer pago y `t2` el siguiente, y el `ON` dice cómo se encadenan: lo que recibió `t1` es lo que paga `t2`.
 
 ```figura
 title: Un autojoin encadena filas de la misma tabla
@@ -106,7 +112,9 @@ JOIN personas AS b ON b.nacimiento = a.nacimiento AND a.id < b.id
 WHERE a.distrito = 'Surquillo' AND b.distrito = 'Surquillo';
 ```
 
-**Antijoin y semijoin.** A veces no quieres las parejas, sino saber **si existen**. Un **antijoin** se queda con las filas que **no** tienen pareja: `LEFT JOIN … WHERE derecha.id IS NULL`, o mejor, `NOT EXISTS (…)`. Un **semijoin** se queda con las que **sí** tienen, **una sola vez** aunque tengan varias: `EXISTS (…)`. Lo de adentro del `EXISTS` es una consulta que mira la fila de afuera; en la sesión 7 verás cómo corre.
+### Antijoin y semijoin
+
+A veces no quieres las parejas, sino saber **si existen**. Un **antijoin** se queda con las filas que **no** tienen pareja: `LEFT JOIN … WHERE derecha.id IS NULL`, o mejor, `NOT EXISTS (…)`. Un **semijoin** se queda con las que **sí** tienen, **una sola vez** aunque tengan varias: `EXISTS (…)`. Lo de adentro del `EXISTS` es una consulta que mira la fila de afuera; en la sesión 7 verás cómo corre.
 
 ```junta
 title: NOT EXISTS, quien no tiene ninguna pareja
@@ -152,7 +160,9 @@ type: semi
 caption: "Nelly denunció dos veces y sale una sola vez. Con un `JOIN` común saldría dos."
 ```
 
-**Contar después de multiplicar.** Si un `JOIN` duplica filas, `COUNT(*)` cuenta los duplicados. `COUNT(DISTINCT p.id)` cuenta personas distintas:
+### Contar después de multiplicar
+
+Si un `JOIN` duplica filas, `COUNT(*)` cuenta los duplicados. `COUNT(DISTINCT p.id)` cuenta personas distintas:
 
 ```sql run
 SELECT COUNT(*) AS filas, COUNT(DISTINCT p.id) AS personas
@@ -547,7 +557,7 @@ reveal: |
   **A Milagros Tello Benavides.** Los 14 adelantos, de los cuatro cobradores (el chip también), saltan a su celular entre 48 y 140 minutos después, y siempre es **el 90 %**: de 300 salen 270, de 500 salen 450. Los cobradores se quedan con una comisión y pasan el resto. Milagros vive en Surquillo y trabaja de cajera. ¿Es ella la que manda, o solo la caja de alguien más?
 hints:
   - "El `ON` del autojoin: `t2.de_telefono = t1.a_telefono AND t2.momento BETWEEN t1.momento AND datetime(t1.momento, '+3 hours')`."
-  - "Los minutos: `(julianday(t2.momento) - julianday(t1.momento)) * 24 * 60`, redondeado y pasado a entero como en la sesión 3."
+  - "Los minutos: `(julianday(t2.momento) - julianday(t1.momento)) * 24 * 60`, envuelto en `CAST(round(…) AS INTEGER)` (`round` redondea), como en la sesión 3."
 tests:
   - name: cada adelanto con el pago que sigue, por momento
     same: SELECT t1.monto, t2.monto, CAST(round((julianday(t2.momento) - julianday(t1.momento)) * 1440) AS INTEGER), r.nombre FROM transferencias AS t1 JOIN transferencias AS t2 ON t2.de_telefono = t1.a_telefono AND t2.momento BETWEEN t1.momento AND datetime(t1.momento, '+3 hours') LEFT JOIN personas AS r ON r.telefono = t2.a_telefono WHERE t1.mensaje LIKE 'adelanto%' ORDER BY t1.momento

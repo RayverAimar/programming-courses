@@ -6,9 +6,17 @@ case: frio
 
 ## El encargo
 
+> **La vez pasada:** mirar por dentro te llevó a la Cerrajería El Candado, que recibió cinco llamadas de la casa 4417825, la última la noche del robo. Para probar quién vivía ahí hay que cruzar cuatro tablas en una sola consulta, y quien decide cómo es el planificador.
+
 Martes 31 de marzo, en la noche. Haydée vuelve a Loop. En la pizarra hay dos relevos desde la misma casa, **4417825**, y una cerrajería de cajas fuertes a la que esa casa llamó cinco veces. La guía de 1998 dice que el teléfono estaba a nombre de **Gloria Tello de Salazar**, que no trabajaba en la fábrica: para saber quién del equipo vivía en esa casa hay que cruzar la guía con la **planilla**, que sí guarda el teléfono de cada empleado.
 
-"Eso no basta", dice Haydée. "A mi papá lo condenaron con menos, pero yo no quiero hacerle a nadie lo que le hicieron a él." Tiene razón: la prueba tiene que ser **una sola consulta** que cruce todo a la vez: quién conocía la combinación (el árbol de la sesión 12), los relevos (la sesión 13) y la planilla. Cuatro tablas, dos de ellas enormes.
+"Eso no basta", dice Haydée. "A mi papá lo condenaron con menos, pero yo no quiero hacerle a nadie lo que le hicieron a él." Tiene razón: la prueba tiene que ser **una sola consulta** que cruce todo a la vez:
+
+- quién conocía la combinación (el árbol de la sesión 12);
+- los relevos (la sesión 13);
+- la planilla.
+
+Cuatro tablas, dos de ellas enormes.
 
 Cuando escribes un `JOIN`, no dices **cómo** juntar las filas: eso lo decide el **planificador** de SQLite, la parte que lee tu consulta y elige un plan entre muchos posibles. Hoy aprendes cómo elige, qué hace cuando no hay índice y cómo lo hacen otros motores.
 
@@ -93,7 +101,9 @@ timeline:
 
 ## Lo mínimo
 
-**Un JOIN en SQLite es un bucle dentro de otro.** Para `A JOIN B ON …`, SQLite toma una fila de la tabla de **afuera** y busca sus parejas en la de **adentro**; luego la siguiente fila de afuera, y así. Es el *nested loop* que viste en la sesión 5. Lo que decide si tarda 1 milisegundo o 10 segundos es **qué tabla va afuera** y **cómo se busca adentro**.
+### Un JOIN en SQLite es un bucle dentro de otro
+
+Para `A JOIN B ON …`, SQLite toma una fila de la tabla de **afuera** y busca sus parejas en la de **adentro**; luego la siguiente fila de afuera, y así. Es el *nested loop* que viste en la sesión 5. Lo que decide si tarda 1 milisegundo o 10 segundos es **qué tabla va afuera** y **cómo se busca adentro**.
 
 ```algoritmo
 title: "Bucle anidado: cada fila de afuera recorre toda la de adentro"
@@ -104,7 +114,9 @@ right: { name: telefonos, cols: [numero, titular], rows: [["4721093", "Caseta"],
 caption: "6 filas afuera por 5 adentro: 30 comparaciones. Con 60 000 llamadas y 5000 teléfonos serían 300 millones."
 ```
 
-**El orden lo elige el planificador, no tú.** Escribir las tablas al revés no cambia el plan: SQLite estima el costo de cada orden posible y se queda con el más barato. Para estimar usa lo que sabe: qué índices hay, qué columnas fija el `WHERE` y, si se lo diste, cuántas filas tiene cada tabla. Aquí el empleado 318 es **una** fila (se busca por su `id`), así que va afuera, y adentro se buscan sus llamadas por `origen`:
+### El orden lo elige el planificador, no tú
+
+Escribir las tablas al revés no cambia el plan: SQLite estima el costo de cada orden posible y se queda con el más barato. Para estimar usa lo que sabe: qué índices hay, qué columnas fija el `WHERE` y, si se lo diste, cuántas filas tiene cada tabla. Aquí el empleado 318 es **una** fila (se busca por su `id`), así que va afuera, y adentro se buscan sus llamadas por `origen`:
 
 ```plan
 title: "empleados_1998 afuera: 1 fila; llamadas_1998 adentro, con índice"
@@ -126,7 +138,9 @@ panes:
     value: "60 000 × 3 páginas"
 ```
 
-**Sin índice, SQLite fabrica uno.** Si adentro no hay índice útil y el bucle de afuera tiene muchas filas, SQLite puede armar un **índice automático**: recorre la tabla de adentro una vez, construye un B-tree temporal con la columna del `ON` y lo usa para cada fila de afuera. Al terminar la consulta lo bota. En el plan dice `AUTOMATIC`:
+### Sin índice, SQLite fabrica uno
+
+Si adentro no hay índice útil y el bucle de afuera tiene muchas filas, SQLite puede armar un **índice automático**: recorre la tabla de adentro una vez, construye un B-tree temporal con la columna del `ON` y lo usa para cada fila de afuera. Al terminar la consulta lo bota. En el plan dice `AUTOMATIC`:
 
 ```plan
 title: "Un índice automático, armado para esta consulta y botado después"
@@ -139,7 +153,23 @@ query: |
 
 Es una buena salida de emergencia, pero se paga **en cada ejecución**: leer la tabla entera y ordenarla. Por eso la caminata de la sesión 12 con `aristas` no se colgó en todo diciembre (SQLite indexó `aristas` sola) y la versión con `OR` sí: un `OR` entre dos columnas ni siquiera puede usar un índice automático.
 
-**Otros motores tienen más algoritmos.** SQLite solo hace bucles anidados (con índice, con índice automático o sin nada). PostgreSQL, MySQL 8 y SQL Server además tienen:
+```steps
+# Un índice automático, paso a paso
+## La consulta no tiene índice adentro
+El `ON` compara una columna de la tabla de adentro, y esa columna no tiene ningún índice.
+## SQLite lo ve venir
+Si el bucle de afuera tiene muchas filas, buscar sin índice sería recorrer la tabla de adentro **una vez por cada fila de afuera**.
+## Arma un B-tree temporal
+Recorre la tabla de adentro **una sola vez** y construye un árbol ordenado por la columna del `ON`. En el plan aparece como `AUTOMATIC`.
+## Cada fila de afuera baja por el árbol
+En vez de leer la tabla entera, cada fila de afuera baja por ese árbol y lee solo sus parejas.
+## Al terminar, lo bota
+El índice vive lo que dura la consulta. La siguiente ejecución lo arma de nuevo y paga otra vez.
+```
+
+### Otros motores tienen más algoritmos
+
+SQLite solo hace bucles anidados (con índice, con índice automático o sin nada). PostgreSQL, MySQL 8 y SQL Server además tienen:
 
 - **Hash join**: recorre la tabla chica una vez y la reparte en **baldes** según una función hash de la clave; después cada fila de la grande calcula su balde y compara **solo** con lo que hay ahí. Ideal para juntar tablas grandes sin índice por igualdad.
 - **Merge join**: si las dos tablas están **ordenadas** por la clave (por un índice o después de ordenarlas), avanza con un dedo en cada una, como quien junta dos listas ordenadas. Cada fila se mira casi una sola vez.
@@ -163,7 +193,9 @@ right: { name: telefonos, cols: [numero, titular], rows: [["4721093", "Caseta"],
 
 En PostgreSQL, `EXPLAIN` muestra `Hash Join`, `Merge Join` o `Nested Loop`, y el planificador elige entre los tres según sus estadísticas.
 
-**Ordenar y agrupar también cuesta.** Si el `ORDER BY` o el `GROUP BY` no coinciden con el orden de un índice, SQLite arma un **B-tree temporal** para ordenar: en el plan, `USE TEMP B-TREE`. Con un índice que ya trae las filas en ese orden, se lo ahorra:
+### Ordenar y agrupar también cuesta
+
+Si el `ORDER BY` o el `GROUP BY` no coinciden con el orden de un índice, SQLite arma un **B-tree temporal** para ordenar: en el plan, `USE TEMP B-TREE`. Con un índice que ya trae las filas en ese orden, se lo ahorra:
 
 ```plan
 title: "Agrupar sin índice: dos árboles temporales"
@@ -186,7 +218,9 @@ query: |
   ORDER BY origen;
 ```
 
-**ANALYZE: darle números al planificador.** Sin estadísticas, SQLite supone que cualquier índice por igualdad deja pocas filas. Con dos índices posibles, puede elegir mal. `ANALYZE` recorre las tablas y guarda en `sqlite_stat1` cuántas filas hay y cuántas trae, en promedio, cada valor de cada índice:
+### ANALYZE: darle números al planificador
+
+Sin estadísticas, SQLite supone que cualquier índice por igualdad deja pocas filas. Con dos índices posibles, puede elegir mal. `ANALYZE` recorre las tablas y guarda en `sqlite_stat1` cuántas filas hay y cuántas trae, en promedio, cada valor de cada índice:
 
 ```plan
 title: "Antes de ANALYZE: elige el índice por tipo"
@@ -219,7 +253,9 @@ WHERE tbl = 'telefonos_1998';
 
 `'5135 1712'` se lee: 5135 filas en la tabla; cada valor de `tipo` trae, en promedio, 1712. El de `distrito`, unas 257. El planificador prefiere el más selectivo.
 
-**Medir.** El plan dice **qué** hará; para saber **cuánto** tarda hay que medir con datos reales. En la consola de SQLite, `.timer on` antes de la consulta. En PostgreSQL, `EXPLAIN ANALYZE` corre la consulta y anota en cada paso las filas reales y los milisegundos. La regla: mide, cambia **una** cosa (un índice, `ANALYZE`, una condición reescrita), vuelve a medir.
+### Medir
+
+El plan dice **qué** hará; para saber **cuánto** tarda hay que medir con datos reales. En la consola de SQLite, `.timer on` antes de la consulta. En PostgreSQL, `EXPLAIN ANALYZE` corre la consulta y anota en cada paso las filas reales y los milisegundos. La regla: mide, cambia **una** cosa (un índice, `ANALYZE`, una condición reescrita), vuelve a medir.
 
 > **Trampa común:** reordenar las tablas en el `FROM` "para que vaya más rápido" no hace nada: el planificador las reordena igual. Lo que cambia el plan es darle **opciones** (un índice que sirva a la condición) e **información** (`ANALYZE` después de cargar o cambiar muchos datos). Si de verdad quieres imponer el orden, SQLite respeta el orden escrito con `CROSS JOIN`; casi nunca hace falta, y si los datos cambian, el plan forzado se queda viejo.
 

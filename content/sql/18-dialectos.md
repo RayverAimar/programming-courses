@@ -6,7 +6,14 @@ case: taller
 
 ## El encargo
 
-Jueves 9 de abril. Dos noticias. La buena: Edith aprobó el diseño de Loop, y el padrón nuevo va a vivir en el servidor de la municipalidad, que corre **PostgreSQL**. La otra: la **Contraloría** abrió una investigación por los cuatro traspasos y manda sus consultas escritas para PostgreSQL. Tú trabajas en SQLite. Mismo SQL, distintos dialectos: lo que en uno es una línea, en otro es un error… o, peor, un resultado distinto sin aviso.
+> **La vez pasada:** el diseño te llevó a Delia Lozano Yupanqui, la de sistemas: las cuatro filas de Yolanda se editaron el 20 de marzo y todas llevan su celular. ¿Delia preparó los traspasos, o alguien quiere que parezca? Para responder hay que cruzar todos los expedientes, y ahora en dos dialectos.
+
+Jueves 9 de abril. Dos noticias:
+
+- **La buena:** Edith aprobó el diseño de Loop, y el padrón nuevo va a vivir en el servidor de la municipalidad, que corre **PostgreSQL**.
+- **La otra:** la **Contraloría** abrió una investigación por los cuatro traspasos y manda sus consultas escritas para PostgreSQL.
+
+Tú trabajas en SQLite. Mismo SQL, distintos dialectos: lo que en uno es una línea, en otro es un error… o, peor, un resultado distinto sin aviso.
 
 Y queda la última pregunta del expediente. Alfredo dice que se fue a las 18:30 y que alguien usó su cuenta. El teléfono de la planilla apunta a Delia; la computadora, a la ventanilla 1. Para cerrar el caso vas a cruzar **todos los expedientes**: las puertas del mercado y las llamadas del primer caso, los pagos del segundo y la bitácora de este.
 
@@ -55,7 +62,13 @@ table:
 
 ## Lo mínimo
 
+<!-- photo: sql-michael-stonebraker -->
+
 SQL es un estándar, pero cada motor lo habla con su acento. Las diferencias que más muerden al pasar una consulta de un motor a otro:
+
+> **Historia:** PostgreSQL viene del proyecto Ingres de la Universidad de California en Berkeley, que dirigía Michael Stonebraker. Su sucesor se llamó POSTGRES, y en 1996 lo rebautizaron PostgreSQL porque ya entendía SQL.
+
+<!-- /photo -->
 
 | tema | SQLite (este curso) | PostgreSQL | MySQL |
 |---|---|---|---|
@@ -74,7 +87,9 @@ SQL es un estándar, pero cada motor lo habla con su acento. Las diferencias que
 | **FULL JOIN** | sí (3.39) | sí | no |
 | **comillas** | `'texto'`, `"columna"` | igual | `'texto'`, `` `columna` `` |
 
-**Pasar una consulta de un dialecto a otro**, pieza por pieza. Esta es una consulta de la Contraloría sobre licencias, en PostgreSQL. Dale a ▶:
+### Pasar una consulta de un dialecto a otro
+
+Pieza por pieza. Esta es una consulta de la Contraloría sobre licencias, en PostgreSQL. Dale a ▶:
 
 ```traduccion
 title: De PostgreSQL a SQLite
@@ -174,7 +189,7 @@ id: sql18-predice-booleanos
 type: predict
 title: Verdadero más verdadero
 prompt: |
-  ¿Qué devuelve en SQLite?
+  `typeof(x)` dice de qué tipo es el valor de `x`. ¿Qué devuelve en SQLite?
 code: |
   SELECT TRUE + TRUE, 5 > 3, typeof(5 > 3);
 options:

@@ -6,9 +6,11 @@ case: taller
 
 ## The job
 
-Wednesday 8 April. Edith has made a decision: the old app is retired and Loop **designs the new registry** from scratch. For that, Delia from IT hands you the only thing the office had before the app: **the Excel sheet** where each registrar wrote down the stalls by hand, and which someone kept filling in "just in case". It was imported as it was into the table `stall_sheet`.
+> **Last time:** the transactions showed you in the log that Carmen's renewal was approved at 18:47 at counter 2, and that five minutes later, at counter 1, a transfer of the same stall was processed. Now it is time to design the new registry so that two registrars don't step on each other.
 
-A spreadsheet lets you type anything in any cell, and it shows: names typed three different ways, two trades in one cell, the same stall twice. Today you'll learn to **design tables** that don't let that happen, to save named queries (**views**) and to make the database note every change by itself (**triggers**). And in that sheet there's something nobody expected.
+Wednesday 8 April. Edith has made a decision: the old app is retired and Loop **designs the new registry** from scratch. For that, Delia from IT hands you the only thing the office had before the app: **the Excel sheet** where each registrar wrote down the stalls by hand, and which someone kept filling in "just in case". It was imported into the table `stall_sheet`.
+
+A spreadsheet lets you type anything in any cell: names typed three different ways, two trades in one cell, the same stall twice. Today you'll learn to **design tables** that don't let that happen, to save named queries (**views**) and to make the database note every change by itself (**triggers**). And in that sheet there's something nobody expected.
 
 ```setting
 case: taller
@@ -52,7 +54,13 @@ caption: "Two trades in one cell, an upper-case name and stall 89 copied twice. 
 | **2NF** | does each column depend on the **whole** key? | in `stall_trades(stall, trade, aisle)`, the aisle depends only on the stall | the aisle goes in `stalls` |
 | **3NF** | does any column depend on another that isn't the key? | `phone` depends on the `national_id`, not on the stall | a `holders` table with the ID, the name and the phone |
 
+<!-- photo: js-mars-climate-orbiter -->
+
 When a table isn't normalized, **anomalies** appear: on **update** (you change the phone in one row and not the others), on **insert** (you can't register a holder without inventing a stall for them) and on **delete** (you delete their only stall and lose their phone). The normalized design of the new registry:
+
+> **History:** On September 23, 1999, NASA's Mars Climate Orbiter was lost on arrival at Mars. One program delivered the thrusters' impulse in pound-force seconds and another read it as newton-seconds. No number was "wrong": it just didn't say which unit it came in. That is why a column is better named `amount_soles` than `amount`.
+
+<!-- /photo -->
 
 ```schema
 title: The new registry, normalized
@@ -65,9 +73,13 @@ schema: |
 caption: "Each box keeps one thing. `stall_trades` resolves the **many-to-many** relationship: a stall sells several trades and a trade is in many stalls. Its key is the two columns together."
 ```
 
-**Natural and surrogate keys.** A **natural** key already exists in the world: the national ID, the license code, the stall number. A **surrogate** key is invented by the database: `id INTEGER PRIMARY KEY`, which in SQLite is the `rowid` and numbers itself. Natural keys can change (a license is renewed under a new code) or arrive dirty; surrogate keys never change, but they say nothing. The healthy habit: a surrogate key to join tables, and the natural one **too**, with `UNIQUE`, so the database won't accept two holders with the same national ID.
+### Natural and surrogate keys
 
-**Views.** `CREATE VIEW name AS SELECT …` saves a named query. It stores no data: every time you use it, SQLite runs the `SELECT` again on the data of that moment. It saves you repeating long joins and lets you show each user only what they should see.
+A **natural** key already exists in the world: the national ID, the license code, the stall number. A **surrogate** key is invented by the database: `id INTEGER PRIMARY KEY`, which in SQLite is the `rowid` and numbers itself. Natural keys can change (a license is renewed under a new code) or arrive dirty; surrogate keys never change, but they say nothing. The healthy habit: a surrogate key to join tables, and the natural one **too**, with `UNIQUE`, so the database won't accept two holders with the same national ID.
+
+### Views
+
+`CREATE VIEW name AS SELECT …` saves a named query. It stores no data: every time you use it, SQLite runs the `SELECT` again on the data of that moment. It saves you repeating long joins and lets you show each user only what they should see.
 
 ```sql run
 CREATE VIEW current_holders AS
@@ -78,7 +90,9 @@ JOIN people p ON p.id = sr.holder_id;
 SELECT * FROM current_holders WHERE expires >= '2026-04-08' AND expires < '2026-05-31';
 ```
 
-**Triggers.** A **trigger** is SQL the database runs by itself when something happens to a table: `BEFORE` or `AFTER` an `INSERT`, `UPDATE` or `DELETE`, once for each row (`FOR EACH ROW`). Inside, `OLD` is the row as it was and `NEW` as it ends up. The classic use is **auditing**: nobody can change the registry without leaving a trace, even if the app forgets to note it. Press ▶:
+### Triggers
+
+A **trigger** is SQL the database runs by itself when something happens to a table: `BEFORE` or `AFTER` an `INSERT`, `UPDATE` or `DELETE`, once for each row (`FOR EACH ROW`). Inside, `OLD` is the row as it was and `NEW` as it ends up. The classic use is **auditing**: nobody can change the registry without leaving a trace, even if the app forgets to note it. Press ▶:
 
 ```change
 title: An UPDATE that leaves a trace
@@ -102,7 +116,9 @@ notes:
 caption: "The audit is written by the database, not the app: even if someone connects through another program, the trace stays."
 ```
 
-**When to denormalize.** Sometimes it pays to repeat a value on purpose: a reporting table rebuilt every night, or an order's total stored next to the order so you don't sum it every time. It's a decision, not an oversight: someone (a trigger, a nightly job) has to keep the copy up to date.
+### When to denormalize
+
+Sometimes it pays to repeat a value on purpose: a reporting table rebuilt every night, or an order's total stored next to the order so you don't sum it every time. It's a decision, not an oversight: someone (a trigger, a nightly job) has to keep the copy up to date.
 
 > **Common trap:** believing a view is a copy. `CREATE VIEW` doesn't photograph the data: if the registry changes tomorrow, the view shows the change. For a real snapshot, `CREATE TABLE snapshot AS SELECT …`. And another: in a trigger, `NEW` doesn't exist on a `DELETE` and `OLD` doesn't exist on an `INSERT`; on an `UPDATE` both exist.
 

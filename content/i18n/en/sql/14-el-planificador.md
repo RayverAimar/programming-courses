@@ -6,9 +6,17 @@ case: frio
 
 ## The job
 
+> **Last time:** looking inside led you to Cerrajería El Candado, which received five calls from home 4417825, the last on the night of the robbery. To prove who lived there you have to cross four tables in a single query, and the planner decides how.
+
 Tuesday 31 March, evening. Haydée is back at Loop. On the board there are two relays from the same home, **4417825**, and a safe locksmith that home called five times. The 1998 phone book says the line was registered to **Gloria Tello de Salazar**, who didn't work at the mill: to know who on the team lived in that home you have to cross the phone book with the **payroll**, which does keep each employee's phone.
 
-"That's not enough," Haydée says. "They convicted my dad on less, but I don't want to do to anyone what they did to him." She's right: the proof has to be **a single query** that crosses everything at once: who knew the combination (session 12's tree), the relays (session 13) and the staff list. Four tables, two of them huge.
+"That's not enough," Haydée says. "They convicted my dad on less, but I don't want to do to anyone what they did to him." She's right: the proof has to be **a single query** that crosses everything at once:
+
+- who knew the combination (session 12's tree);
+- the relays (session 13);
+- the staff list.
+
+Four tables, two of them huge.
 
 When you write a `JOIN`, you don't say **how** to put the rows together: SQLite's **planner** decides that, the part that reads your query and picks one plan among many. Today you learn how it chooses, what it does when there's no index and how other engines do it.
 
@@ -91,7 +99,9 @@ timeline:
 
 ## The minimum
 
-**A JOIN in SQLite is a loop inside a loop.** For `A JOIN B ON …`, SQLite takes a row from the **outer** table and looks for its partners in the **inner** one; then the next outer row, and so on. It's the *nested loop* you saw in session 5. What decides whether it takes 1 millisecond or 10 seconds is **which table goes outside** and **how the inner one is searched**.
+### A JOIN in SQLite is a loop inside a loop
+
+For `A JOIN B ON …`, SQLite takes a row from the **outer** table and looks for its partners in the **inner** one; then the next outer row, and so on. It's the *nested loop* you saw in session 5. What decides whether it takes 1 millisecond or 10 seconds is **which table goes outside** and **how the inner one is searched**.
 
 ```joinalgo
 title: "Nested loop: every outer row walks the whole inner table"
@@ -102,7 +112,9 @@ right: { name: phones, cols: [number, holder], rows: [["4721093", "Booth"], ["42
 caption: "6 rows outside times 5 inside: 30 comparisons. With 60,000 calls and 5,000 phones it would be 300 million."
 ```
 
-**The planner picks the order, not you.** Writing the tables the other way round doesn't change the plan: SQLite estimates the cost of every possible order and keeps the cheapest. To estimate it uses what it knows: which indexes exist, which columns the `WHERE` fixes and, if you gave it them, how many rows each table has. Here employee 318 is **one** row (looked up by `id`), so it goes outside, and inside their calls are looked up by `caller`:
+### The planner picks the order, not you
+
+Writing the tables the other way round doesn't change the plan: SQLite estimates the cost of every possible order and keeps the cheapest. To estimate it uses what it knows: which indexes exist, which columns the `WHERE` fixes and, if you gave it them, how many rows each table has. Here employee 318 is **one** row (looked up by `id`), so it goes outside, and inside their calls are looked up by `caller`:
 
 ```plan
 title: "employees_1998 outside: 1 row; calls_1998 inside, with an index"
@@ -124,7 +136,9 @@ panes:
     value: "60,000 × 3 pages"
 ```
 
-**No index? SQLite makes one.** If there's no useful index inside and the outer loop has many rows, SQLite may build an **automatic index**: it reads the inner table once, builds a temporary B-tree on the `ON` column and uses it for every outer row. When the query ends it throws it away. The plan says `AUTOMATIC`:
+### No index? SQLite makes one
+
+If there's no useful index inside and the outer loop has many rows, SQLite may build an **automatic index**: it reads the inner table once, builds a temporary B-tree on the `ON` column and uses it for every outer row. When the query ends it throws it away. The plan says `AUTOMATIC`:
 
 ```plan
 title: "An automatic index, built for this query and thrown away after"
@@ -137,7 +151,23 @@ query: |
 
 It's a good emergency exit, but you pay for it **on every run**: reading the whole table and sorting it. That's why session 12's walk with `edges` didn't hang over all of December (SQLite indexed `edges` by itself) and the `OR` version did: an `OR` across two columns can't even use an automatic index.
 
-**Other engines have more algorithms.** SQLite only does nested loops (with an index, with an automatic index or with nothing). PostgreSQL, MySQL 8 and SQL Server also have:
+```steps
+# An automatic index, step by step
+## The query has no index inside
+The `ON` compares a column of the inner table, and that column has no index.
+## SQLite sees it coming
+If the outer loop has many rows, searching without an index would mean scanning the inner table **once per outer row**.
+## It builds a temporary B-tree
+It reads the inner table **just once** and builds a tree sorted by the `ON` column. The plan shows it as `AUTOMATIC`.
+## Each outer row walks down the tree
+Instead of reading the whole table, each outer row walks down that tree and reads only its matches.
+## When it ends, it throws it away
+The index lives as long as the query. The next run builds it again and pays again.
+```
+
+### Other engines have more algorithms
+
+SQLite only does nested loops (with an index, with an automatic index or with nothing). PostgreSQL, MySQL 8 and SQL Server also have:
 
 - **Hash join**: reads the small table once and spreads it into **buckets** by a hash of the key; then each row of the big one computes its bucket and compares **only** with what's there. Ideal for joining big tables on equality with no index.
 - **Merge join**: if both tables are **sorted** by the key (through an index, or after sorting them), it moves one finger along each, like merging two sorted lists. Each row is looked at almost once.
@@ -161,7 +191,9 @@ right: { name: phones, cols: [number, holder], rows: [["4721093", "Booth"], ["42
 
 In PostgreSQL, `EXPLAIN` shows `Hash Join`, `Merge Join` or `Nested Loop`, and the planner picks among the three from its statistics.
 
-**Sorting and grouping cost too.** If the `ORDER BY` or `GROUP BY` doesn't match an index's order, SQLite builds a **temporary B-tree** to sort: in the plan, `USE TEMP B-TREE`. With an index that already brings rows in that order, it skips it:
+### Sorting and grouping cost too
+
+If the `ORDER BY` or `GROUP BY` doesn't match an index's order, SQLite builds a **temporary B-tree** to sort: in the plan, `USE TEMP B-TREE`. With an index that already brings rows in that order, it skips it:
 
 ```plan
 title: "Grouping with no index: two temporary trees"
@@ -184,7 +216,9 @@ query: |
   ORDER BY caller;
 ```
 
-**ANALYZE: giving the planner numbers.** Without statistics, SQLite assumes any equality index leaves few rows. With two candidate indexes, it can pick the wrong one. `ANALYZE` reads the tables and stores in `sqlite_stat1` how many rows there are and how many, on average, each value of each index brings:
+### ANALYZE: giving the planner numbers
+
+Without statistics, SQLite assumes any equality index leaves few rows. With two candidate indexes, it can pick the wrong one. `ANALYZE` reads the tables and stores in `sqlite_stat1` how many rows there are and how many, on average, each value of each index brings:
 
 ```plan
 title: "Before ANALYZE: it picks the index on kind"
@@ -217,7 +251,9 @@ WHERE tbl = 'phones_1998';
 
 `'5135 1712'` reads: 5135 rows in the table; each value of `kind` brings, on average, 1712. Each `district`, about 257. The planner prefers the more selective one.
 
-**Measuring.** The plan says **what** it will do; to know **how long** it takes you measure on real data. In SQLite's shell, `.timer on` before the query. In PostgreSQL, `EXPLAIN ANALYZE` runs the query and notes the real rows and milliseconds at each step. The rule: measure, change **one** thing (an index, `ANALYZE`, a rewritten condition), measure again.
+### Measuring
+
+The plan says **what** it will do; to know **how long** it takes you measure on real data. In SQLite's shell, `.timer on` before the query. In PostgreSQL, `EXPLAIN ANALYZE` runs the query and notes the real rows and milliseconds at each step. The rule: measure, change **one** thing (an index, `ANALYZE`, a rewritten condition), measure again.
 
 > **Common trap:** reordering the tables in the `FROM` "to make it faster" does nothing: the planner reorders them anyway. What changes the plan is giving it **options** (an index that serves the condition) and **information** (`ANALYZE` after loading or changing lots of data). If you truly want to force the order, SQLite keeps the written order with `CROSS JOIN`; it's almost never needed, and when the data changes, the forced plan goes stale.
 

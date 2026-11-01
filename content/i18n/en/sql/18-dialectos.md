@@ -6,7 +6,14 @@ case: taller
 
 ## The job
 
-Thursday 9 April. Two pieces of news. The good one: Edith approved Loop's design, and the new registry will live on the municipality's server, which runs **PostgreSQL**. The other: the **Comptroller's Office** opened an investigation into the four transfers and sends its queries written for PostgreSQL. You work in SQLite. Same SQL, different dialects: what is one line in one is an error in another… or, worse, a different result with no warning.
+> **Last time:** the design led you to Delia Lozano Yupanqui, from IT: Yolanda's four rows were edited on 20 March and all carry her phone number. Did Delia prepare the transfers, or does someone want it to look that way? To answer you have to cross all the dossiers, and now in two dialects.
+
+Thursday 9 April. Two pieces of news:
+
+- **The good one:** Edith approved Loop's design, and the new registry will live on the municipality's server, which runs **PostgreSQL**.
+- **The other:** the **Comptroller's Office** opened an investigation into the four transfers and sends its queries written for PostgreSQL.
+
+You work in SQLite. Same SQL, different dialects: what is one line in one is an error in another… or, worse, a different result with no warning.
 
 And one last question remains in the dossier. Alfredo says he left at 18:30 and that someone used his account. The phone on the sheet points to Delia; the computer, to counter 1. To close the case you'll cross **all the dossiers**: the market gates and the calls from the first case, the payments from the second and the log from this one.
 
@@ -55,7 +62,13 @@ table:
 
 ## The minimum
 
+<!-- photo: sql-michael-stonebraker -->
+
 SQL is a standard, but each engine speaks it with its own accent. The differences that bite most when moving a query from one engine to another:
+
+> **History:** PostgreSQL comes from the Ingres project at the University of California, Berkeley, led by Michael Stonebraker. Its successor was called POSTGRES, and in 1996 it was renamed PostgreSQL because it now understood SQL.
+
+<!-- /photo -->
 
 | topic | SQLite (this course) | PostgreSQL | MySQL |
 |---|---|---|---|
@@ -74,7 +87,9 @@ SQL is a standard, but each engine speaks it with its own accent. The difference
 | **FULL JOIN** | yes (3.39) | yes | no |
 | **quotes** | `'text'`, `"column"` | same | `'text'`, `` `column` `` |
 
-**Translating a query from one dialect to another**, piece by piece. This is a Comptroller's query on licenses, in PostgreSQL. Press ▶:
+### Translating a query from one dialect to another
+
+Piece by piece. This is a Comptroller's query on licenses, in PostgreSQL. Press ▶:
 
 ```translation
 title: From PostgreSQL to SQLite
@@ -174,7 +189,7 @@ id: sql18-predice-booleanos
 type: predict
 title: True plus true
 prompt: |
-  What does this return in SQLite?
+  `typeof(x)` says what type the value of `x` is. What does this return in SQLite?
 code: |
   SELECT TRUE + TRUE, 5 > 3, typeof(5 > 3);
 options:

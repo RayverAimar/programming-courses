@@ -6,6 +6,8 @@ case: pagos
 
 ## The job
 
+> **Last time:** counting and grouping showed that Tito Vílchez made four calls in three days, one at 22:52, six minutes after Renzo left through Gate 3. That case is closed; the next one spreads what you need across several tables, and `GROUP BY` doesn't put them together.
+
 Monday 23 March. The gyroscope case is closed and the Surquillo police station brings another one: **Sonia Huamán**, a local teacher, saw a dirt-cheap iPhone 13 on Marketplace, paid a **S/ 300 deposit by Yape** to hold it, and never heard from the seller again. She isn't the only one: in March several reports tell the same story, from different districts. Chasqui suspects **a single ring**.
 
 The trouble is that what you need is spread out. The report says **who reported it** (a person number), the register has **that person's phone**, and payments are stored **by phone**. No table has the answer on its own: you have to **join** them. That's what `JOIN` does.

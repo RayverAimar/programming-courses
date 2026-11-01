@@ -6,6 +6,8 @@ case: pagos
 
 ## El encargo
 
+> **La vez pasada:** contar y agrupar mostró que Tito Vílchez hizo cuatro llamadas en tres días, una a las 22:52, seis minutos después de que Renzo saliera por la Puerta 3. Ese caso se cerró; el siguiente reparte lo que necesitas en varias tablas, y `GROUP BY` no las junta.
+
 Lunes 23 de marzo. El caso del giroscopio está cerrado y la comisaría de Surquillo trae otro: **Sonia Huamán**, profesora del barrio, vio un iPhone 13 baratísimo en Marketplace, pagó **S/ 300 de adelanto por Yape** para separarlo y nunca más supo del vendedor. No es la única: en marzo hay varias denuncias que cuentan lo mismo, en distritos distintos. Chasqui sospecha que es **una sola red**.
 
 El problema es que lo que necesitas está repartido. La denuncia dice **quién denunció** (un número de persona), el padrón dice **el celular de esa persona** y los pagos están guardados **por celular**. Ninguna tabla tiene la respuesta sola: hay que **unirlas**. Eso hace `JOIN`.

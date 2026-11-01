@@ -6,6 +6,8 @@ case: taller
 
 ## El encargo
 
+> **La vez pasada:** con `INSERT`, `UPDATE` y `DELETE` seguiste el cambio que le quitó el puesto 47 a Carmen: lo hizo `abenavides`, desde la ventanilla 1, a favor de Yolanda Ugarte Montes. Falta explicar por qué su renovación no quedó en el padrón.
+
 Martes 7 de abril. Carmen llega a la oficina con su voucher en la mano: el **viernes 20, a las 18:47**, pagó **S/ 120** en la ventanilla 2 para renovar su licencia hasta marzo de 2027. Pero el padrón dice que venció el **31 de marzo de 2026**. La renovación se perdió.
 
 En la Oficina de Mercados trabajan dos registradores a la vez, cada uno en su ventanilla, sobre la misma base. Cuando dos personas escriben al mismo tiempo pueden pisarse. Las bases de datos tienen una herramienta para que eso no pase, la **transacción**, y la app vieja la usaba… a medias. Su **bitácora** guarda cada sentencia que envió, con la sesión, el usuario y el segundo exacto: ahí está la respuesta.
@@ -49,7 +51,9 @@ Las transacciones prometen cuatro cosas, que se recuerdan como **ACID**:
 | a**I**slamiento | las transacciones no se ven a medias entre sí | la ventanilla 1 no ve lo que la 2 todavía no confirma |
 | **D**urabilidad | lo confirmado sobrevive a un apagón | después del `COMMIT`, está en el disco |
 
-**Atomicidad, paso a paso.** Susana renueva una licencia: inserta el trámite y cambia el padrón. A la mitad, se va la luz. Dale a ▶:
+### Atomicidad, paso a paso
+
+Susana renueva una licencia: inserta el trámite y cambia el padrón. A la mitad, se va la luz. Dale a ▶:
 
 ```transaccion
 title: Un apagón a la mitad
@@ -77,7 +81,9 @@ steps:
 caption: "En modo **WAL** la idea es la misma al revés: los cambios se anotan al final de un archivo `-wal` y un `COMMIT` es una marca; lo que no tiene marca se ignora."
 ```
 
-**Savepoints.** Dentro de una transacción puedes marcar un punto con `SAVEPOINT nombre` y volver a él con `ROLLBACK TO nombre`, sin perder lo de antes. `RELEASE nombre` borra la marca.
+### Savepoints
+
+Dentro de una transacción puedes marcar un punto con `SAVEPOINT nombre` y volver a él con `ROLLBACK TO nombre`, sin perder lo de antes. `RELEASE nombre` borra la marca.
 
 ```sql run
 BEGIN;
@@ -91,7 +97,9 @@ FROM padron_puestos
 WHERE puesto = 12;
 ```
 
-**Aislamiento: lo que se ve entre dos sesiones.** Si dos transacciones corren a la vez, ¿qué ve cada una de la otra? Cuanto más aisladas, más seguras… y más esperan. El estándar describe cuatro **anomalías**:
+### Aislamiento: lo que se ve entre dos sesiones
+
+Si dos transacciones corren a la vez, ¿qué ve cada una de la otra? Cuanto más aisladas, más seguras… y más esperan. El estándar describe cuatro **anomalías**:
 
 ```transaccion
 title: Lectura sucia
@@ -164,7 +172,9 @@ steps:
 caption: "El arreglo no es \"más transacción\": es escribir solo lo que cambias (`SET rubro = …`), o escribir solo si la fila sigue como la leíste (`WHERE … AND actualizado = 'lo que leí'`)."
 ```
 
-**Cómo lo hace cada motor.** SQLite deja leer a muchos, pero **escribir a uno solo a la vez**: quien escribe toma un candado de toda la base, y quien llega después espera o recibe `SQLITE_BUSY`. Con WAL, los lectores no esperan a nadie: leen la foto de la base que había cuando empezaron. PostgreSQL usa **MVCC** (control de concurrencia multiversión): un `UPDATE` no pisa la fila, crea **una versión nueva** y marca la vieja como reemplazada; cada transacción ve las versiones que le corresponden. Por eso ahí muchos escriben a la vez, en filas distintas.
+### Cómo lo hace cada motor
+
+SQLite deja leer a muchos, pero **escribir a uno solo a la vez**: quien escribe toma un candado de toda la base, y quien llega después espera o recibe `SQLITE_BUSY`. Con WAL, los lectores no esperan a nadie: leen la foto de la base que había cuando empezaron. PostgreSQL usa **MVCC** (control de concurrencia multiversión): un `UPDATE` no pisa la fila, crea **una versión nueva** y marca la vieja como reemplazada; cada transacción ve las versiones que le corresponden. Por eso ahí muchos escriben a la vez, en filas distintas.
 
 ```figura
 title: Dos maneras de compartir

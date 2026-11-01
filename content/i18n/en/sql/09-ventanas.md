@@ -6,9 +6,11 @@ case: sensores
 
 ## The job
 
-Friday 27 March, 09:10. Carmen Ríos arrives at Loop with three robots that don't work: since Tuesday, **Tika** bumps into walls on its night rounds and **Kusi** overheats in the kitchen; since Thursday, **Pituco** leans to one side on its Barranco deliveries. All three sleep in the **sensor room**, where every night, at **03:00**, they calibrate themselves.
+> **Last time:** `WITH` and the set operations led you to Importaciones Ccori, the phone shop in La Victoria, and closed the scam case. Today another begins, with robots and sensors, and there grouping is no longer enough: you can't lose the rows.
 
-Since Friday 20, the room keeps a reading from each robot **every ten minutes** (gyroscope and temperature) in `readings`, and the door logs every card that opens it in a new table, `access_log`. That's thousands of rows. To find "the first odd reading of **each** robot" or "the last entry of **each** night", grouping isn't enough: you need to number rows **inside each group without losing them**. That's what window functions do.
+Friday 27 March, 09:10. Carmen Ríos arrives at Loop with three robots that don't work: since Tuesday, **Tika** bumps into walls on its night rounds and **Kusi** overheats in the kitchen; since Thursday, **Pituco** leans to one side. All three sleep in the **sensor room**, where every night, at **03:00**, they calibrate themselves.
+
+Since Friday 20, the room keeps a reading from each robot **every ten minutes** in `readings`, and the door logs every card that opens it in a new table, `access_log`. To find "the first odd reading of **each** robot" or "the last entry of **each** night", grouping isn't enough: you need to number rows **inside each group without losing them**. That's what window functions do.
 
 ```setting
 case: sensores
@@ -186,7 +188,7 @@ id: sql9-predice-rangos
 type: predict
 title: Ties on the podium
 prompt: |
-  What does it return?
+  `VALUES (…), (…)` builds a table from those rows, and `t(robot, maxima)` names the table and its columns. What does it return?
 code: |
   WITH t(robot, peak) AS (
     VALUES ('Tika', 1.86), ('Kusi', 1.61), ('Chasqui', 0.07),
@@ -304,7 +306,7 @@ id: sql9-escribe-top3
 type: write
 title: The three most unstable
 prompt: |
-  For each robot, list its **three gyroscope readings furthest from zero** (largest absolute value) since Friday 20: `robot_id`, `moment`, `value` and its `place` (1, 2, 3). If two tie, the earlier one goes first. Sort by `robot_id` and `place`.
+  For each robot, list its **three gyroscope readings furthest from zero** (largest absolute value, that is, ignoring the sign: `abs(-1.6)` is `1.6`) since Friday 20: `robot_id`, `moment`, `value` and its `place` (1, 2, 3). If two tie, the earlier one goes first. Sort by `robot_id` and `place`.
 visual:
   figure:
     title: Top 3 per robot
@@ -379,7 +381,7 @@ title: The first odd reading
 prompt: |
   **For each robot, find its first out-of-range gyroscope reading (absolute value above 1) since Friday 20. Which robot went out of calibration on a different night from the others?** Type its name.
 
-  A healthy gyroscope reads almost zero (±0.1). Number each robot's out-of-range readings by time and keep the first; then put the robot's name on it with `robots`.
+  A healthy gyroscope reads almost zero (±0.1). `abs(x)` drops the sign: `abs(-1.6)` is `1.6`. Number each robot's out-of-range readings by time and keep the first; then put the robot's name on it with `robots`.
 visual:
   - setting:
       case: sensores

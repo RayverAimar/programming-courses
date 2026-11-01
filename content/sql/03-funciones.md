@@ -6,9 +6,11 @@ case: surquillo
 
 ## El encargo
 
-Lunes 16 de marzo. Quedan tres sospechosos: **Renzo Huamaní**, **Lucía Paredes** y **Julio Ccahuana**, y los tres dieron su declaración. Renzo dice que salió "como a las once y diez"; Lucía, "pasadas las once"; Julio, "cerca de las once y media". Marleny vio el auto blanco como a las **22:45**.
+> **La vez pasada:** Marleny vio a alguien subirse a un auto blanco como a las 22:45, sin ver la placa. Ahora los datos de la cámara y las declaraciones hablan en formatos distintos, y hay que limpiarlos para cruzarlos.
 
-Frente a la Puerta 3 hay una cámara de la municipalidad, la **CAM-SUR-03**, que lee las placas de los autos que pasan. El problema: sus datos están sucios. La cámara escribe las placas como las lee (`b7r415`, `D9K 731`, `C3M-208`) y guarda la hora **en UTC**, la hora de Greenwich, que va cinco horas adelante de Lima. Para cruzar esos datos con los de la Puerta 3 vas a tener que **transformarlos** dentro de la consulta: eso hacen las funciones.
+Lunes 16 de marzo. Quedan tres sospechosos: **Renzo Huamaní**, **Lucía Paredes** y **Julio Ccahuana**, con tres declaraciones. Renzo dice que salió "como a las once y diez"; Lucía, "pasadas las once"; Julio, "cerca de las once y media". Marleny vio el auto blanco como a las **22:45**.
+
+Frente a la Puerta 3 hay una cámara municipal, la **CAM-SUR-03**, que lee las placas de los autos que pasan. El problema: sus datos están sucios. La cámara escribe las placas como las lee (`b7r415`, `D9K 731`, `C3M-208`) y guarda la hora **en UTC**, la hora de Greenwich, que va cinco horas adelante de Lima. Para cruzar esos datos con los de la Puerta 3 vas a tener que **transformarlos** dentro de la consulta: eso hacen las funciones.
 
 ```escenario
 case: surquillo
@@ -38,9 +40,18 @@ cards:
 
 ## Lo mínimo
 
-Una **función** recibe valores y devuelve otro, fila por fila: puedes usarla en el `SELECT`, en el `WHERE` y en el `ORDER BY`. Hoy, tres familias.
+Una **función** recibe valores y devuelve otro, fila por fila: puedes usarla en el `SELECT`, en el `WHERE` y en el `ORDER BY`. Hoy, tres familias, una por una.
 
-**Textos.** `upper` y `lower` cambian mayúsculas (solo letras sin tilde), `trim` quita espacios de los extremos, `replace(t, 'a', 'b')` cambia cada `a` por `b`, `substr(t, inicio, largo)` corta un pedazo (se cuenta desde 1), `length` cuenta caracteres e `instr(t, 'x')` dice dónde aparece algo. `||` pega textos: `'B7R' || '-' || '415'`.
+### Textos
+
+La cámara escribe las placas de mil maneras; con estas funciones las dejas todas iguales:
+
+- `upper` y `lower` cambian mayúsculas (solo letras sin tilde).
+- `trim` quita los espacios de los extremos.
+- `replace(t, 'a', 'b')` cambia cada `a` por `b`.
+- `substr(t, inicio, largo)` corta un pedazo (se cuenta desde 1).
+- `length` cuenta caracteres e `instr(t, 'x')` dice dónde aparece algo.
+- `||` pega textos: `'B7R' || '-' || '415'`.
 
 ```esquema
 tables: [avistamientos, camaras]
@@ -59,7 +70,9 @@ LIMIT 6;
 
 Las funciones se anidan como en matemáticas: primero quita los espacios, luego los guiones y al final pasa a mayúsculas. Ahora `b7r415`, `B7R-415` y `b7r 415` dan lo mismo: `B7R415`.
 
-**Fechas y horas.** SQLite no tiene un tipo fecha: guarda texto `'AAAA-MM-DD HH:MM:SS'`, que se ordena bien, y lo calcula con `date`, `time`, `datetime` y `strftime`. Todas aceptan **modificadores** después del momento: `'-5 hours'`, `'+1 day'`, `'start of day'`. Para pasar de UTC a la hora de Lima, resta cinco horas:
+### Fechas y horas
+
+La cámara guarda la hora en UTC y tú necesitas la de Lima. SQLite no tiene un tipo fecha: guarda texto `'AAAA-MM-DD HH:MM:SS'`, que se ordena bien, y lo calcula con `date`, `time`, `datetime` y `strftime`. Todas aceptan **modificadores** después del momento: `'-5 hours'`, `'+1 day'`, `'start of day'`. Para pasar de UTC a la hora de Lima, resta cinco horas:
 
 ```figura
 title: La misma lectura, en dos relojes
@@ -73,7 +86,15 @@ steps:
 
 `strftime('%H', m)` da solo la hora, `'%w'` el día de la semana (0 es domingo) y `julianday(a) - julianday(b)` la diferencia en días entre dos momentos (multiplica por 24 × 60 para tener minutos).
 
-**Decidir y rellenar.** `CASE WHEN condición THEN valor … ELSE otro END` elige un valor según la fila. `COALESCE(a, b, …)` devuelve el primero que no sea `NULL`: `COALESCE(telefono, 'sin número')`. `CAST(x AS INTEGER)` convierte.
+### Decidir y rellenar
+
+A veces el valor depende de la fila, falta o viene en otro tipo:
+
+- `CASE WHEN condición THEN valor … ELSE otro END` elige un valor según la fila (*case*: caso).
+- `COALESCE(a, b, …)` devuelve el primero que no sea `NULL`: `COALESCE(telefono, 'sin número')`.
+- `CAST(x AS INTEGER)` convierte `x` a otro tipo (*cast*: moldear).
+
+Un `CASE` en acción: pone a cada pasada de tarjeta su turno.
 
 ```sql run
 SELECT momento,

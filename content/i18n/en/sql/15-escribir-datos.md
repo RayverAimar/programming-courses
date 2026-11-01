@@ -6,6 +6,8 @@ case: taller
 
 ## The job
 
+> **Last time:** the planner helped you prove that Teodoro was telling the truth: he called Rosa Ugarte that night and nobody answered. Until now you only read data; from today the municipality lets you write it.
+
 Monday 6 April 2026. With four dossiers closed, Surquillo Municipality trusts Loop. **Edith Choque**, the Markets manager, calls early: the office that manages the licences of Market No. 1 runs on an old app that writes to a database, the **stall registry**, and she wants Loop to replace it. Until today you only read the database; from today **you write to it**.
 
 That same morning, **Carmen** gets a strange notification: according to the municipality, stall 47, Loop's stall, **is no longer in her name**. She never signed anything. Before touching a single row you're going to learn to write data without breaking anything: an `UPDATE` without `WHERE` changes all 120 stalls in one go.
@@ -60,7 +62,7 @@ caption: "`stall_registry` has one row per stall: its holder, its licence and wh
 - **Without `WHERE`, `UPDATE` and `DELETE` touch every row.** The habit that saves careers: first write `SELECT * FROM table WHERE …`, look at which rows come out, and only then swap `SELECT *` for `UPDATE … SET …` or `DELETE`.
 - **`RETURNING`** at the end of any of the three returns the rows it touched, like a `SELECT`: `DELETE FROM … WHERE … RETURNING id, stall;`.
 
-Inside, the engine does the same as with a `SELECT`: it walks the table, evaluates the `WHERE` row by row and, for each row that passes, computes the new values and rewrites it. If **a single** row breaks a rule of the table, SQLite **undoes the whole statement**: changes are never left half done. Press ▶:
+Inside, the engine does the same as with a `SELECT`: it walks the table, evaluates the `WHERE` row by row and, for each row that passes, computes the new values and rewrites it. If **a single** row breaks a rule of the table, SQLite **undoes the whole statement**: changes are never left half done. Press ▶ (the example table was created with some rules, `PRIMARY KEY`, `NOT NULL` and `CHECK`, which I explain right after):
 
 ```change
 title: Three statements on a tiny table
@@ -81,7 +83,9 @@ notes:
 caption: "The second statement carries two rows: stall 121 was fine, but 47 already existed (it's the **primary key**). SQLite doesn't insert even the good one: the statement is **atomic**."
 ```
 
-**A table's rules** are written when it is created, and the database enforces them on every `INSERT` and `UPDATE`:
+### A table's rules
+
+They are written when the table is created, and the database enforces them on every `INSERT` and `UPDATE`:
 
 | constraint | what it prevents |
 |---|---|
@@ -94,7 +98,23 @@ caption: "The second statement carries two rows: stall 121 was fine, but 47 alre
 
 Two SQLite oddities worth knowing. Foreign keys **come switched off**: you have to turn them on in every connection with `PRAGMA foreign_keys = ON;`. And types are **flexible**: in an `INTEGER` column you can store `'twelve'` and SQLite accepts it as text. If you want strict types, as in PostgreSQL, create the table with **`STRICT`** at the end: `CREATE TABLE t (…) STRICT;`.
 
-**UPSERT.** With a `UNIQUE` or `PRIMARY KEY` constraint, an `INSERT` that collides can turn into an `UPDATE`: `INSERT … ON CONFLICT (column) DO UPDATE SET col = excluded.col`. `excluded` is the row you were trying to insert. With `DO NOTHING`, the colliding row simply doesn't go in.
+### UPSERT
+
+With a `UNIQUE` or `PRIMARY KEY` constraint, an `INSERT` that collides can turn into an `UPDATE`: `INSERT … ON CONFLICT (column) DO UPDATE SET col = excluded.col`. `excluded` is the row you were trying to insert. With `DO NOTHING`, the colliding row simply doesn't go in.
+
+```steps
+# An INSERT that collides becomes an UPDATE
+## You try to insert
+`INSERT INTO licenses VALUES (47, 'Carmen', '2027-03-31', 120) ON CONFLICT (stall) DO UPDATE SET expires = excluded.expires;`
+## SQLite checks the key
+It looks for stall **47** in the table. If it doesn't exist, the row goes in and that's it.
+## There's a collision
+Stall 47 already exists, and `PRIMARY KEY` doesn't allow two. Without `ON CONFLICT`, the whole statement would fail.
+## The clause kicks in
+`excluded` is the row you tried to insert: `excluded.expires` is `'2027-03-31'`. `DO UPDATE` applies the `SET` to the row that was **already there**.
+## Result
+The table still has a single row for stall 47, with the new date. With `DO NOTHING` the colliding row simply doesn't go in.
+```
 
 ```sql run
 SELECT sr.stall, p.name AS holder, sr.expires, sr.updated_at, sr.updated_by

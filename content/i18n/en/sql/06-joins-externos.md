@@ -6,6 +6,8 @@ case: pagos
 
 ## The job
 
+> **Last time:** with `JOIN` you linked reports, registry and payments and reached Brenda Salazar Cusi, who collected Sonia's deposit. But a `JOIN` drops rows that find no match, and that is why nine reports gave seven rows.
+
 Tuesday 24 March. Yesterday left you three named collectors, and also a count that doesn't add up: **nine fraud reports** mention a deposit and your query returned **seven rows**. The reports by **Edwin Condori** and **Iván Choque** got lost along the way. And there's more: Chasqui thinks some victims paid and **never reported it**, out of embarrassment or because it was only 300 soles.
 
 To see what's missing you need joins that don't throw rows away: **LEFT JOIN**. To follow the money from one phone to the next, a table joined **with itself**. And to find whoever never did something, an **anti-join**.
@@ -56,7 +58,9 @@ caption: "977000003 isn't in `people`: with `JOIN` it would vanish; with `LEFT J
 
 **`RIGHT JOIN`** is the same seen from the other table (it keeps the whole right side) and **`FULL JOIN`** keeps both. SQLite has had them since version 3.39 (2022); in older code you'll see the tables swapped round to write a `LEFT JOIN` instead.
 
-**The filter in `ON` or in `WHERE`.** With `JOIN` it makes no difference. With `LEFT JOIN` it does: a condition in `ON` decides **who each row pairs with** (and if it finds nobody, it comes out with `NULL`); a condition in `WHERE` applies **afterwards** and strikes rows out, the `NULL`-padded ones too.
+### The filter in `ON` or in `WHERE`
+
+With `JOIN` it makes no difference. With `LEFT JOIN` it does: a condition in `ON` decides **who each row pairs with** (and if it finds nobody, it comes out with `NULL`); a condition in `WHERE` applies **afterwards** and strikes rows out, the `NULL`-padded ones too.
 
 ```result
 title: The condition in ON
@@ -81,7 +85,9 @@ query: |
 caption: "`WHERE j.role = 'technician'` is `NULL` on the padded rows, so it strikes them out: the `LEFT JOIN` turned into a plain `JOIN` without a word."
 ```
 
-**A table with itself (self-join).** To ask "A paid B, and did B pay anyone afterwards?", you join `transfers` with `transfers`, with two aliases: `t1` is the first payment and `t2` the next one, and the `ON` says how they chain: what `t1` received is what `t2` pays.
+### A table with itself (self-join)
+
+To ask "A paid B, and did B pay anyone afterwards?", you join `transfers` with `transfers`, with two aliases: `t1` is the first payment and `t2` the next one, and the `ON` says how they chain: what `t1` received is what `t2` pays.
 
 ```figure
 title: A self-join chains rows of the same table
@@ -106,7 +112,9 @@ JOIN people AS b ON b.born = a.born AND a.id < b.id
 WHERE a.district = 'Surquillo' AND b.district = 'Surquillo';
 ```
 
-**Anti-join and semi-join.** Sometimes you don't want the pairs, just to know **whether they exist**. An **anti-join** keeps the rows that have **no** partner: `LEFT JOIN … WHERE right.id IS NULL`, or better, `NOT EXISTS (…)`. A **semi-join** keeps the ones that **do**, **just once** even if they have several: `EXISTS (…)`. What goes inside `EXISTS` is a query that looks at the outer row; in session 7 you'll see how it runs.
+### Anti-join and semi-join
+
+Sometimes you don't want the pairs, just to know **whether they exist**. An **anti-join** keeps the rows that have **no** partner: `LEFT JOIN … WHERE right.id IS NULL`, or better, `NOT EXISTS (…)`. A **semi-join** keeps the ones that **do**, **just once** even if they have several: `EXISTS (…)`. What goes inside `EXISTS` is a query that looks at the outer row; in session 7 you'll see how it runs.
 
 ```join
 title: NOT EXISTS, whoever has no partner at all
@@ -152,7 +160,9 @@ type: semi
 caption: "Nelly reported twice and comes out once. With a plain `JOIN` she'd come out twice."
 ```
 
-**Counting after multiplying.** If a `JOIN` duplicates rows, `COUNT(*)` counts the duplicates. `COUNT(DISTINCT p.id)` counts distinct people:
+### Counting after multiplying
+
+If a `JOIN` duplicates rows, `COUNT(*)` counts the duplicates. `COUNT(DISTINCT p.id)` counts distinct people:
 
 ```sql run
 SELECT COUNT(*) AS row_count, COUNT(DISTINCT p.id) AS person_count
@@ -547,7 +557,7 @@ reveal: |
   **Milagros Tello Benavides.** All 14 deposits, from the four collectors (the chip too), jump to her phone between 48 and 140 minutes later, and it's always **90%**: out of 300 go 270, out of 500 go 450. The collectors keep a cut and pass the rest on. Milagros lives in Surquillo and works as a cashier. Is she the one in charge, or just somebody else's till?
 hints:
   - "The self-join's `ON`: `t2.from_phone = t1.to_phone AND t2.moment BETWEEN t1.moment AND datetime(t1.moment, '+3 hours')`."
-  - "The minutes: `(julianday(t2.moment) - julianday(t1.moment)) * 24 * 60`, rounded and cast to an integer as in session 3."
+  - "The minutes: `(julianday(t2.moment) - julianday(t1.moment)) * 24 * 60`, wrapped in `CAST(round(…) AS INTEGER)` (`round` rounds), as in session 3."
 tests:
   - name: each deposit with the next payment, by moment
     same: SELECT t1.amount, t2.amount, CAST(round((julianday(t2.moment) - julianday(t1.moment)) * 1440) AS INTEGER), p.name FROM transfers AS t1 JOIN transfers AS t2 ON t2.from_phone = t1.to_phone AND t2.moment BETWEEN t1.moment AND datetime(t1.moment, '+3 hours') LEFT JOIN people AS p ON p.phone = t2.to_phone WHERE t1.note LIKE 'deposit%' ORDER BY t1.moment

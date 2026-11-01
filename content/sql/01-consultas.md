@@ -6,9 +6,9 @@ case: surquillo
 
 ## El encargo
 
-Sábado 14 de marzo de 2026, siete de la mañana. Suena el teléfono de Loop: es **Carmen Ríos**, la técnica que atiende nuestro puesto de reparaciones, el **47 del Mercado N.º 1 de Surquillo**. Anoche dejó a **Wayra**, nuestro robot de reparto, cargando en el puesto, como siempre. Hoy lo encontró apagado y **sin su giroscopio**, la pieza que le dice hacia dónde está inclinado. Sin ella, Wayra no puede ni pararse derecho.
+Sábado 14 de marzo de 2026, siete de la mañana. Llama **Carmen Ríos**, la técnica de nuestro puesto de reparaciones, el **47 del Mercado N.º 1 de Surquillo**. Anoche dejó a **Wayra**, nuestro robot de reparto, cargando en el puesto. Hoy lo encontró apagado y **sin su giroscopio**, la pieza que le dice hacia dónde está inclinado.
 
-La comisaría de Surquillo tiene poca gente y muchos casos. La municipalidad le dio a Loop acceso de lectura a su base de datos, **los expedientes de Lima**: el padrón de personas, los vehículos, las tarjetas que se pasan en las puertas del mercado, las cámaras que leen placas, las denuncias, las llamadas. Son miles de filas. **Chasqui**, el primer robot de Loop, será tu asistente; tú harás las preguntas. Y en una base de datos las preguntas se hacen en **SQL**.
+La municipalidad le dio a Loop acceso de lectura a la base de datos de la comisaría de Surquillo, **los expedientes de Lima**: el padrón de personas, las tarjetas que se pasan en las puertas del mercado, las cámaras que leen placas, las denuncias, las llamadas. **Chasqui**, el primer robot de Loop, será tu asistente; tú harás las preguntas. Y en una base de datos las preguntas se hacen en **SQL**.
 
 ```escenario
 case: surquillo
@@ -120,9 +120,21 @@ El programa sabía el camino de memoria, y si el camino cambiaba, los programas 
 
 **Edgar F. Codd**, un matemático británico que trabajaba en el laboratorio de IBM en San José, publicó en junio de 1970 el artículo *A Relational Model of Data for Large Shared Data Banks*. Su idea: guardar los datos como **relaciones** (tablas de filas y columnas, sin punteros a la vista) y pedirlos **describiendo qué quieres**, no cómo encontrarlo. El sistema decide el camino. A eso se le llama ser **declarativo**.
 
-Codd escribió matemáticas, no un lenguaje. En 1974, **Donald Chamberlin** y **Raymond Boyce**, también de IBM, diseñaron uno que se leyera casi como inglés para el prototipo **System R**: lo llamaron **SEQUEL** (*Structured English Query Language*). Como "SEQUEL" ya era una marca registrada de una empresa aeronáutica británica, le quitaron las vocales: **SQL**. Por eso hay gente que dice "es-cu-ele" y gente que dice "sícuel"; las dos formas valen.
+<!-- /photo -->
+
+### ¿Cómo se llama un lenguaje que se lee como inglés?
+
+Codd escribió matemáticas, no un lenguaje. Faltaba alguien que lo bajara a algo que una persona pudiera teclear. Antes de seguir, apuesta: si tuvieras que bautizar un lenguaje de consultas pensado para leerse casi como inglés, ¿qué nombre le pondrías?
+
+<!-- photo: sql-don-chamberlin -->
+
+En 1974, **Donald Chamberlin** y **Raymond Boyce**, también de IBM, diseñaron uno para el prototipo **System R**, y lo llamaron **SEQUEL** (*Structured English Query Language*): consulta estructurada en inglés. Pero "SEQUEL" ya era una marca registrada de una empresa aeronáutica británica, así que le quitaron las vocales: **SQL**.
 
 <!-- /photo -->
+
+Por eso hay gente que dice "es-cu-ele" y gente que dice "sícuel"; las dos formas valen.
+
+> **Para llevar:** SQL junta dos ideas de IBM: la de Codd (1970), pedir qué quieres y no cómo encontrarlo, y un lenguaje que se lee casi como inglés (1974). Su nombre es SEQUEL sin vocales.
 
 ```figura
 title: SQL en el tiempo
@@ -163,6 +175,8 @@ SQL nació para que pidas los datos diciendo qué quieres, no cómo ir a buscarl
 ### SQLite, la base de este curso
 
 En la primavera del año 2000, **D. Richard Hipp** escribía software para los destructores de la Marina de Estados Unidos, como contratista de General Dynamics. El programa dependía de un servidor de base de datos aparte, y cuando ese servidor no estaba disponible, el programa no podía hacer nada. Hipp se preguntó por qué una base de datos necesitaba un servidor y escribió una que no: **SQLite**, una biblioteca que guarda toda la base en **un solo archivo** y corre dentro del programa que la usa. La versión 1.0 salió en agosto de 2000, y su código es de **dominio público**.
+
+### Hoy está en todas partes
 
 Hoy SQLite está dentro de cada celular, de cada navegador y de miles de aplicaciones. El propio proyecto calcula que hay **más de un billón** (un millón de millones) de bases SQLite en uso. Este curso la usa porque corre en tu navegador sin instalar nada (compilada a WebAssembly) y porque es SQL de verdad: lo que aprendas aquí sirve en PostgreSQL o MySQL, y en cada sesión verás dónde cambian.
 
@@ -353,7 +367,7 @@ id: sql1-predice-division
 type: predict
 title: Dividir en SQLite
 prompt: |
-  Chasqui quiere repartir 7 baterías entre 2 robots. ¿Qué devuelve esta consulta? (Un `SELECT` sin `FROM` calcula una sola fila.)
+  Chasqui quiere repartir 7 baterías entre 2 robots. ¿Qué devuelve esta consulta? (Un `SELECT` sin `FROM` calcula una sola fila, y `%` es el resto de la división.)
 code: |
   SELECT 7 / 2, 7 / 2.0, 7 % 2;
 options:
@@ -522,8 +536,7 @@ solution: |
   FROM denuncias
   WHERE fecha = '2026-03-14'
     AND distrito = 'Surquillo'
-    AND tipo = 'robo'
-    AND lugar LIKE '%47%';
+    AND tipo = 'robo';
 answer: Marleny Quispe
 answerLabel: ¿Cómo se llama la vigilante?
 reveal: |

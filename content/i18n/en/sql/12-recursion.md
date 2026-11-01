@@ -6,9 +6,18 @@ case: frio
 
 ## The job
 
+> **Last time:** JSON and time series showed a firmware 2.6.0 that nobody published, installed on all three robots after their silences. That case is behind you; the next one comes in a cardboard box, from 1998.
+
 Monday 30 March 2026. **Haydée Llanos**, a nurse in Surquillo, walks into Loop with a cardboard box full of papers. Her father, **Teodoro Llanos**, was the night guard at **Textil San Jacinto**, a textile mill in La Victoria. On the night of **Friday 18 December 1998** someone opened the mill's safe **with its combination** and took S/ 412,000, the Christmas bonuses. Teodoro was alone in the guard booth. He was convicted in 1999 and died in 2021 with nobody believing him.
 
-"He always said that night someone called him to let a technician in," Haydée says. The municipality has just digitised the file: the mill's **staff list** with each employee's boss, the 1998 **phone book**, **every December call** through the La Victoria exchange (more than sixty thousand) and the **statements** taken at the time. The tables end in `_1998`.
+"He always said that night someone called him to let a technician in," Haydée says. The municipality has just digitised the file:
+
+- the mill's **staff list**, with each employee's boss;
+- the 1998 **phone book**;
+- **every December call** through the La Victoria exchange (more than sixty thousand);
+- the **statements** taken at the time.
+
+The tables end in `_1998`.
 
 To answer "who reports to whom?" or "who is three calls away from this phone?" you have to follow a chain **without knowing how many links it has**. A `JOIN` moves one step; today you learn to move as many as it takes.
 
@@ -129,7 +138,9 @@ query: |
 
 Look at the last round: with `x = 5`, `WHERE x < 5` lets nothing through. **Without that condition, it never ends.**
 
-**Date series.** The same trick with `date(d, '+1 day')` builds a calendar. It does what `GROUP BY` can't: show **the days with no rows too**. The calls the mill's guard booth (`'4721093'`) received in the week of the robbery:
+### Date series
+
+The same trick with `date(d, '+1 day')` builds a calendar. It does what `GROUP BY` can't: show **the days with no rows too**. The calls the mill's guard booth (`'4721093'`) received in the week of the robbery:
 
 ```sql run
 WITH RECURSIVE days(day) AS (
@@ -145,7 +156,9 @@ SELECT day,
 FROM days;
 ```
 
-**Hierarchies.** The anchor is the person at the top; the recursive part looks for whoever has someone from the previous round as their boss, and keeps count of the level:
+### Hierarchies
+
+The anchor is the person at the top; the recursive part looks for whoever has someone from the previous round as their boss, and keeps count of the level:
 
 ```sql run
 WITH RECURSIVE team(id, name, role, level) AS (
@@ -179,7 +192,9 @@ caption: "No stopping `WHERE` is needed here: in round 4 nobody has the trainee 
 
 To **climb** the chain (from an employee up to the general manager) you flip the `JOIN`: `e.id = q.boss_id`, "the boss of someone from the previous round".
 
-**Graphs.** Calls aren't a tree: A calls B, B calls C and C calls A back. Walking a graph like that has two dangers: going round in circles forever and exploding into paths. Two things keep it in check:
+### Graphs
+
+Calls aren't a tree: A calls B, B calls C and C calls A back. Walking a graph like that has two dangers: going round in circles forever and exploding into paths. Two things keep it in check:
 
 - a **depth limit** (`WHERE r.hops < 3`), and
 - a **path as text** (`r.path || '>' || number`) so you never step on a number already in the path: `instr(r.path, number) = 0`.

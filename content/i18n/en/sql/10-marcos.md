@@ -6,6 +6,8 @@ case: sensores
 
 ## The job
 
+> **Last time:** window functions showed that Tika, Kusi and Pituco go out of calibration right after the 03:00 calibration. Someone was in the room beforehand; to find out who, you have to measure between neighbouring rows.
+
 Saturday 28 March. The card that went in before dawn on both sabotage mornings, **T-0412**, is in the name of **Wilmer Zevallos**, the guard. But Wilmer has a story: on Monday 23 he reported that card **lost**, and since that night he does his rounds with a new one, **T-0533**.
 
 To know whether he's lying you have to measure **between rows**: how long each visit lasted (from an `in` to the same card's next `out`) and whether the robots stopped reporting while someone was inside (how much time passed between a reading and **the previous one**). A row on its own knows nothing about its neighbour; a window with a **frame** does.
@@ -149,6 +151,10 @@ WHERE robot_id = 3
   AND moment BETWEEN '2026-03-24 02:30' AND '2026-03-24 03:30'
 ORDER BY moment;
 ```
+
+### FIRST_VALUE and LAST_VALUE
+
+To compare each row with the first (or last) one of its frame: **`FIRST_VALUE(col)`** brings the value of the frame's first row and **`LAST_VALUE(col)`**, the last one's. `value - FIRST_VALUE(value) OVER (ORDER BY moment)` says how much a reading rose since the start. Watch out for `LAST_VALUE`: see the trap below.
 
 ### Gaps and islands
 

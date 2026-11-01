@@ -6,6 +6,8 @@ case: frio
 
 ## The job
 
+> **Last time:** `WITH RECURSIVE` gave you the twelve people who reported to Rosa Ugarte and knew the combination; Teodoro, the guard, was not one of them. Applied to 60,000 calls, the same idea gets stuck, and to understand why you have to look inside.
+
 Tuesday 31 March, first thing. Three names are left on the board: **Víctor Salazar**, **Rosa Ugarte** and **Nilton Palomino**. Last night Chasqui wanted to see who the public phone talked to **all of December**, not just on the night of the robbery. It copied session 12's walk, dropped the time filter, stretched it to **four** calls and, to save writing the edges, put both directions in a single condition:
 
 ```sql
@@ -107,7 +109,9 @@ timeline:
 
 ## The minimum
 
-**The file is pages.** An SQLite database is a single file cut into **pages** of the same size. SQLite reads and writes whole pages, never single rows: a query's cost is measured in **how many pages it has to read**.
+### The file is pages
+
+An SQLite database is a single file cut into **pages** of the same size. SQLite reads and writes whole pages, never single rows: a query's cost is measured in **how many pages it has to read**. To see the page size use `PRAGMA`, an SQLite command that reads or changes the database's settings:
 
 ```sql run
 PRAGMA page_size;
@@ -116,10 +120,13 @@ PRAGMA page_size;
 <!-- photo: hdd-open-wd -->
 
 That's 4096 bytes. A call takes about 50, so some 90 fit on a page: `calls_1998` takes about **680 pages**.
-
-**A table is a B-tree ordered by `id`.** The pages aren't loose: they form a **tree**. The **leaves** hold the rows, in `id` order (the `rowid`). The pages above hold only **dividing keys**: "ids below 20,000 this way; the rest, that way". Finding an `id` means walking from the root down to a leaf, comparing:
-
 <!-- /photo -->
+
+### A table is a B-tree ordered by `id`
+
+The pages aren't loose: they form a **tree**. The **leaves** hold the rows, in `id` order (the `rowid`, the internal number SQLite identifies each row by). The pages above hold only **dividing keys**: "ids below 20,000 this way; the rest, that way". Finding an `id` means walking from the root down to a leaf, comparing:
+
+
 
 ```btree
 title: Finding call 35552 by its id
@@ -130,7 +137,9 @@ find: 35552
 caption: "Drawn with 3 keys per page. In the real file each inner page holds hundreds of keys: with 680 leaves, the tree has 3 levels. Looking up an `id` reads **3 pages**; reading the table, **680**."
 ```
 
-**Without an index, everything else is a SCAN.** The tree is ordered by `id`, not by `caller`. To find a number's calls SQLite has no choice but to read **every** leaf and look row by row. `EXPLAIN QUERY PLAN` in front of a query doesn't run it: it says **how** it would run it.
+### Without an index, everything else is a SCAN
+
+The tree is ordered by `id`, not by `caller`. To find a number's calls SQLite has no choice but to read **every** leaf and look row by row. `EXPLAIN QUERY PLAN` in front of a query doesn't run it: it says **how** it would run it.
 
 ```plan
 title: "No index: SCAN"
@@ -139,7 +148,23 @@ query: |
   WHERE caller = '4417825';
 ```
 
-**An index is another B-tree.** `CREATE INDEX idx_calls_caller ON calls_1998(caller)` builds a separate tree whose leaves hold `(caller, rowid)` pairs **sorted by `caller`**. Finding a number means walking down that tree to the first entry with that `caller`, reading the ones that follow (they sit together) and, with each `rowid`, fetching the row from the table.
+### An index is another B-tree
+
+`CREATE INDEX idx_calls_caller ON calls_1998(caller)` builds a separate tree whose leaves hold `(caller, rowid)` pairs **sorted by `caller`**. Finding a number means walking down that tree to the first entry with that `caller`, reading the ones that follow (they sit together) and, with each `rowid`, fetching the row from the table.
+
+```steps
+# Searching with an index: two trips
+## The question
+`WHERE caller = '4417825'`. The table is sorted by `id`, not by `caller`; the index is sorted by `caller`.
+## You walk down the index
+From the index root, the dividing keys take you to the leaf where `'4417825'` starts.
+## You read the entries that sit together
+Entries with the same `caller` sit next to each other. You read until the number changes.
+## You jump to the table with each rowid
+Each entry carries its row's `rowid`: with it you walk down the table's tree and fetch the whole row.
+## Total
+A few index pages plus one walk down the table for each call found, instead of the 680 pages of a SCAN.
+```
 
 ```btree
 title: "The index on caller: entries sorted by number"
@@ -159,7 +184,9 @@ query: |
 
 Read it top to bottom and outside in. **SCAN** (red) reads the whole table; **SEARCH … USING INDEX** (green) walks down an index; **USING COVERING INDEX** means the index has **every** column the query asks for and the table isn't even opened; **USE TEMP B-TREE** is a temporary tree SQLite builds to sort or group.
 
-**Multi-column indexes and the leftmost prefix.** An index on `(callee, started)` is sorted like a phone book by surname and first name: first by `callee` and, within each `callee`, by `started`. It helps if the query fixes **the first column**; the second only helps after the first.
+### Multi-column indexes and the leftmost prefix
+
+An index on `(callee, started)` is sorted like a phone book by surname and first name: first by `callee` and, within each `callee`, by `started`. It helps if the query fixes **the first column**; the second only helps after the first.
 
 ```figure
 title: "Does the index (callee, started) help?"
@@ -174,7 +201,9 @@ panes:
         - ["date(started) = '1998-12-18'", "no: SCAN (a function hides the column)"]
 ```
 
-**Functions on the column.** The index stores `started`, not `date(started)`. If you write `WHERE date(started) = '1998-12-18'`, SQLite has to compute the function on every row: SCAN. The same question as a **range** on the bare column does use the index:
+### Functions on the column
+
+The index stores `started`, not `date(started)`. If you write `WHERE date(started) = '1998-12-18'`, SQLite has to compute the function on every row: SCAN. The same question as a **range** on the bare column does use the index:
 
 ```plan
 title: The same day, written as a range
@@ -184,11 +213,11 @@ query: |
   WHERE started >= '1998-12-18' AND started < '1998-12-19';
 ```
 
-**`LIKE` with a prefix.** `holder LIKE 'Cerraj%'` could walk an index down to "Cerraj" and read until names stop starting that way. But `LIKE` ignores case, and a normal index doesn't. SQLite only uses it if the index compares the way `LIKE` does: `CREATE INDEX … ON phones_1998(holder COLLATE NOCASE)`. A `LIKE '%Candado%'`, with `%` at the start, can never use an index.
+### More things to look for in a plan
 
-**The cost of `SELECT *`.** With an index on `(callee, started, caller)`, `SELECT started, caller … WHERE callee = …` comes **entirely from the index** (COVERING). With `SELECT *`, every entry forces a jump to the table for the other columns. Ask only for what you'll read.
-
-**And Chasqui's query.** `r.number IN (l.caller, l.callee)` is an `OR` across **two different columns**: no single-column index answers both questions at once, so SQLite SCANs the 60,000 calls **for every number in the queue**. With about 5,000 numbers in the queue, that's about 300 million rows read.
+- **`LIKE` with a prefix.** `holder LIKE 'Cerraj%'` could walk an index down to "Cerraj" and read until names stop starting that way. But `LIKE` ignores case, and a normal index doesn't. SQLite only uses it if the index compares the way `LIKE` does: `CREATE INDEX … ON phones_1998(holder COLLATE NOCASE)`. A `LIKE '%Candado%'`, with `%` at the start, can never use an index.
+- **The cost of `SELECT *`.** With an index on `(callee, started, caller)`, `SELECT started, caller … WHERE callee = …` comes **entirely from the index** (COVERING). With `SELECT *`, every entry forces a jump to the table for the other columns. Ask only for what you'll read.
+- **And Chasqui's query.** `r.number IN (l.caller, l.callee)` is an `OR` across **two different columns**: no single-column index answers both questions at once, so SQLite SCANs the 60,000 calls **for every number in the queue**. With about 5,000 numbers in the queue, that's about 300 million rows read.
 
 ```plan
 title: The plan of Chasqui's walk

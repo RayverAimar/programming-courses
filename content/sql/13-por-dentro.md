@@ -6,6 +6,8 @@ case: frio
 
 ## El encargo
 
+> **La vez pasada:** `WITH RECURSIVE` te dio los doce que dependían de Rosa Ugarte y conocían la combinación; Teodoro, el vigilante, no era uno. Aplicada a 60 000 llamadas, la misma idea se atasca, y para entender por qué hay que mirar adentro.
+
 Martes 31 de marzo, a primera hora. Quedan tres nombres en la pizarra: **Víctor Salazar**, **Rosa Ugarte** y **Nilton Palomino**. Anoche Chasqui quiso ver con quién habló el teléfono público **en todo diciembre**, no solo la noche del robo. Copió la caminata de la sesión 12, le quitó el filtro de horas, la estiró a **cuatro** llamadas y, para no escribir las aristas, juntó los dos sentidos en una sola condición:
 
 ```sql
@@ -109,7 +111,9 @@ timeline:
 
 ## Lo mínimo
 
-**El archivo son páginas.** Una base de SQLite es un solo archivo cortado en **páginas** del mismo tamaño. SQLite lee y escribe páginas enteras, nunca filas sueltas: el costo de una consulta se mide en **cuántas páginas tiene que leer**.
+### El archivo son páginas
+
+Una base de SQLite es un solo archivo cortado en **páginas** del mismo tamaño. SQLite lee y escribe páginas enteras, nunca filas sueltas: el costo de una consulta se mide en **cuántas páginas tiene que leer**. Para ver el tamaño de página usa `PRAGMA`, un comando de SQLite que consulta o cambia ajustes de la base:
 
 ```sql run
 PRAGMA page_size;
@@ -118,10 +122,13 @@ PRAGMA page_size;
 <!-- photo: hdd-open-wd -->
 
 Son 4096 bytes. Una llamada ocupa unos 50, así que caben unas 90 por página: `llamadas_1998` ocupa unas **680 páginas**.
-
-**Una tabla es un B-tree ordenado por `id`.** Las páginas no están sueltas: forman un **árbol**. Las **hojas** guardan las filas, en orden de `id` (el `rowid`). Las páginas de arriba guardan solo **claves divisorias**: "los `id` menores que 20 000, por aquí; los otros, por allá". Buscar un `id` es bajar de la raíz a una hoja, comparando:
-
 <!-- /photo -->
+
+### Una tabla es un B-tree ordenado por `id`
+
+Las páginas no están sueltas: forman un **árbol**. Las **hojas** guardan las filas, en orden de `id` (el `rowid`, el número interno con que SQLite identifica cada fila). Las páginas de arriba guardan solo **claves divisorias**: "los `id` menores que 20 000, por aquí; los otros, por allá". Buscar un `id` es bajar de la raíz a una hoja, comparando:
+
+
 
 ```arbol
 title: Buscar la llamada 35552 por su id
@@ -132,7 +139,9 @@ find: 35552
 caption: "Dibujado con 3 claves por página. En el archivo real cada página interna guarda cientos de claves: con 680 hojas, el árbol tiene 3 niveles. Buscar por `id` lee **3 páginas**; recorrer la tabla, **680**."
 ```
 
-**Sin índice, todo lo demás es un SCAN.** El árbol está ordenado por `id`, no por `origen`. Para encontrar las llamadas de un número SQLite no tiene más remedio que leer **todas** las hojas y mirar fila por fila. `EXPLAIN QUERY PLAN` delante de una consulta no la corre: dice **cómo** la correría.
+### Sin índice, todo lo demás es un SCAN
+
+El árbol está ordenado por `id`, no por `origen`. Para encontrar las llamadas de un número SQLite no tiene más remedio que leer **todas** las hojas y mirar fila por fila. `EXPLAIN QUERY PLAN` delante de una consulta no la corre: dice **cómo** la correría.
 
 ```plan
 title: "Sin índice: SCAN"
@@ -141,7 +150,23 @@ query: |
   WHERE origen = '4417825';
 ```
 
-**Un índice es otro B-tree.** `CREATE INDEX idx_llamadas_origen ON llamadas_1998(origen)` arma un árbol aparte cuyas hojas guardan pares `(origen, rowid)` **ordenados por `origen`**. Buscar un número es bajar por ese árbol hasta la primera entrada con ese `origen`, leer las que siguen (están juntas) y, con cada `rowid`, ir a buscar la fila a la tabla.
+### Un índice es otro B-tree
+
+`CREATE INDEX idx_llamadas_origen ON llamadas_1998(origen)` arma un árbol aparte cuyas hojas guardan pares `(origen, rowid)` **ordenados por `origen`**. Buscar un número es bajar por ese árbol hasta la primera entrada con ese `origen`, leer las que siguen (están juntas) y, con cada `rowid`, ir a buscar la fila a la tabla.
+
+```steps
+# Buscar con un índice: dos viajes
+## La pregunta
+`WHERE origen = '4417825'`. La tabla está ordenada por `id`, no por `origen`; el índice sí está ordenado por `origen`.
+## Bajas por el índice
+Desde la raíz del índice, las claves divisorias te llevan a la hoja donde empieza `'4417825'`.
+## Lees las entradas juntas
+Las entradas con el mismo `origen` están una al lado de la otra. Lees hasta que el número cambia.
+## Saltas a la tabla con cada rowid
+Cada entrada trae el `rowid` de su fila: con él bajas por el árbol de la tabla y traes la fila completa.
+## Total
+Unas pocas páginas del índice más una bajada a la tabla por cada llamada encontrada, en vez de las 680 páginas de un SCAN.
+```
 
 ```arbol
 title: "El índice por origen: las entradas ordenadas por número"
@@ -161,7 +186,9 @@ query: |
 
 Se lee de arriba abajo y de afuera hacia adentro. **SCAN** (rojo) lee la tabla entera; **SEARCH … USING INDEX** (verde) baja por un índice; **USING COVERING INDEX** significa que el índice tiene **todas** las columnas que pide la consulta y la tabla ni se abre; **USE TEMP B-TREE** es un árbol temporal que SQLite arma para ordenar o agrupar.
 
-**Índices de varias columnas y el prefijo izquierdo.** Un índice `(destino, inicio)` está ordenado como una guía telefónica por apellido y nombre: primero por `destino` y, dentro de cada `destino`, por `inicio`. Sirve si la consulta fija **la primera columna**; la segunda solo ayuda después de la primera.
+### Índices de varias columnas y el prefijo izquierdo
+
+Un índice `(destino, inicio)` está ordenado como una guía telefónica por apellido y nombre: primero por `destino` y, dentro de cada `destino`, por `inicio`. Sirve si la consulta fija **la primera columna**; la segunda solo ayuda después de la primera.
 
 ```figura
 title: "¿Le sirve el índice (destino, inicio)?"
@@ -176,7 +203,9 @@ panes:
         - ["date(inicio) = '1998-12-18'", "no: SCAN (una función esconde la columna)"]
 ```
 
-**Funciones sobre la columna.** El índice guarda `inicio`, no `date(inicio)`. Si escribes `WHERE date(inicio) = '1998-12-18'`, SQLite tiene que calcular la función en cada fila: SCAN. La misma pregunta como **rango** sobre la columna desnuda sí usa el índice:
+### Funciones sobre la columna
+
+El índice guarda `inicio`, no `date(inicio)`. Si escribes `WHERE date(inicio) = '1998-12-18'`, SQLite tiene que calcular la función en cada fila: SCAN. La misma pregunta como **rango** sobre la columna desnuda sí usa el índice:
 
 ```plan
 title: El mismo día, escrito como rango
@@ -186,11 +215,11 @@ query: |
   WHERE inicio >= '1998-12-18' AND inicio < '1998-12-19';
 ```
 
-**`LIKE` con prefijo.** `titular LIKE 'Cerraj%'` podría bajar por un índice hasta "Cerraj" y leer hasta que deje de empezar así. Pero `LIKE` no distingue mayúsculas, y un índice normal sí. SQLite solo lo aprovecha si el índice compara igual que `LIKE`: `CREATE INDEX … ON telefonos_1998(titular COLLATE NOCASE)`. Un `LIKE '%Candado%'`, con `%` al inicio, nunca puede usar un índice.
+### Más cosas que mirar en un plan
 
-**El costo de `SELECT *`.** Con un índice `(destino, inicio, origen)`, `SELECT inicio, origen … WHERE destino = …` sale **entero del índice** (COVERING). Con `SELECT *`, cada entrada obliga a saltar a la tabla por las otras columnas. Pide solo lo que vas a leer.
-
-**Y la consulta de Chasqui.** `r.numero IN (l.origen, l.destino)` es un `OR` entre **dos columnas distintas**: ningún índice por una sola columna responde las dos preguntas a la vez, así que SQLite hace un SCAN de las 60 000 llamadas **por cada número de la cola**. Con unos 5 000 números en la cola, son unos 300 millones de filas leídas.
+- **`LIKE` con prefijo.** `titular LIKE 'Cerraj%'` podría bajar por un índice hasta "Cerraj" y leer hasta que deje de empezar así. Pero `LIKE` no distingue mayúsculas, y un índice normal sí. SQLite solo lo aprovecha si el índice compara igual que `LIKE`: `CREATE INDEX … ON telefonos_1998(titular COLLATE NOCASE)`. Un `LIKE '%Candado%'`, con `%` al inicio, nunca puede usar un índice.
+- **El costo de `SELECT *`.** Con un índice `(destino, inicio, origen)`, `SELECT inicio, origen … WHERE destino = …` sale **entero del índice** (COVERING). Con `SELECT *`, cada entrada obliga a saltar a la tabla por las otras columnas. Pide solo lo que vas a leer.
+- **Y la consulta de Chasqui.** `r.numero IN (l.origen, l.destino)` es un `OR` entre **dos columnas distintas**: ningún índice por una sola columna responde las dos preguntas a la vez, así que SQLite hace un SCAN de las 60 000 llamadas **por cada número de la cola**. Con unos 5 000 números en la cola, son unos 300 millones de filas leídas.
 
 ```plan
 title: El plan de la caminata de Chasqui

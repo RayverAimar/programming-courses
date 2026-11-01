@@ -6,9 +6,11 @@ case: sensores
 
 ## The job
 
-Monday 30 March. You already know **when**: the robots went quiet for 40 minutes before dawn on the 24th and the 26th, while someone was using Wilmer's lost card. What's missing is **who**. Carmen is sure that to throw a robot out of calibration like that you have to change its firmware, and that leaves a mark.
+> **Last time:** frames measured the visits: card T-0412 made two visits of 38 and 39 minutes, and its owner, Wilmer, had reported it lost before the first one. You know when; who is still missing.
 
-The mark is in the `data` column of `readings`: every reading carries a **JSON** text with the firmware version that produced it, and when a robot gets updated it stores a row from the `'system'` sensor with who updated it, from which device and what changed. SQL can't see inside a text… except with the JSON functions. And to read the readings as what they are, a **time series**, you'll group them by hour and compare them with the previous hour or day.
+Monday 30 March. You already know **when**: the robots went quiet for 40 minutes before dawn on the 24th and the 26th. What's missing is **who**. Carmen is sure that to throw a robot out of calibration like that you have to change its firmware, and that leaves a mark.
+
+The mark is in the `data` column of `readings`: every reading carries a **JSON** text with the firmware version that produced it, and when a robot gets updated it stores a row from the `'system'` sensor with who updated it, from which device and what changed. SQL can't see inside a text… except with the JSON functions. To read them as a **time series**, you'll group them by hour and compare each with the one before.
 
 ```setting
 case: sensores

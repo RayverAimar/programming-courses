@@ -6,6 +6,8 @@ case: pagos
 
 ## El encargo
 
+> **La vez pasada:** las subconsultas dejaron tres nombres nuevos en la pizarra: Gustavo Alvarado, Teodoro Huanca y Percy Tello. Cruzar todo eso con subconsultas anidadas se vuelve ilegible; hoy cada paso tendrá su nombre.
+
 Jueves 26 de marzo. La plata de las 14 víctimas pasa por cuatro cobradores, llega a la caja de **Milagros Tello** y casi toda sale otra vez. En la pizarra quedan tres nombres que recibieron pagos grandes de ella: su casero (ya descartado), su hermano **Percy** y un comerciante de San Borja, **Gustavo Alvarado**, que hoy declaró: «Milagros me compra mercadería». Dos víctimas contaron que el vendedor les habló de **una tienda de celulares en Gamarra**.
 
 Hoy toca cruzar todo lo que sabes en una sola consulta que se pueda leer: cada paso con su nombre (**`WITH`**) y listas que se juntan, se cruzan o se restan (**`UNION`**, **`INTERSECT`**, **`EXCEPT`**). Si la consulta de hoy lo prueba, la comisaría tiene a quién buscar.
@@ -96,7 +98,9 @@ caption: "Las 9 que denunciaron también pagaron. `EXCEPT` da las 5 que pagaron 
 
 Las reglas: los nombres de las columnas salen de la **primera** consulta; un `ORDER BY` va **una sola vez, al final**, y ordena el resultado combinado; y para estas operaciones dos `NULL` **sí** son iguales (a diferencia de `=`), así que `NULL INTERSECT NULL` da una fila.
 
-**Vistas.** Si un paso te sirve en muchas consultas, puedes guardarlo en la base con `CREATE VIEW`. Una vista es una consulta con nombre que vive en la base (no guarda filas: se vuelve a calcular cada vez). En la sesión 17 diseñarás las tuyas.
+### Vistas
+
+Si un paso te sirve en muchas consultas, puedes guardarlo en la base con `CREATE VIEW`. Una vista es una consulta con nombre que vive en la base (no guarda filas: se vuelve a calcular cada vez). En la sesión 17 diseñarás las tuyas.
 
 ```sql run
 CREATE VIEW adelantos AS
@@ -266,7 +270,7 @@ solution: |
   SELECT de_telefono
   FROM transferencias
   WHERE a_telefono = (SELECT telefono FROM personas WHERE nombre = 'Milagros Tello Benavides')
-  ORDER BY 1;
+  ORDER BY a_telefono;
 hints:
   - "La segunda lista: `SELECT de_telefono FROM transferencias WHERE a_telefono = (SELECT telefono FROM personas WHERE nombre = 'Milagros Tello Benavides')`."
   - "El `ORDER BY` va una vez, al final de todo."
@@ -299,7 +303,7 @@ solution: |
   FROM denuncias AS d
   JOIN personas AS p ON p.id = d.denunciante_id
   WHERE d.tipo = 'estafa'
-  ORDER BY 1;
+  ORDER BY nombre;
 hints:
   - "La segunda lista son los nombres de quienes denunciaron una estafa: `denuncias` unida a `personas`."
 tests:

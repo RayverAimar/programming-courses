@@ -6,6 +6,8 @@ case: taller
 
 ## The job
 
+> **Last time:** with `INSERT`, `UPDATE` and `DELETE` you traced the change that took stall 47 from Carmen: it was made by `abenavides`, at counter 1, in favour of Yolanda Ugarte Montes. What is left to explain is why her renewal never reached the registry.
+
 Tuesday 7 April. Carmen arrives at the office with her receipt in hand: on **Friday 20, at 18:47**, she paid **S/ 120** at counter 2 to renew her licence until March 2027. But the registry says it expired on **31 March 2026**. The renewal got lost.
 
 Two clerks work at the Markets Office at the same time, each at their own counter, on the same database. When two people write at once they can step on each other. Databases have a tool so that doesn't happen, the **transaction**, and the old app used it… halfway. Its **session log** keeps every statement it sent, with the session, the user and the exact second: the answer is in there.
@@ -49,7 +51,9 @@ Transactions promise four things, remembered as **ACID**:
 | **I**solation | transactions don't see each other half done | counter 1 doesn't see what counter 2 hasn't confirmed yet |
 | **D**urability | what is confirmed survives a blackout | after the `COMMIT`, it's on disk |
 
-**Atomicity, step by step.** Susana renews a licence: she inserts the filing and changes the registry. Halfway through, the power goes out. Press ▶:
+### Atomicity, step by step
+
+Susana renews a licence: she inserts the filing and changes the registry. Halfway through, the power goes out. Press ▶:
 
 ```transaction
 title: A blackout halfway
@@ -77,7 +81,9 @@ steps:
 caption: "In **WAL** mode the idea is the same, reversed: changes are appended to the end of a `-wal` file and a `COMMIT` is a mark; whatever has no mark is ignored."
 ```
 
-**Savepoints.** Inside a transaction you can mark a point with `SAVEPOINT name` and go back to it with `ROLLBACK TO name`, without losing what came before. `RELEASE name` removes the mark.
+### Savepoints
+
+Inside a transaction you can mark a point with `SAVEPOINT name` and go back to it with `ROLLBACK TO name`, without losing what came before. `RELEASE name` removes the mark.
 
 ```sql run
 BEGIN;
@@ -91,7 +97,9 @@ FROM stall_registry
 WHERE stall = 12;
 ```
 
-**Isolation: what each of two sessions sees.** If two transactions run at once, what does each see of the other? The more isolated, the safer… and the more they wait. The standard describes four **anomalies**:
+### Isolation: what each of two sessions sees
+
+If two transactions run at once, what does each see of the other? The more isolated, the safer… and the more they wait. The standard describes four **anomalies**:
 
 ```transaction
 title: Dirty read
@@ -164,7 +172,9 @@ steps:
 caption: "The fix isn't \"more transaction\": it's writing only what you change (`SET trade = …`), or writing only if the row is still as you read it (`WHERE … AND updated_at = 'what I read'`)."
 ```
 
-**How each engine does it.** SQLite lets many read but **only one write at a time**: whoever writes takes a lock on the whole database, and whoever arrives later waits or gets `SQLITE_BUSY`. With WAL, readers wait for nobody: they read the snapshot of the database from when they started. PostgreSQL uses **MVCC** (multiversion concurrency control): an `UPDATE` doesn't overwrite the row, it creates **a new version** and marks the old one as replaced; each transaction sees the versions that belong to it. That's why many can write at once there, on different rows.
+### How each engine does it
+
+SQLite lets many read but **only one write at a time**: whoever writes takes a lock on the whole database, and whoever arrives later waits or gets `SQLITE_BUSY`. With WAL, readers wait for nobody: they read the snapshot of the database from when they started. PostgreSQL uses **MVCC** (multiversion concurrency control): an `UPDATE` doesn't overwrite the row, it creates **a new version** and marks the old one as replaced; each transaction sees the versions that belong to it. That's why many can write at once there, on different rows.
 
 ```figure
 title: Two ways of sharing

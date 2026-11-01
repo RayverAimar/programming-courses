@@ -6,6 +6,8 @@ case: pagos
 
 ## The job
 
+> **Last time:** subqueries left three new names on the board: Gustavo Alvarado, Teodoro Huanca and Percy Tello. Crossing all of that with nested subqueries becomes unreadable; today every step gets a name.
+
 Thursday 26 March. The money of the 14 victims goes through four collectors, reaches **Milagros Tello**'s till and almost all of it goes out again. Three names on the board got big payments from her: her landlord (already cleared), her brother **Percy** and a merchant from San Borja, **Gustavo Alvarado**, who said today: "Milagros buys stock from me." Two victims said the seller mentioned **a phone shop in Gamarra**.
 
 Today you cross everything you know in a single query that can be read: each step with its name (**`WITH`**) and lists that are combined, crossed or subtracted (**`UNION`**, **`INTERSECT`**, **`EXCEPT`**). If today's query proves it, the police know who to go after.
@@ -96,7 +98,9 @@ caption: "The 9 who reported also paid. `EXCEPT` gives the 5 who paid and kept q
 
 The rules: column names come from the **first** query; an `ORDER BY` goes **once, at the end**, and sorts the combined result; and for these operations two `NULL`s **are** equal (unlike `=`), so `NULL INTERSECT NULL` gives one row.
 
-**Views.** If a step is useful in many queries, you can save it in the database with `CREATE VIEW`. A view is a named query that lives in the database (it stores no rows: it's recomputed every time). In session 17 you'll design your own.
+### Views
+
+If a step is useful in many queries, you can save it in the database with `CREATE VIEW`. A view is a named query that lives in the database (it stores no rows: it's recomputed every time). In session 17 you'll design your own.
 
 ```sql run
 CREATE VIEW deposits AS
@@ -266,7 +270,7 @@ solution: |
   SELECT from_phone
   FROM transfers
   WHERE to_phone = (SELECT phone FROM people WHERE name = 'Milagros Tello Benavides')
-  ORDER BY 1;
+  ORDER BY to_phone;
 hints:
   - "The second list: `SELECT from_phone FROM transfers WHERE to_phone = (SELECT phone FROM people WHERE name = 'Milagros Tello Benavides')`."
   - "The `ORDER BY` goes once, at the very end."
@@ -299,7 +303,7 @@ solution: |
   FROM reports AS r
   JOIN people AS p ON p.id = r.reporter_id
   WHERE r.kind = 'fraud'
-  ORDER BY 1;
+  ORDER BY name;
 hints:
   - "The second list is the names of whoever reported a fraud: `reports` joined to `people`."
 tests:

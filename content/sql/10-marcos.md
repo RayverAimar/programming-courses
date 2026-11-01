@@ -6,6 +6,8 @@ case: sensores
 
 ## El encargo
 
+> **La vez pasada:** las funciones de ventana mostraron que Tika, Kusi y Pituco se descalibran justo después de la calibración de las 03:00. Alguien estuvo en la sala antes; para saber quién, hay que medir entre filas vecinas.
+
 Sábado 28 de marzo. La tarjeta que entró de madrugada las dos veces del sabotaje, la **T-0412**, está a nombre de **Wilmer Zevallos**, el vigilante. Pero Wilmer tiene una historia: el lunes 23 denunció esa tarjeta como **perdida**, y desde esa noche hace sus rondas con una nueva, la **T-0533**.
 
 Para saber si miente hay que medir **entre filas**: cuánto duró cada visita (de una `entrada` a la `salida` siguiente de la misma tarjeta) y si los robots dejaron de reportar mientras alguien estaba adentro (cuánto tiempo pasó entre una lectura y **la anterior**). Una fila sola no sabe nada de su vecina; una ventana con **marco**, sí.
@@ -149,6 +151,10 @@ WHERE robot_id = 3
   AND momento BETWEEN '2026-03-24 02:30' AND '2026-03-24 03:30'
 ORDER BY momento;
 ```
+
+### FIRST_VALUE y LAST_VALUE
+
+Para comparar cada fila con la primera (o la última) de su marco: **`FIRST_VALUE(col)`** trae el valor de la primera fila del marco y **`LAST_VALUE(col)`**, el de la última. `valor - FIRST_VALUE(valor) OVER (ORDER BY momento)` dice cuánto subió una lectura desde el inicio. Ojo con `LAST_VALUE`: mira la trampa más abajo.
 
 ### Huecos e islas
 

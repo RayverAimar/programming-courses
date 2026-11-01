@@ -6,9 +6,11 @@ case: taller
 
 ## El encargo
 
-Miércoles 8 de abril. Edith tomó una decisión: la app vieja se jubila y Loop **diseña el padrón nuevo** desde cero. Para eso, Delia, la de sistemas, te pasa lo único que la oficina tenía antes de la app: **la planilla de Excel** donde cada registrador anotaba los puestos a mano, que alguien siguió llenando "por si acaso". La importaron tal cual a la tabla `planilla_puestos`.
+> **La vez pasada:** las transacciones te mostraron en la bitácora que la renovación de Carmen se aprobó a las 18:47 en la ventanilla 2, y que cinco minutos después, en la ventanilla 1, se tramitó el traspaso del mismo puesto. Ahora toca diseñar el padrón nuevo para que dos registradores no se pisen.
 
-Una hoja de cálculo deja escribir cualquier cosa en cualquier celda, y eso se nota: nombres escritos de tres maneras, dos rubros en una celda, el mismo puesto dos veces. Hoy aprenderás a **diseñar tablas** que no dejan que eso pase, a guardar consultas con nombre (**vistas**) y a que la base anote sola cada cambio (**triggers**). Y en esa planilla hay algo que nadie esperaba.
+Miércoles 8 de abril. Edith tomó una decisión: la app vieja se jubila y Loop **diseña el padrón nuevo** desde cero. Para eso, Delia, la de sistemas, te pasa lo único que la oficina tenía antes de la app: **la planilla de Excel** donde cada registrador anotaba los puestos a mano, que alguien siguió llenando "por si acaso". La importaron a la tabla `planilla_puestos`.
+
+Una hoja de cálculo deja escribir cualquier cosa en cualquier celda, nombres escritos de tres maneras, dos rubros en una celda, el mismo puesto dos veces. Hoy aprenderás a **diseñar tablas** que no dejan que eso pase, a guardar consultas con nombre (**vistas**) y a que la base anote sola cada cambio (**triggers**). Y en esa planilla hay algo que nadie esperaba.
 
 ```escenario
 case: taller
@@ -52,7 +54,13 @@ caption: "Dos rubros en una celda, un nombre en mayúsculas y el puesto 89 copia
 | **2FN** | ¿cada columna depende de **toda** la clave? | en `puesto_rubros(puesto, rubro, pasillo)`, el pasillo depende solo del puesto | el pasillo va en `puestos` |
 | **3FN** | ¿alguna columna depende de otra que no es la clave? | `telefono` depende del `dni`, no del puesto | una tabla `titulares` con el DNI, el nombre y el teléfono |
 
+<!-- photo: js-mars-climate-orbiter -->
+
 Cuando una tabla no está normalizada aparecen las **anomalías**: al **actualizar** (cambias el teléfono en una fila y no en las otras), al **insertar** (no puedes registrar a un titular sin inventarle un puesto) y al **borrar** (borras su único puesto y pierdes su teléfono). El diseño normalizado del padrón nuevo:
+
+> **Historia:** El 23 de septiembre de 1999 se perdió la sonda Mars Climate Orbiter de la NASA al llegar a Marte. Un programa entregaba el impulso de los propulsores en libras-fuerza por segundo y otro lo leía como newtons por segundo. Ningún número estaba "mal": solo no decía en qué unidad venía. Por eso conviene que la columna se llame `monto_soles` y no `monto`.
+
+<!-- /photo -->
 
 ```esquema
 title: El padrón nuevo, normalizado
@@ -65,9 +73,13 @@ schema: |
 caption: "Cada caja guarda una sola cosa. `puesto_rubros` resuelve la relación **muchos a muchos**: un puesto vende varios rubros y un rubro está en muchos puestos. Su clave son las dos columnas juntas."
 ```
 
-**Claves naturales y sustitutas.** Una clave **natural** ya existe en el mundo: el DNI, el código de licencia, el número de puesto. Una **sustituta** la inventa la base: `id INTEGER PRIMARY KEY`, que en SQLite es el `rowid` y se numera solo. Las naturales pueden cambiar (una licencia se renueva con código nuevo) o venir sucias; las sustitutas nunca cambian, pero no dicen nada. La costumbre sana: clave sustituta para unir tablas, y la natural **también**, con `UNIQUE`, para que la base no acepte dos titulares con el mismo DNI.
+### Claves naturales y sustitutas
 
-**Vistas.** `CREATE VIEW nombre AS SELECT …` guarda una consulta con nombre. No guarda datos: cada vez que la usas, SQLite vuelve a correr el `SELECT` con los datos de ese momento. Sirve para no repetir joins largos y para darle a cada usuario solo lo que debe ver.
+Una clave **natural** ya existe en el mundo: el DNI, el código de licencia, el número de puesto. Una **sustituta** la inventa la base: `id INTEGER PRIMARY KEY`, que en SQLite es el `rowid` y se numera solo. Las naturales pueden cambiar (una licencia se renueva con código nuevo) o venir sucias; las sustitutas nunca cambian, pero no dicen nada. La costumbre sana: clave sustituta para unir tablas, y la natural **también**, con `UNIQUE`, para que la base no acepte dos titulares con el mismo DNI.
+
+### Vistas
+
+`CREATE VIEW nombre AS SELECT …` guarda una consulta con nombre. No guarda datos: cada vez que la usas, SQLite vuelve a correr el `SELECT` con los datos de ese momento. Sirve para no repetir joins largos y para darle a cada usuario solo lo que debe ver.
 
 ```sql run
 CREATE VIEW titulares_actuales AS
@@ -78,7 +90,9 @@ JOIN personas p ON p.id = pp.titular_id;
 SELECT * FROM titulares_actuales WHERE vence >= '2026-04-08' AND vence < '2026-05-31';
 ```
 
-**Triggers.** Un **trigger** es SQL que la base corre sola cuando pasa algo en una tabla: `BEFORE` o `AFTER` un `INSERT`, `UPDATE` o `DELETE`, una vez por cada fila (`FOR EACH ROW`). Adentro, `OLD` es la fila como era y `NEW` como queda. El uso clásico es la **auditoría**: que nadie pueda cambiar el padrón sin dejar rastro, aunque la app se olvide de anotarlo. Dale a ▶:
+### Triggers
+
+Un **trigger** es SQL que la base corre sola cuando pasa algo en una tabla: `BEFORE` o `AFTER` un `INSERT`, `UPDATE` o `DELETE`, una vez por cada fila (`FOR EACH ROW`). Adentro, `OLD` es la fila como era y `NEW` como queda. El uso clásico es la **auditoría**: que nadie pueda cambiar el padrón sin dejar rastro, aunque la app se olvide de anotarlo. Dale a ▶:
 
 ```cambio
 title: Un UPDATE que deja rastro
@@ -102,7 +116,9 @@ notes:
 caption: "La auditoría la escribe la base, no la app: aunque alguien se conecte por otro programa, el rastro queda."
 ```
 
-**Cuándo desnormalizar.** A veces conviene repetir un dato a propósito: una tabla de reportes que se recalcula cada noche, o el total de un pedido guardado junto al pedido para no sumarlo cada vez. Es una decisión, no un descuido: alguien (un trigger, un proceso nocturno) tiene que mantener la copia al día.
+### Cuándo desnormalizar
+
+A veces conviene repetir un dato a propósito: una tabla de reportes que se recalcula cada noche, o el total de un pedido guardado junto al pedido para no sumarlo cada vez. Es una decisión, no un descuido: alguien (un trigger, un proceso nocturno) tiene que mantener la copia al día.
 
 > **Trampa común:** creer que una vista es una copia. `CREATE VIEW` no fotografía los datos: si mañana cambia el padrón, la vista muestra el cambio. Para una foto de verdad, `CREATE TABLE foto AS SELECT …`. Y otra: en un trigger, `NEW` en un `DELETE` y `OLD` en un `INSERT` no existen; en un `UPDATE` existen los dos.
 

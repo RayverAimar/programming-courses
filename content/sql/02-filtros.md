@@ -6,6 +6,8 @@ case: surquillo
 
 ## El encargo
 
+> **La vez pasada:** con `SELECT` y `WHERE` encontraste a Marleny Quispe, la vigilante, y la pista de la denuncia: el giroscopio dejó de responder a las 22:41 y alguien salió por la Puerta 3. Cinco personas salieron por ahí; una sola condición ya no las separa.
+
 Domingo 15 de marzo. En la pizarra de Loop hay cinco números de persona: **731, 905, 1046, 412 y 377**, las cinco salidas por la Puerta 3 después de que el giroscopio de Wayra dejara de responder. Cinco sospechosos son demasiados para la comisaría. Chasqui encontró que la vigilante, **Marleny Quispe**, dio su declaración el sábado: está en la tabla `entrevistas`, palabra por palabra.
 
 Hoy vas a filtrar con más precisión: varias condiciones a la vez, listas de valores, textos que se parecen, y el dato más traicionero de SQL, el que significa **"no sabemos"**: `NULL`.
@@ -73,7 +75,7 @@ title: Verdadero, falso y desconocido
 caption: "`WHERE` solo deja pasar las filas donde la condición es **TRUE**. Las que dan FALSE **o NULL** se van."
 ```
 
-Por eso, para preguntar por un dato que falta se usa **`IS NULL`** (o `IS NOT NULL`), nunca `= NULL`. Mira cuántos autos aparecen con cada condición:
+Por eso, para preguntar por un dato que falta se usa **`IS NULL`** (o `IS NOT NULL`), nunca `= NULL`. Para contar los autos de cada caso usamos `count(*)`, que cuenta filas (lo verás a fondo en la sesión 4), y `UNION ALL`, que pega varios resultados uno debajo de otro:
 
 ```sql run
 SELECT 'blanco' AS caso, count(*) FROM vehiculos
@@ -88,7 +90,7 @@ UNION ALL
 SELECT 'todos', count(*) FROM vehiculos;
 ```
 
-`count(*)` cuenta filas (lo verás a fondo en la sesión 4) y `UNION ALL` pega varios resultados uno debajo de otro. Suma: los blancos más los no blancos **no** dan el total. Faltan justo los de color `NULL`: no son blancos ni no blancos, son desconocidos.
+Suma: los blancos más los no blancos **no** dan el total. Faltan justo los de color `NULL`: no son blancos ni no blancos, son desconocidos.
 
 ```resultado
 title: Los autos de los cinco salientes

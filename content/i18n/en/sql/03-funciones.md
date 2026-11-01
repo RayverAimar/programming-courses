@@ -6,6 +6,8 @@ case: surquillo
 
 ## The job
 
+> **Last time:** Marleny saw someone get into a white car around 22:45, without seeing the plate. Now the camera's data and the statements speak in different formats, and they have to be cleaned before they can be crossed.
+
 Monday 16 March. Three suspects are left: **Renzo Huamaní**, **Lucía Paredes** and **Julio Ccahuana**, and all three gave statements. Renzo says he left "at about ten past eleven"; Lucía, "a bit after eleven"; Julio, "nearly half past eleven". Marleny saw the white car at about **22:45**.
 
 Opposite Gate 3 there's a municipal camera, **CAM-SUR-03**, that reads the plates of passing cars. The problem: its data is dirty. The camera writes plates the way it reads them (`b7r415`, `D9K 731`, `C3M-208`) and stores the time **in UTC**, Greenwich time, five hours ahead of Lima. To cross that data with Gate 3's, you'll have to **transform** it inside the query: that's what functions do.
@@ -38,9 +40,18 @@ cards:
 
 ## The minimum
 
-A **function** takes values and returns another, row by row: you can use it in `SELECT`, in `WHERE` and in `ORDER BY`. Today, three families.
+A **function** takes values and returns another, row by row: you can use it in `SELECT`, in `WHERE` and in `ORDER BY`. Today, three families, one at a time.
 
-**Text.** `upper` and `lower` change case (only letters without accents), `trim` removes spaces at both ends, `replace(t, 'a', 'b')` swaps every `a` for `b`, `substr(t, start, length)` cuts a piece (counting from 1), `length` counts characters and `instr(t, 'x')` says where something appears. `||` glues text: `'B7R' || '-' || '415'`.
+### Text
+
+The camera writes plates a thousand ways; these functions make them all the same:
+
+- `upper` and `lower` change case (only letters without accents).
+- `trim` removes the spaces at both ends.
+- `replace(t, 'a', 'b')` swaps every `a` for `b`.
+- `substr(t, start, length)` cuts a piece (counting from 1).
+- `length` counts characters and `instr(t, 'x')` says where something appears.
+- `||` glues text: `'B7R' || '-' || '415'`.
 
 ```schema
 tables: [sightings, cameras]
@@ -59,7 +70,9 @@ LIMIT 6;
 
 Functions nest like in maths: first remove the spaces, then the dashes, and finally go uppercase. Now `b7r415`, `B7R-415` and `b7r 415` all give the same thing: `B7R415`.
 
-**Dates and times.** SQLite has no date type: it stores `'YYYY-MM-DD HH:MM:SS'` text, which sorts correctly, and computes with `date`, `time`, `datetime` and `strftime`. They all take **modifiers** after the moment: `'-5 hours'`, `'+1 day'`, `'start of day'`. To go from UTC to Lima time, subtract five hours:
+### Dates and times
+
+The camera stores UTC and you need Lima time. SQLite has no date type: it stores `'YYYY-MM-DD HH:MM:SS'` text, which sorts correctly, and computes with `date`, `time`, `datetime` and `strftime`. They all take **modifiers** after the moment: `'-5 hours'`, `'+1 day'`, `'start of day'`. To go from UTC to Lima time, subtract five hours:
 
 ```figure
 title: The same reading, on two clocks
@@ -73,7 +86,15 @@ steps:
 
 `strftime('%H', m)` gives only the hour, `'%w'` the day of the week (0 is Sunday) and `julianday(a) - julianday(b)` the difference in days between two moments (multiply by 24 × 60 to get minutes).
 
-**Deciding and filling in.** `CASE WHEN condition THEN value … ELSE other END` picks a value per row. `COALESCE(a, b, …)` returns the first one that isn't `NULL`: `COALESCE(phone, 'no number')`. `CAST(x AS INTEGER)` converts.
+### Deciding and filling in
+
+Sometimes the value depends on the row, is missing, or comes in another type:
+
+- `CASE WHEN condition THEN value … ELSE other END` picks a value per row.
+- `COALESCE(a, b, …)` returns the first one that isn't `NULL`: `COALESCE(phone, 'no number')`.
+- `CAST(x AS INTEGER)` converts `x` to another type.
+
+A `CASE` at work: it gives each card swipe its shift.
 
 ```sql run
 SELECT moment,

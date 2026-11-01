@@ -6,9 +6,18 @@ case: frio
 
 ## El encargo
 
+> **La vez pasada:** JSON y las series de tiempo mostraron un firmware 2.6.0 que nadie publicó, instalado en los tres robots después de sus silencios. Ese caso queda atrás; el siguiente viene en una caja de cartón, de 1998.
+
 Lunes 30 de marzo de 2026. **Haydée Llanos**, enfermera en Surquillo, llega a Loop con una caja de cartón llena de papeles. Su papá, **Teodoro Llanos**, era vigilante nocturno de **Textil San Jacinto**, una fábrica de La Victoria. La noche del **viernes 18 de diciembre de 1998** alguien abrió la caja fuerte de la fábrica **con su combinación** y se llevó S/ 412 000, las gratificaciones de Navidad. Teodoro estaba solo en la caseta. Lo condenaron en 1999 y murió en 2021 sin que nadie le creyera.
 
-"Él siempre dijo que esa noche lo llamaron para que dejara entrar a un técnico", dice Haydée. La municipalidad acaba de digitalizar el expediente: la **planilla** de la fábrica con el jefe de cada empleado, la **guía telefónica** de 1998, **cada llamada de diciembre** de la central de La Victoria (más de sesenta mil) y las **declaraciones** que se tomaron entonces. Las tablas terminan en `_1998`.
+"Él siempre dijo que esa noche lo llamaron para que dejara entrar a un técnico", dice Haydée. La municipalidad acaba de digitalizar el expediente:
+
+- la **planilla** de la fábrica, con el jefe de cada empleado;
+- la **guía telefónica** de 1998;
+- **cada llamada de diciembre** de la central de La Victoria (más de sesenta mil);
+- las **declaraciones** que se tomaron entonces.
+
+Las tablas terminan en `_1998`.
 
 Para responder "¿quién depende de quién?" o "¿quién está a tres llamadas de este teléfono?" hay que seguir una cadena **sin saber cuántos eslabones tiene**. Un `JOIN` avanza un paso; hoy aprendes a avanzar todos los que hagan falta.
 
@@ -131,7 +140,9 @@ query: |
 
 Fíjate en la última vuelta: con `x = 5`, el `WHERE x < 5` no deja pasar nada. **Sin esa condición, no termina nunca.**
 
-**Series de fechas.** El mismo truco con `date(d, '+1 day')` arma un calendario. Sirve para lo que `GROUP BY` no puede: mostrar **también los días sin filas**. Las llamadas que recibió la caseta de la fábrica (`'4721093'`) la semana del robo:
+### Series de fechas
+
+El mismo truco con `date(d, '+1 day')` arma un calendario. Sirve para lo que `GROUP BY` no puede: mostrar **también los días sin filas**. Las llamadas que recibió la caseta de la fábrica (`'4721093'`) la semana del robo:
 
 ```sql run
 WITH RECURSIVE dias(dia) AS (
@@ -147,7 +158,9 @@ SELECT dia,
 FROM dias;
 ```
 
-**Jerarquías.** El ancla es la persona de arriba; la parte recursiva busca a quienes tienen como jefe a alguien de la vuelta anterior, y lleva la cuenta del nivel:
+### Jerarquías
+
+El ancla es la persona de arriba; la parte recursiva busca a quienes tienen como jefe a alguien de la vuelta anterior, y lleva la cuenta del nivel:
 
 ```sql run
 WITH RECURSIVE equipo(id, nombre, cargo, nivel) AS (
@@ -181,7 +194,9 @@ caption: "Aquí no hace falta un `WHERE` que pare: en la vuelta 4 nadie tiene co
 
 Para **subir** por la cadena (de un empleado hasta el gerente general) se cambia el sentido del `JOIN`: `e.id = q.jefe_id`, "el jefe de alguien de la vuelta anterior".
 
-**Grafos.** Las llamadas no son un árbol: A llama a B, B a C y C de vuelta a A. Recorrer un grafo así tiene dos peligros: dar vueltas en círculo para siempre y explotar en caminos. Se controlan con dos cosas:
+### Grafos
+
+Las llamadas no son un árbol: A llama a B, B a C y C de vuelta a A. Recorrer un grafo así tiene dos peligros: dar vueltas en círculo para siempre y explotar en caminos. Se controlan con dos cosas:
 
 - un **límite de profundidad** (`WHERE r.saltos < 3`), y
 - un **camino como texto** (`r.camino || '>' || numero`) para no volver a pisar un número que ya está en el camino: `instr(r.camino, numero) = 0`.

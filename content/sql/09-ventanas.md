@@ -6,9 +6,11 @@ case: sensores
 
 ## El encargo
 
-Viernes 27 de marzo, 09:10. Carmen Ríos llega a Loop con tres robots que no funcionan: desde el martes, **Tika** choca con las paredes en su ronda nocturna y **Kusi** se recalienta en la cocina; desde el jueves, **Pituco** se va de lado en sus repartos por Barranco. Los tres duermen en la **sala de sensores**, donde cada noche, a las **03:00**, se calibran solos.
+> **La vez pasada:** `WITH` y los conjuntos te llevaron a Importaciones Ccori, la tienda de celulares de La Victoria, y cerraron el caso de las estafas. Hoy empieza otro, con robots y sensores, y ahí agrupar ya no basta: no puedes perder las filas.
 
-Desde el viernes 20, la sala guarda una lectura de cada robot **cada diez minutos** (giroscopio y temperatura) en `lecturas`, y la puerta registra cada tarjeta que la abre en una tabla nueva, `accesos`. Son miles de filas. Para encontrar "la primera lectura rara de **cada** robot" o "la última entrada de **cada** noche" no basta con agrupar: necesitas numerar filas **dentro de cada grupo sin perderlas**. Eso hacen las funciones de ventana.
+Viernes 27 de marzo, 09:10. Carmen Ríos llega a Loop con tres robots descompuestos: desde el martes, **Tika** choca con las paredes en su ronda nocturna y **Kusi** se recalienta en la cocina; desde el jueves, **Pituco** se va de lado. Los tres duermen en la **sala de sensores**, donde cada noche, a las **03:00**, se calibran solos.
+
+Desde el viernes 20, la sala guarda una lectura de cada robot **cada diez minutos** en `lecturas`, y la puerta registra cada tarjeta que la abre en una tabla nueva, `accesos`. Para encontrar "la primera lectura rara de **cada** robot" o "la última entrada de **cada** noche" no basta con agrupar: necesitas numerar filas **dentro de cada grupo sin perderlas**. Eso hacen las funciones de ventana.
 
 ```escenario
 case: sensores
@@ -186,7 +188,7 @@ id: sql9-predice-rangos
 type: predict
 title: Empates en el podio
 prompt: |
-  ¿Qué devuelve?
+  `VALUES (…), (…)` arma una tabla con esas filas, y `t(robot, maxima)` le pone nombre a la tabla y a sus columnas. ¿Qué devuelve?
 code: |
   WITH t(robot, maxima) AS (
     VALUES ('Tika', 1.86), ('Kusi', 1.61), ('Chasqui', 0.07),
@@ -304,7 +306,7 @@ id: sql9-escribe-top3
 type: write
 title: Las tres más inestables
 prompt: |
-  Para cada robot, lista sus **tres lecturas de giroscopio más lejos de cero** (mayor valor absoluto) desde el viernes 20: `robot_id`, `momento`, `valor` y su `puesto` (1, 2, 3). Si dos empatan, va primero la más temprana. Ordena por `robot_id` y `puesto`.
+  Para cada robot, lista sus **tres lecturas de giroscopio más lejos de cero** (mayor valor absoluto, es decir, sin el signo: `abs(-1.6)` es `1.6`) desde el viernes 20: `robot_id`, `momento`, `valor` y su `puesto` (1, 2, 3). Si dos empatan, va primero la más temprana. Ordena por `robot_id` y `puesto`.
 visual:
   figure:
     title: Top 3 por robot
@@ -379,7 +381,7 @@ title: La primera lectura rara
 prompt: |
   **Para cada robot, encuentra su primera lectura de giroscopio fuera de rango (valor absoluto mayor que 1) desde el viernes 20. ¿Qué robot se descalibró otra noche que los demás?** Escribe su nombre.
 
-  Un giroscopio sano marca casi cero (±0.1). Numera las lecturas fuera de rango de cada robot por hora y quédate con la primera; después pon el nombre del robot con `robots`.
+  Un giroscopio sano marca casi cero (±0.1). `abs(x)` quita el signo: `abs(-1.6)` es `1.6`. Numera las lecturas fuera de rango de cada robot por hora y quédate con la primera; después pon el nombre del robot con `robots`.
 visual:
   - escenario:
       case: sensores

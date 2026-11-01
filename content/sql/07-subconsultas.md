@@ -6,6 +6,8 @@ case: pagos
 
 ## El encargo
 
+> **La vez pasada:** el `LEFT JOIN` te mostró un chip sin dueño que cobraba adelantos: ya eran cuatro números, y toda la plata va a parar a Milagros Tello. Para saber qué hace ella con esa plata necesitas una consulta que lleve otra adentro.
+
 Miércoles 25 de marzo. Toda la plata de los adelantos termina en el celular de **Milagros Tello**, una cajera de Surquillo. Ella dio su declaración esta mañana: dice que Kevin y Brenda le **devolvían plata que les prestó**. Chasqui no le cree, pero una sospecha no es una prueba. Hay que saber **qué hace Milagros con la plata** y **cuánto** recibió en total.
 
 Las preguntas de hoy tienen una pregunta adentro: "los pagos de Milagros **más grandes que su propio promedio**", "lo que recibió **de los números que cobraron adelantos**". Para escribirlas en una sola consulta, metes una consulta dentro de otra: una **subconsulta**.
@@ -65,7 +67,9 @@ subLabel: promedio de su pagador
 caption: "Cada fila compara su monto con el promedio **de su propio pagador**: A promedia 50, B 200 y C 40. La subconsulta corre seis veces, una por fila. Con seis filas da igual; con seis mil, en la sesión 14 verás cómo el planificador la convierte en un join."
 ```
 
-**Una tabla derivada** es útil cuando primero quieres agrupar y después filtrar o unir el resultado:
+### Tabla derivada
+
+Una tabla derivada es útil cuando primero quieres agrupar y después filtrar o unir el resultado:
 
 ```sql run
 SELECT r.a_telefono, r.total
@@ -78,7 +82,9 @@ WHERE r.total > 4000
 ORDER BY r.total DESC;
 ```
 
-**`NOT IN` y el `NULL`, otra vez.** En la sesión 2 viste que `3 NOT IN (1, 2, NULL)` es `NULL`. Con una subconsulta es peor, porque no ves la lista. En `personas` hay teléfonos en `NULL`, así que esto devuelve **cero filas**, aunque hay números que no son de nadie:
+### `NOT IN` y el `NULL`, otra vez
+
+En la sesión 2 viste que `3 NOT IN (1, 2, NULL)` es `NULL`. Con una subconsulta es peor, porque no ves la lista. En `personas` hay teléfonos en `NULL`, así que esto devuelve **cero filas**, aunque hay números que no son de nadie:
 
 ```sql run
 SELECT DISTINCT a_telefono
@@ -128,7 +134,7 @@ id: sql7-predice-null
 type: predict
 title: El NULL en la subconsulta
 prompt: |
-  `SELECT 1 UNION ALL SELECT NULL` es una lista con dos valores: 1 y `NULL`. ¿Qué devuelve?
+  `SELECT 1 UNION ALL SELECT NULL` es una lista con dos valores: 1 y `NULL`. Un `SELECT` sin `FROM` puede llevar `WHERE`: devuelve su fila solo si la condición es verdadera. ¿Qué devuelve?
 code: |
   SELECT 5 NOT IN (SELECT 1 UNION ALL SELECT NULL),
          1 IN (SELECT 1 UNION ALL SELECT NULL),
@@ -431,7 +437,7 @@ reveal: |
   **S/ 4806**, el **90 %** de los S/ 5340 que pagaron las 14 víctimas. Lo de arriba (lo que le "devolvían") no puede ser préstamos: es exactamente la parte de los adelantos que los cobradores no se quedaron. Y casi todo vuelve a salir. **Milagros es la caja.** Falta saber para quién trabaja.
 hints:
   - "La consulta de arriba suma **todo** lo que recibió Milagros. Agrega `AND de_telefono IN (SELECT a_telefono FROM transferencias WHERE mensaje LIKE 'adelanto%')`."
-  - "El total de adelantos va como columna: `(SELECT SUM(monto) FROM transferencias WHERE mensaje LIKE 'adelanto%') AS adelantos`. Multiplica por `100.0`, no por `100`, para no caer en la división entera."
+  - "El total de adelantos va como columna: `(SELECT SUM(monto) FROM transferencias WHERE mensaje LIKE 'adelanto%') AS adelantos`. Multiplica por `100.0`, no por `100`, para no caer en la división entera. Y `round(valor, 1)` redondea a un decimal."
 tests:
   - name: recibido, adelantos y porcentaje en una fila
     same: SELECT SUM(monto), (SELECT SUM(monto) FROM transferencias WHERE mensaje LIKE 'adelanto%'), round(100.0 * SUM(monto) / (SELECT SUM(monto) FROM transferencias WHERE mensaje LIKE 'adelanto%'), 1) FROM transferencias WHERE a_telefono = (SELECT telefono FROM personas WHERE nombre = 'Milagros Tello Benavides') AND de_telefono IN (SELECT a_telefono FROM transferencias WHERE mensaje LIKE 'adelanto%')

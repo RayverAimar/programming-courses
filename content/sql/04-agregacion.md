@@ -6,6 +6,8 @@ case: surquillo
 
 ## El encargo
 
+> **La vez pasada:** las funciones limpiaron la placa y la hora UTC de la cámara: el auto de Renzo Huamaní estaba ahí a las 22:48, y él dijo que salió a las once y diez. Mentir no es un motivo; para buscarlo hay que resumir miles de filas.
+
 Martes 17 de marzo. Ya sabes que **Renzo Huamaní mintió**: su tarjeta marcó la salida a las 22:46 y la cámara vio su auto dos minutos después, no a las once y diez. Pero mentir no prueba que se llevó el giroscopio. Falta el **por qué**: un giroscopio de robot de reparto vale más de mil soles, y alguien tuvo que comprarlo.
 
 La fiscalía le pasó a Loop dos tablas más: **`llamadas`** y **`transferencias`** (pagos de celular a celular): miles de filas cada una. Nadie las va a leer una por una. Hoy vas a **resumirlas**: contar, sumar y promediar por grupos, para que el patrón salte a la vista.
@@ -82,7 +84,13 @@ Tres conteos distintos sobre la misma tabla: `COUNT(*)` cuenta **filas**, `COUNT
 
 ### Por dentro: cada función guarda una cuenta
 
+<!-- photo: sql-hollerith-census-machine -->
+
 El motor no junta todas las filas en memoria para después calcular. Cada agregado es un **acumulador**: empieza vacío, mira las filas de una en una y actualiza un par de números. Al final entrega el resultado.
+
+> **Historia:** Esta idea de pasar una sola vez por cada registro y llevar la cuenta es vieja. Herman Hollerith patentó en 1884 una máquina tabuladora de tarjetas perforadas, y la oficina del censo de Estados Unidos usó sus máquinas para el censo de 1890.
+
+<!-- /photo -->
 
 | función | qué guarda mientras recorre (y qué entrega) | sin filas o todo `NULL` |
 |---|---|---|
@@ -94,6 +102,20 @@ El motor no junta todas las filas en memoria para después calcular. Cada agrega
 | `MIN` / `MAX` | el menor (o mayor) visto hasta ahora | `NULL` |
 
 Por eso `AVG` **ignora** los `NULL`: no los suma ni los cuenta. Si tres pagos valen 100, 200 y `NULL`, el promedio es 150, no 100.
+
+```steps
+# AVG recorriendo 100, 200 y NULL
+## Empieza vacío
+`AVG` guarda **dos** números: `suma = 0` y `cuántos = 0`. Todavía no ha visto ninguna fila.
+## Primera fila: 100
+No es `NULL`, así que la suma sube a **100** y `cuántos` a **1**.
+## Segunda fila: 200
+La suma sube a **300** y `cuántos` a **2**.
+## Tercera fila: NULL
+Un `NULL` no se suma ni se cuenta: la suma sigue en **300** y `cuántos` en **2**.
+## Al final divide
+Entrega `300 / 2 = 150`. Si hubiera contado el `NULL`, daría `300 / 3 = 100`.
+```
 
 ### GROUP BY: un acumulador por grupo
 
