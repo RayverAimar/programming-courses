@@ -217,7 +217,7 @@ function placeTool(root, ex, ctx, sels) {
 function mountPredict(root, ex, ctx, H) {
   const { t, lang, isPassed, markPassed } = ctx;
   root.insertAdjacentHTML("beforeend", `<div class="ex-code">${ex.codeHtml}</div>
-    <div class="ex-options" role="group">${ex.options.map((o, i) => `<button class="ex-opt" data-i="${i}"><pre>${esc(o)}</pre></button>`).join("")}</div>
+    <div class="ex-options" role="group">${H.optionOrder(ex).map((i) => `<button class="ex-opt" data-i="${i}"><pre>${esc(ex.options[i])}</pre></button>`).join("")}</div>
     <div class="ex-out" hidden aria-live="polite"></div>`);
   const out = root.querySelector(".ex-out");
   const opts = [...root.querySelectorAll(".ex-opt")];

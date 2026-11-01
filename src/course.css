@@ -667,3 +667,9 @@
   .net-node.busy .nl { animation: none; fill: var(--ok); }
   .net-link.busy .net-wire { animation: none; }
 }
+
+/* A run that has not answered yet shows it is working: three dots after "Probando…". */
+.ex-run:disabled { opacity: 1; cursor: progress; }
+.ex-run:disabled::after { content: ""; width: 1.4em; height: .3em; margin-left: .15em; background: radial-gradient(circle closest-side, currentColor 90%, transparent) 0 50% / 33.3% 100% repeat-x; animation: run-dots 900ms steps(4) infinite; clip-path: inset(0 100% 0 0); }
+@keyframes run-dots { to { clip-path: inset(0 -34% 0 0); } }
+@media (prefers-reduced-motion: reduce) { .ex-run:disabled::after { animation: none; clip-path: none; } }

@@ -106,7 +106,8 @@ export function createEditor(parent, { doc, onRun, onChange, label, readOnly = f
         indentUnit.of(py ? "    " : "  "),
         EditorState.readOnly.of(readOnly),
         EditorView.contentAttributes.of({ "aria-label": label, autocapitalize: "off", autocorrect: "off", spellcheck: "false" }),
-        keymap.of([{ key: "Mod-Enter", run }, { key: "Shift-Enter", run }, ...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap, indentWithTab]),
+        // Tab indents, so Escape is the way out of the editor with the keyboard.
+        keymap.of([{ key: "Mod-Enter", run }, { key: "Shift-Enter", run }, { key: "Escape", run: (v) => (v.contentDOM.blur(), true) }, ...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap, indentWithTab]),
         EditorView.updateListener.of((u) => { if (u.docChanged && onChange) onChange(u.state.doc.toString()); }),
       ],
     }),

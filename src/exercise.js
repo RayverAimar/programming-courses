@@ -75,7 +75,7 @@ export function mountExercise(slot, ex, ctx) {
 
   if (ex.track === "sql") {
     root.innerHTML = head;
-    mountSqlExercise(root, ex, ctx, { split, showUnlock, resetBtn, modKey, attempt });
+    mountSqlExercise(root, ex, ctx, { split, showUnlock, resetBtn, modKey, attempt, optionOrder });
     return visualize();
   }
   if (ex.type === "predict") { mountPredict(root, ex, ctx, head); return visualize(); }
@@ -225,12 +225,26 @@ export function mountExercise(slot, ex, ctx) {
   split(root, ctx, [".ex-world", ".ex-editor", ".ex-actions", ".ex-cons"]);
 }
 
+// The right option is often written first; a shuffle seeded by the id moves it, and stays the
+// same on every visit. data-i keeps the written index, so saved answers still match.
+function optionOrder(ex) {
+  let h = 2166136261;
+  for (const ch of ex.id) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+  const order = ex.options.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0;
+    const j = h % (i + 1);
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+}
+
 function mountPredict(root, ex, ctx, head) {
   const { t, lang, isPassed, markPassed } = ctx;
   root.innerHTML = `${head}
     <div class="ex-code">${ex.codeHtml}</div>
-    <div class="ex-options" role="group">${ex.options
-      .map((o, i) => `<button class="ex-opt" data-i="${i}"><pre>${esc(o)}</pre></button>`)
+    <div class="ex-options" role="group">${optionOrder(ex)
+      .map((i) => `<button class="ex-opt" data-i="${i}"><pre>${esc(ex.options[i])}</pre></button>`)
       .join("")}</div>
     <div class="ex-out" hidden aria-live="polite"></div>`;
   const out = root.querySelector(".ex-out");
