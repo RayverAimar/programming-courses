@@ -99,6 +99,107 @@ The same entries make the track's "Moderno y antiguo" page (`#/js/modern`). MDN 
 Peruvian places and names, small stakes, light humour, no clichés. Keep the theory short: if
 something can be learned by predicting or fixing code, make it an exercise instead of a paragraph.
 
+### The thread from session to session
+
+A track is one story. "El encargo" opens with a one- or two-line `> **La vez pasada:**` /
+`> **Last time:**` callout: what the robot learned in the previous session and why today's job
+needs something new (session 1 skips it). Earlier ideas come back where they matter ("el `for` de
+la sesión 3 vuelve aquí"), and a practice block or the case mixes in an earlier concept.
+
+### Real stories, told richly
+
+When a real case fits the concept (a famous bug, an outage, the language's origin), tell it, don't
+summarise it: a question to the reader first (`### ¿Sabías que…?`), the real thing with its source,
+a prediction before the answer, the mechanism, then what happened and what happens today (dated)
+and a `> **Para llevar:**` callout. Follow-up questions ("¿y por qué…?", "¿y si…?") go one level
+deeper. Facts and numbers are checked; nothing is invented.
+
+## Writing that reads well
+
+Every rule here is general: what is fixed in one session is fixed the same way in all of them.
+
+- **Open with the problem**, never with a definition: the customer's job, a question, a bet.
+- **Breathing room**: no more than about 130 words of running prose without a break (a `###`
+  sub-heading, a code block, a figure, a callout, a table or a short list).
+  `node scripts/dense.mjs` lists the places that go over. Cut words before adding headings;
+  prefer a table or a figure to prose.
+- **Each step stands alone**: a step shows alone, so "el ejemplo de arriba" only refers to
+  something in the same step; otherwise show it again or name the step.
+- **Explain every term the first time**: what it does, what its name means (`len`: *length*;
+  `elif`: *else if*; `SELECT`…`FROM`), what happens without it. Spanish keeps the English term in
+  italics the first time: "cadena (*string*)".
+- **Never use a concept before it is taught**, in prose, examples or exercises; a short preview is
+  fine when it says so ("lo verás en la sesión 5").
+- **One new concept at a time**: a question that makes you want it, the idea, a figure or table,
+  then practice.
+- **Inline code** for every name, command or value the learner would type. **Bold inside
+  italics** (*f*ormatted *str*ing) is drawn in the accent colour: only for the letters a name
+  comes from.
+- **Exercises test the idea, not patience**: at the learner's level, the statement names the
+  variables and functions to use, the motivation is clear, the `msg`/`explain` answers the likely
+  wrong answers, and nothing passes by printing the sample's output.
+- **Predict options**: write them in any order; the page shuffles them (seeded by the id), so the
+  right one isn't always first.
+
+### Pictures, GIFs and walk-throughs
+
+A lesson should never look like plain text. Where an idea is a thing you can see, a process with
+an order, or a real event, show it. **Only where it helps**: a picture that teaches nothing is
+noise, and there is no quota.
+
+#### Real photos and GIFs
+
+`platform/build/photo.ts` fetches a picture, makes the two WebP sizes and writes its entry in
+`content/img/photos.json` (with a lock, so several people can add photos at once):
+
+```bash
+node platform/build/photo.ts search <words>              # Wikimedia Commons: size and licence
+node platform/build/photo.ts search-web <words>          # other sources: each result's page and size
+node platform/build/photo.ts add <course>-<slug> "File:Name.jpg"
+node platform/build/photo.ts add <course>-<slug> --image <URL or local file> --page <page URL> --author "…" --license "…" [--source "…"]
+node platform/build/photo.ts set <id> <file.json>        # {"alt": {"es","en"}, "caption": {"es","en"}}
+```
+
+The id starts with the track folder (`py-guido-cwi`), so the files land in `content/img/<course>/`.
+The build refuses a photo whose alt or caption still says TODO. Then put `<!-- photo: id -->` right
+before the **paragraph** it illustrates (never right before a heading).
+
+- **What to show**: the recognisable real thing: the people, the machine, the banknote, the
+  screen with the error, the newspaper front page, the official chart, a YouTube video's frame
+  (`https://i.ytimg.com/vi/<id>/maxresdefault.jpg`). Rich, sharp, recognisable: a dim or blurry
+  picture is worse than none. Prefer originals of 1200 px or more.
+- **A GIF where motion is the point** (a crash on a ticker, a queue moving, a robot arm): cut a
+  few seconds of a video with `yt-dlp` + `ffmpeg`, crop to what matters, and `add … --image
+  clip.gif`; it becomes an animated WebP and shows a "GIF" tag.
+- **Captions** say what the picture shows (what, where, when), never how it was made. **Credits**
+  are what the source page says. Facts in a caption are checked. Download one at a time with a
+  pause of 3 s or more; if Commons answers 429, wait, or use another source.
+
+#### Step-by-step walk-throughs
+
+Anything that happens in an order (an order matching, a DNS lookup, a loan becoming money, a
+`for` loop's turns, a `JOIN` pairing rows, a deal moving through a pipeline) can be a
+walk-through: one step on screen at a time, with Anterior / Siguiente and dots.
+
+````md
+```steps
+# Mira cómo ocurre una operación
+## El libro antes de que alguien se mueva
+La mejor oferta de compra es **$182.45** y la mejor de venta **$182.47**…
+## Aprietas "comprar" con una orden a mercado
+…
+```
+````
+
+`# ` is an optional title; each `## ` is a step (2 to 8), with a short paragraph, a list, a table or
+a code block. No photo markers inside a step. Same steps in both languages.
+
+### Callouts
+
+A blockquote whose first words are bold gets its style from the label: `Trampa común` / `Common
+trap`, `Dónde vive esto` / `Where this lives`, `Historia` / `History`, `Pruébalo` / `Try it`,
+`Ejemplo` / `Example`, `La vez pasada` / `Last time`, `Para llevar` / `Takeaway`, `Nota` / `Note`.
+
 ## One language per page
 
 Code on an English page is English: identifiers, strings, comments, console output, helper and
