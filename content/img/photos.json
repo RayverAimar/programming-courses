@@ -1,41 +1,21 @@
 {
-  "internet-modem-1995": {
-    "file": "js/internet-modem-1995",
-    "w": 1000,
-    "h": 322,
-    "sw": 800,
+  "codd-1970-paper": {
+    "file": "sql/codd-1970-paper",
+    "w": 1151,
+    "h": 1600,
+    "sw": 576,
     "alt": {
-      "es": "Módem externo U.S. Robotics Sportster 28.8 Faxmodem",
-      "en": "U.S. Robotics Sportster 28.8 Faxmodem external modem"
+      "es": "Primera página del artículo de E. F. Codd de 1970",
+      "en": "First page of E. F. Codd's 1970 paper"
     },
     "caption": {
-      "es": "Un módem externo U.S. Robotics Sportster de 28.8 kbit/s, de mediados de los noventa: convertía los datos en sonido para mandarlos por la línea del teléfono.",
-      "en": "A U.S. Robotics Sportster 28.8 kbit/s external modem from the mid-nineties: it turned data into sound to send it down the phone line."
+      "es": "Primera página del artículo de Codd «A Relational Model of Data for Large Shared Data Banks», publicado en Communications of the ACM en junio de 1970.",
+      "en": "First page of Codd's paper \"A Relational Model of Data for Large Shared Data Banks\", published in Communications of the ACM in June 1970."
     },
     "credit": {
-      "author": "Centre for Computing History",
-      "source": "computinghistory.org.uk",
-      "url": "https://www.computinghistory.org.uk/det/44296/US-Robotics-Sportster-Voice-28-8-Faxmodem/"
-    }
-  },
-  "netscape-navigator-2": {
-    "file": "js/netscape-navigator-2",
-    "w": 1117,
-    "h": 699,
-    "sw": 800,
-    "alt": {
-      "es": "Ventana de Netscape Navigator 2 con su página about",
-      "en": "Netscape Navigator 2 window showing its about page"
-    },
-    "caption": {
-      "es": "Netscape Navigator 2, el navegador que en 1996 trajo la primera versión de JavaScript (la ventana «About», recreada en una captura de 2015).",
-      "en": "Netscape Navigator 2, the browser that shipped the first JavaScript in 1996 (its About window, in a 2015 screenshot)."
-    },
-    "credit": {
-      "author": "Indolering",
-      "license": "CC0",
-      "source": "Wikimedia Commons",
-      "url": "https://commons.wikimedia.org/wiki/File:Netscape_Navigator_2_Screenshot.png"
+      "author": "E. F. Codd, Communications of the ACM 13(6)",
+      "source": "University of Pennsylvania",
+      "url": "https://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf"
     }
   },
   "guido-van-rossum-2006": {
@@ -58,6 +38,26 @@
       "url": "https://commons.wikimedia.org/wiki/File:Guido_van_Rossum_OSCON_2006.jpg"
     }
   },
+  "hdd-open-wd": {
+    "file": "sql/hdd-open-wd",
+    "w": 1600,
+    "h": 1067,
+    "sw": 800,
+    "alt": {
+      "es": "Disco duro abierto con el plato y el brazo con el cabezal",
+      "en": "Opened hard disk with the platter and the arm with the head"
+    },
+    "caption": {
+      "es": "Un disco duro abierto: el brazo lleva el cabezal hasta la pista del plato que gira. Cada página que SQLite lee puede costar ese viaje.",
+      "en": "An opened hard disk: the arm carries the head to the track on the spinning platter. Every page SQLite reads can cost that trip."
+    },
+    "credit": {
+      "author": "Raimond Spekking",
+      "license": "CC BY-SA 4.0",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:WD_Blue_WD40NMZW-11GX6S1_-_cover_removed_-_platter_and_head-2203.jpg"
+    }
+  },
   "ibm-system-360": {
     "file": "sql/ibm-system-360",
     "w": 1600,
@@ -78,43 +78,303 @@
       "url": "https://commons.wikimedia.org/wiki/File:IBM_System360_Model_30.jpg"
     }
   },
-  "codd-1970-paper": {
-    "file": "sql/codd-1970-paper",
-    "w": 1151,
-    "h": 1600,
-    "sw": 576,
+  "internet-modem-1995": {
+    "file": "js/internet-modem-1995",
+    "w": 1000,
+    "h": 322,
+    "sw": 800,
     "alt": {
-      "es": "Primera página del artículo de E. F. Codd de 1970",
-      "en": "First page of E. F. Codd's 1970 paper"
+      "es": "Módem externo U.S. Robotics Sportster 28.8 Faxmodem",
+      "en": "U.S. Robotics Sportster 28.8 Faxmodem external modem"
     },
     "caption": {
-      "es": "Primera página del artículo de Codd «A Relational Model of Data for Large Shared Data Banks», publicado en Communications of the ACM en junio de 1970.",
-      "en": "First page of Codd's paper \"A Relational Model of Data for Large Shared Data Banks\", published in Communications of the ACM in June 1970."
+      "es": "Un módem externo U.S. Robotics Sportster de 28.8 kbit/s, de mediados de los noventa: convertía los datos en sonido para mandarlos por la línea del teléfono.",
+      "en": "A U.S. Robotics Sportster 28.8 kbit/s external modem from the mid-nineties: it turned data into sound to send it down the phone line."
     },
     "credit": {
-      "author": "E. F. Codd, Communications of the ACM 13(6)",
-      "source": "University of Pennsylvania",
-      "url": "https://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf"
+      "author": "Centre for Computing History",
+      "source": "computinghistory.org.uk",
+      "url": "https://www.computinghistory.org.uk/det/44296/US-Robotics-Sportster-Voice-28-8-Faxmodem/"
     }
   },
-  "hdd-open-wd": {
-    "file": "sql/hdd-open-wd",
+  "js-ariane-501": {
+    "file": "js/js-ariane-501",
+    "w": 1600,
+    "h": 1111,
+    "sw": 800,
+    "alt": {
+      "es": "Soporte metálico de la estructura de los satélites, recuperado tras el fallo del Ariane 5",
+      "en": "Metal support strut of the satellite structure, recovered after the Ariane 5 failure"
+    },
+    "caption": {
+      "es": "Soporte de la estructura de los satélites recuperado tras el lanzamiento fallido del Ariane 5, vuelo 501 (1996).",
+      "en": "Support strut of the satellite structure recovered after the failed Ariane 5 launch, flight 501 (1996)."
+    },
+    "credit": {
+      "author": "Deadpan",
+      "license": "Public domain",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:Ariane_501_Fragment.jpg"
+    }
+  },
+  "js-ascii-chart": {
+    "file": "js/js-ascii-chart",
+    "w": 1600,
+    "h": 1092,
+    "sw": 800,
+    "alt": {
+      "es": "Tabla de códigos US-ASCII con cada carácter y su número",
+      "en": "US-ASCII code chart with each character and its number"
+    },
+    "caption": {
+      "es": "La tabla US-ASCII: 128 códigos, cada uno con su carácter.",
+      "en": "The US-ASCII chart: 128 codes, each with its character."
+    },
+    "credit": {
+      "author": "an unknown officer or employee of the United States Government",
+      "license": "Public domain",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:USASCII_code_chart.png"
+    }
+  },
+  "js-brendan-eich": {
+    "file": "js/js-brendan-eich",
+    "w": 1600,
+    "h": 1600,
+    "sw": 800,
+    "alt": {
+      "es": "Retrato de Brendan Eich, creador de JavaScript.",
+      "en": "Portrait of Brendan Eich, the creator of JavaScript."
+    },
+    "caption": {
+      "es": "Brendan Eich, el programador de Netscape que escribió el primer prototipo de JavaScript en 1995.",
+      "en": "Brendan Eich, the Netscape programmer who wrote the first JavaScript prototype in 1995."
+    },
+    "credit": {
+      "author": "Darcy Padilla",
+      "license": "CC BY-SA 3.0",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:Brendan_Eich_Mozilla_Foundation_official_photo.jpg"
+    }
+  },
+  "js-droste-tin": {
+    "file": "js/js-droste-tin",
+    "w": 823,
+    "h": 1600,
+    "sw": 412,
+    "alt": {
+      "es": "Lata roja de cacao Droste con una enfermera que sostiene una bandeja con una caja de cacao",
+      "en": "Red Droste cocoa tin with a nurse holding a tray with a cocoa box"
+    },
+    "caption": {
+      "es": "Lata de cacao Droste de 250 g: la enfermera lleva en su bandeja una caja con la misma imagen.",
+      "en": "A 250 g Droste cocoa tin: the nurse carries on her tray a box with the same picture."
+    },
+    "credit": {
+      "author": "Alf van Beem",
+      "license": "CC0",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:Droste_Cacao_-_Pastilles_blikje_van_250_gram,_foto_1.JPG"
+    }
+  },
+  "js-first-computer-bug": {
+    "file": "js/js-first-computer-bug",
+    "w": 1600,
+    "h": 1266,
+    "sw": 800,
+    "alt": {
+      "es": "Página del cuaderno de registro de la Mark II con la polilla pegada con cinta",
+      "en": "Page of the Mark II logbook with the moth taped in"
+    },
+    "caption": {
+      "es": "Página del cuaderno de registro de la Mark II de Harvard (1947) con la polilla pegada y la nota «First actual case of bug being found».",
+      "en": "Page of the Harvard Mark II logbook (1947) with the moth taped in and the note \"First actual case of bug being found\"."
+    },
+    "credit": {
+      "author": "Courtesy of the Naval Surface Warfare Center, Dahlgren, VA., 1988.",
+      "license": "Public domain",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:First_Computer_Bug,_1947.jpg"
+    }
+  },
+  "js-mars-climate-orbiter": {
+    "file": "js/js-mars-climate-orbiter",
+    "w": 1225,
+    "h": 1600,
+    "sw": 613,
+    "alt": {
+      "es": "La sonda Mars Climate Orbiter durante las pruebas acústicas",
+      "en": "The Mars Climate Orbiter spacecraft during acoustic tests"
+    },
+    "caption": {
+      "es": "La sonda Mars Climate Orbiter de la NASA durante las pruebas acústicas que simulan el lanzamiento (mayo de 1998).",
+      "en": "NASA's Mars Climate Orbiter during the acoustic tests that simulate launch conditions (May 1998)."
+    },
+    "credit": {
+      "author": "NASA",
+      "license": "Public domain",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:Mars_Climate_Orbiter_during_tests.jpg"
+    }
+  },
+  "js-tony-hoare": {
+    "file": "js/js-tony-hoare",
+    "w": 1600,
+    "h": 1600,
+    "sw": 800,
+    "alt": {
+      "es": "Retrato de Tony Hoare",
+      "en": "Portrait of Tony Hoare"
+    },
+    "caption": {
+      "es": "Tony Hoare, el científico británico que introdujo la referencia nula en 1965.",
+      "en": "Tony Hoare, the British computer scientist who introduced the null reference in 1965."
+    },
+    "credit": {
+      "author": "Rama",
+      "license": "CC BY-SA 2.0 fr",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:Sir_Tony_Hoare_IMG_5125.jpg"
+    }
+  },
+  "netscape-navigator-2": {
+    "file": "js/netscape-navigator-2",
+    "w": 1117,
+    "h": 699,
+    "sw": 800,
+    "alt": {
+      "es": "Ventana de Netscape Navigator 2 con su página about",
+      "en": "Netscape Navigator 2 window showing its about page"
+    },
+    "caption": {
+      "es": "Netscape Navigator 2, el navegador que en 1996 trajo la primera versión de JavaScript (la ventana «About», recreada en una captura de 2015).",
+      "en": "Netscape Navigator 2, the browser that shipped the first JavaScript in 1996 (its About window, in a 2015 screenshot)."
+    },
+    "credit": {
+      "author": "Indolering",
+      "license": "CC0",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:Netscape_Navigator_2_Screenshot.png"
+    }
+  },
+  "py-ascii-chart": {
+    "file": "py/py-ascii-chart",
+    "w": 1600,
+    "h": 1163,
+    "sw": 800,
+    "alt": {
+      "es": "Tabla de códigos USASCII",
+      "en": "The USASCII code chart"
+    },
+    "caption": {
+      "es": "Tabla de códigos USASCII: cada carácter con su número en binario, de 7 bits.",
+      "en": "The USASCII code chart: each character with its 7-bit binary number."
+    },
+    "credit": {
+      "author": "an unknown officer or employee of the United States Government, Namazu-tron (scanned)",
+      "license": "Public domain",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:ASCII_Code_Chart-Quick_ref_card.jpg"
+    }
+  },
+  "py-dijkstra-1994": {
+    "file": "py/py-dijkstra-1994",
+    "w": 1600,
+    "h": 1096,
+    "sw": 800,
+    "alt": {
+      "es": "Edsger Dijkstra en la ETH Zúrich",
+      "en": "Edsger Dijkstra at ETH Zurich"
+    },
+    "caption": {
+      "es": "Edsger Dijkstra en la ETH Zúrich, Suiza, en 1994.",
+      "en": "Edsger Dijkstra at ETH Zurich, Switzerland, in 1994."
+    },
+    "credit": {
+      "author": "Andreas F. Borchert",
+      "license": "CC BY-SA 4.0",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:Edsger_Dijkstra_1994.jpg"
+    }
+  },
+  "py-patriot-scud": {
+    "file": "py/py-patriot-scud",
     "w": 1600,
     "h": 1067,
     "sw": 800,
     "alt": {
-      "es": "Disco duro abierto con el plato y el brazo con el cabezal",
-      "en": "Opened hard disk with the platter and the arm with the head"
+      "es": "Estelas de misiles Patriot sobre una ciudad de noche",
+      "en": "Patriot missile trails over a city at night"
     },
     "caption": {
-      "es": "Un disco duro abierto: el brazo lleva el cabezal hasta la pista del plato que gira. Cada página que SQLite lee puede costar ese viaje.",
-      "en": "An opened hard disk: the arm carries the head to the track on the spinning platter. Every page SQLite reads can cost that trip."
+      "es": "Misiles Patriot lanzados para interceptar misiles Scud iraquíes sobre Tel Aviv, el 12 de febrero de 1991, durante la Guerra del Golfo.",
+      "en": "Patriot missiles launched to intercept Iraqi Scud missiles over Tel Aviv, 12 February 1991, during the Gulf War."
     },
     "credit": {
-      "author": "Raimond Spekking",
+      "author": "Alpert Nathan, Government Press Office (Israel)",
+      "license": "CC BY-SA 3.0",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:Flickr_-_Government_Press_Office_(GPO)_-_Patriot_missiles_being_launched_to_intercept_an_Iraqi_Scud_missile.jpg"
+    }
+  },
+  "sql-don-chamberlin": {
+    "file": "sql/sql-don-chamberlin",
+    "w": 1067,
+    "h": 1600,
+    "sw": 534,
+    "alt": {
+      "es": "Retrato de Donald Chamberlin",
+      "en": "Portrait of Donald Chamberlin"
+    },
+    "caption": {
+      "es": "Donald Chamberlin en 2009, cuando el Computer History Museum lo nombró Fellow.",
+      "en": "Donald Chamberlin in 2009, when the Computer History Museum inducted him as a Fellow."
+    },
+    "credit": {
+      "author": "Dicklyon",
       "license": "CC BY-SA 4.0",
       "source": "Wikimedia Commons",
-      "url": "https://commons.wikimedia.org/wiki/File:WD_Blue_WD40NMZW-11GX6S1_-_cover_removed_-_platter_and_head-2203.jpg"
+      "url": "https://commons.wikimedia.org/wiki/File:Don_Chamberlin.jpg"
+    }
+  },
+  "sql-hollerith-census-machine": {
+    "file": "sql/sql-hollerith-census-machine",
+    "w": 1600,
+    "h": 1445,
+    "sw": 800,
+    "alt": {
+      "es": "Réplica de la máquina censal de Hollerith",
+      "en": "Replica of Hollerith's census machine"
+    },
+    "caption": {
+      "es": "Réplica de la máquina censal de Hollerith, una de las primeras tabuladoras, en el Computer History Museum de Mountain View, California.",
+      "en": "Replica of Hollerith's census machine, an early tabulating machine, at the Computer History Museum in Mountain View, California."
+    },
+    "credit": {
+      "author": "Tomwsulcer",
+      "license": "CC0",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:Hollerith_census_machine_at_CHM_by_Tomwsulcer.jpg"
+    }
+  },
+  "sql-michael-stonebraker": {
+    "file": "sql/sql-michael-stonebraker",
+    "w": 1600,
+    "h": 1064,
+    "sw": 800,
+    "alt": {
+      "es": "Retrato de Michael Stonebraker",
+      "en": "Portrait of Michael Stonebraker"
+    },
+    "caption": {
+      "es": "Michael Stonebraker en la Universidad de California, Berkeley, justo después de una charla.",
+      "en": "Michael Stonebraker at the University of California, Berkeley, just after giving a talk."
+    },
+    "credit": {
+      "author": "Dcoetzee",
+      "license": "CC0",
+      "source": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:Michael_Stonebraker_2.jpg"
     }
   }
 }
