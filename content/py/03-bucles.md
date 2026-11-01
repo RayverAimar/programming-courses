@@ -2,6 +2,8 @@
 
 ## El encargo
 
+> **La vez pasada:** con `if` Quilla ya decide, pero decide una sola vez. En la mina tiene que decidir y volver a decidir hasta que la roca diga basta.
+
 En Cerro de Pasco, a más de cuatro mil metros, hace un frío que corta y la mina San Expedito acaba de reabrir un socavón que llevaba años cerrado. La capataz, **doña Eulalia Ticse**, llamó a Maru: necesita que alguien recorra las galerías, recoja los cristales de cuarzo que la roca fue soltando y diga cuántos hay. Nadie se acuerda de cuánto miden los túneles.
 
 Maru le atornilló a Quilla una **lámpara en la cabeza** y lo subió al bus de Lima a Cerro. El problema no es la oscuridad: es que Quilla no sabe cuántos pasos dar. Hoy le enseñas a **repetir** sin contar a mano: "mientras no haya roca adelante, avanza y recoge".
@@ -30,7 +32,7 @@ program: |
 Un **bucle** repite un bloque de código. Python tiene dos:
 
 - **`while condición:`** repite *mientras* la condición sea verdadera. Sirve cuando no sabes cuántas vueltas habrá: "mientras no haya pared".
-- **`for variable in …:`** da una vuelta por cada elemento de algo que se pueda recorrer: una lista, un texto, o un `range`, que es una secuencia de números.
+- **`for variable in …:`** da una vuelta por cada elemento de algo que se pueda recorrer: una lista (varios valores entre corchetes, como `[40, 85, 120]`; la verás a fondo en la sesión 5), un texto, o un `range`, que es una secuencia de números.
 
 ```py run
 for metros in range(0, 200, 50):
@@ -41,7 +43,11 @@ while lampara > 0:
     lampara -= 1
 ```
 
-`range(a, b, paso)` cuenta desde `a` **hasta antes de `b`**, de `paso` en `paso`: `range(0, 200, 50)` da 0, 50, 100 y 150, pero no 200. Con un solo número, `range(5)` es 0, 1, 2, 3, 4; y el paso puede ser negativo: `range(10, 0, -3)` es 10, 7, 4, 1.
+### `range`: contar sin escribir los números
+
+Para repetir "10 veces" o "de 5 en 5" no vas a escribir los números a mano. `range(a, b, paso)` cuenta desde `a` **hasta antes de `b`**, de `paso` en `paso`: `range(0, 200, 50)` da 0, 50, 100 y 150, pero no 200. Con un solo número, `range(5)` es 0, 1, 2, 3, 4; y el paso puede ser negativo: `range(10, 0, -3)` es 10, 7, 4, 1.
+
+### Cuándo revisa la condición el `while`
 
 Dale a ▶ y mira cómo el `while` revisa la condición **antes** de cada vuelta:
 
@@ -61,12 +67,19 @@ notes:
   6: Con 10 de batería, 10 >= 15 es falso y el bucle terminó.
 ```
 
-Lo que necesitas para hoy:
+<!-- photo: py-patriot-scud -->
 
-- **Acumuladores y contadores.** Una variable que empieza en `0` antes del bucle y crece adentro: `total += veta` suma, `vacias += 1` cuenta. En Python no existe `++`.
-- **`break`** sale del bucle en ese momento; **`continue`** salta lo que queda de esta vuelta y pasa a la siguiente.
-- **`for … else`.** El `else` de un bucle corre solo si el bucle terminó **sin** `break`: "busqué y no encontré".
-- **Bucles anidados.** Un bucle dentro de otro: por cada vuelta del de afuera, el de adentro da todas las suyas.
+> **Historia:** El 25 de febrero de 1991, en la Guerra del Golfo, un misil Scud cayó sobre unos barracones en Dhahran, Arabia Saudita, y mató a 28 soldados estadounidenses. La batería Patriot que debía interceptarlo llevaba 100 horas encendida contando el tiempo en décimas de segundo; al guardar esos números cortados en 24 bits, su reloj se había desfasado un tercio de segundo, unos 600 metros para un misil. Sumar un error mínimo en cada vuelta, muchas veces seguidas, deja de ser mínimo.
+
+<!-- /photo -->
+
+### Acumuladores y contadores
+
+Casi todo bucle existe para ir juntando algo: un total, una cuenta. Una variable que empieza en `0` antes del bucle y crece adentro: `total += veta` suma, `vacias += 1` cuenta. En Python no existe `++`.
+
+### `break` y `continue`
+
+No siempre hay que dar todas las vueltas: puedes salir o saltarte una. **`break`** sale del bucle en ese momento; **`continue`** salta lo que queda de esta vuelta y pasa a la siguiente.
 
 ```anima
 title: continue se salta una vuelta, break corta el bucle
@@ -86,6 +99,15 @@ notes:
   7: Una muestra de más de 12 es otra veta; break sale del bucle y el 4 nunca se mira.
   8: "El acumulador: plata crece en cada vuelta que llega hasta aquí."
 ```
+
+### `for … else`
+
+A veces el bucle busca algo y necesitas saber si al final no lo encontró. El `else` de un bucle corre solo si el bucle terminó **sin** `break`: "busqué y no encontré".
+
+### Bucles anidados
+
+Para recorrer tablas o combinar dos cosas necesitas un bucle dentro de otro: por cada vuelta del de afuera, el de adentro da todas las suyas.
+
 
 > **Trampa común:** el bucle que nunca termina. Si nada dentro del `while` cambia su condición, se repite para siempre: `while lampara > 0: print(lampara)` sin el `lampara -= 1` no para nunca. Lo mismo pasa si la línea que cambia la condición queda **sin sangría**, fuera del bloque. El Taller lo corta a los pocos segundos (y Quilla, a las 3000 acciones), pero en tu computadora el programa se queda colgado.
 
@@ -447,7 +469,7 @@ hints:
 
 ## El juez
 
-Lee la entrada con `input()` como en la sesión 1. Cuando una línea trae varios números, `input().split()` te da la lista de sus textos y puedes recorrerla con un `for`; cada texto se convierte con `int(...)` antes de comparar.
+Lee la entrada con `input()` como en la sesión 1. Cuando una línea trae varios números, `input().split()` (*split*: partir) te da la lista de sus textos —lo verás con calma en la sesión 7— y puedes recorrerla con un `for`; cada texto se convierte con `int(...)` antes de comparar.
 
 ```exercise
 id: py3-juez-racha

@@ -2,9 +2,11 @@
 
 ## The job
 
-Chiclayo, seven in the morning. The **Mercado Modelo** already smells of coriander, of pato en olla and of the healers' herbs in the back passage. In the food court on the second floor, four stalls share a single cash register: Catalina with her King Kong, Wálter with his arroz con pato, Rocío with the cabrito and Hermes with the tortilla de raya. The stallholders' association manager, **don Segundo Puicón**, has a receipt audit tomorrow and a mountain of papers, notebooks and files that don't add up.
+> **Last time:** asynchrony taught Quilla not to stand waiting for a server. Everything it learns is forgotten when the program ends: it has to be saved to files.
 
-Maru sent Quilla on the night bus, with its waiter's arm. Until today, everything Quilla knew was forgotten when the program ended. Today it learns to **read and write files**: the till's log as CSV, the price list as JSON, a plain text notebook. And to split its code into **modules**, like a real program.
+Chiclayo, seven in the morning. The **Mercado Modelo** already smells of coriander and pato en olla. In the food court on the second floor, four stalls share a single cash register: King Kong, arroz con pato, cabrito and tortilla de raya. The stallholders' association manager, **don Segundo Puicón**, has a receipt audit tomorrow and a mountain of papers, notebooks and files that don't add up.
+
+Maru sent Quilla on the night bus. Until today, everything Quilla knew was forgotten when the program ended. Today it learns to **read and write files**: the till's log as CSV, the price list as JSON, a plain text notebook. And to split its code into **modules**, like a real program.
 
 ```scene
 theme: cocina
@@ -32,6 +34,8 @@ program: |
 
 ## The minimum
 
+### Opening and reading a file
+
 A **text file** is text saved under a name. You open it with `open(path, mode, encoding="utf-8")` inside a `with`, which **closes it by itself** when the block ends, even if there's an error halfway. Mode `"r"` (the default) reads, `"w"` creates the file or **wipes it and rewrites it**, and `"a"` appends to the end.
 
 ```py
@@ -52,7 +56,27 @@ print(len(name), len(data))
 print(data.decode("latin-1"))
 ```
 
-**`pathlib.Path`** is a path with methods: `/` joins parts, `.name`, `.stem` and `.suffix` take it apart, `.exists()` asks whether it exists, `.read_text()` and `.write_text()` read and write in one go, and `.glob("*.csv")` lists the files in a folder.
+```steps
+# What happens to "Chapoñán" when it is written and read wrongly
+## In your program it is text
+`"Chapoñán"` has **8 letters**. To Python they are characters, not bytes.
+## `encode("utf-8")` turns it into bytes
+Letters without accents take one byte; `ñ` and `á` take **two** each. In total that is **10 bytes**: what gets stored in the file.
+## Reading it with the right encoding brings it back
+With `decode("utf-8")` the two bytes of the `ñ` join again into a single letter.
+## With another encoding, you get gibberish
+`decode("latin-1")` reads each byte as a separate letter, and you get `ChapoÃ±Ã¡n`: that is why you write `encoding="utf-8"` when opening.
+```
+
+<!-- photo: py-ascii-chart -->
+
+> **History:** The first edition of the ASCII standard was published in 1963 and fixed 128 codes: letters without accents, digits, symbols and control characters. There was no `ñ` or `á`; other alphabets had to wait for newer encodings. The first 128 codes of Unicode are the same as ASCII, which is why `"Chapo"` takes the same space in any encoding and `"Chapoñán"` does not.
+
+<!-- /photo -->
+
+### `pathlib`: paths with methods
+
+ a path with methods: `/` joins parts, `.name`, `.stem` and `.suffix` take it apart, `.exists()` asks whether it exists, `.read_text()` and `.write_text()` read and write in one go, and `.glob("*.csv")` lists the files in a folder.
 
 ```py run
 from pathlib import Path
@@ -61,6 +85,8 @@ print(path)
 print(path.name, path.stem, path.suffix)
 print(path.parent)
 ```
+
+### CSV: tables as text
 
 A **CSV** is a table as text: one row per line, columns separated by commas, and the first row is the header. If a value contains a comma it goes in quotes, which is why you never split it with `split(",")`: the **`csv`** module does it right. `csv.DictReader` gives you each row as a dictionary, keyed by the header. When you open a CSV, pass `newline=""`. Here, `io.StringIO(text)` plays the file: it works just like what `open` returns.
 
@@ -93,7 +119,9 @@ notes:
   8: "Wálter adds up 26 + 45; the order is that of first appearance."
 ```
 
-**JSON** is dictionaries and lists written as text. `json.loads(text)` turns it into Python data and `json.dumps(data)` does the opposite; with files, `json.load(file)` and `json.dump(data, file)`. `true` becomes `True` and `null`, `None`. Without `ensure_ascii=False`, accented letters come out as codes:
+### JSON: dictionaries and lists as text
+
+ dictionaries and lists written as text. `json.loads(text)` turns it into Python data and `json.dumps(data)` does the opposite; with files, `json.load(file)` and `json.dump(data, file)`. `true` becomes `True` and `null`, `None`. Without `ensure_ascii=False`, accented letters come out as codes:
 
 ```py run
 import json
@@ -102,6 +130,8 @@ print(data["dishes"][0], data["open"])
 print(json.dumps(data, ensure_ascii=False))
 print(json.dumps({"owner": "Ñique"}))
 ```
+
+### `Counter`, `defaultdict` and sorting with several keys
 
 Two tools from `collections` and a sort with several keys: `Counter` counts a list in one go, `defaultdict(list)` groups without `setdefault`, and a **tuple as the `key`** sorts by several things at once (the `-` puts numbers from largest to smallest):
 
@@ -114,7 +144,9 @@ print(dict(by_table), by_table[7])
 print(sorted([("Rocío", 72.0), ("Wálter", 97.0), ("Hermes", 72.0)], key=lambda p: (-p[1], p[0])))
 ```
 
-**Modules.** Every `.py` file is a module: if there's a `market.py` next to your program, `import market` runs it once and gives you its names as `market.with_tax`, and `from market import with_tax` brings one in directly. Just like `import csv`. Inside a module, `__name__` holds its name (`"market"`), but in the file you run it's `"__main__"`. That's why a module's test code goes like this, and doesn't run when someone else imports it:
+### Modules and `import`
+
+To split a program into files and reuse them. Every `.py` file is a module: if there's a `market.py` next to your program, `import market` runs it once and gives you its names as `market.with_tax`, and `from market import with_tax` brings one in directly. Just like `import csv`. Inside a module, `__name__` holds its name (`"market"`), but in the file you run it's `"__main__"`. That's why a module's test code goes like this, and doesn't run when someone else imports it:
 
 ```py
 def with_tax(amount):
@@ -278,12 +310,16 @@ hints:
 tests:
   - name: Hermes's three days, in order
     expect: 'daily_totals("sales") == {"2026-10-20": 82.5, "2026-10-21": 63.5, "2026-10-22": 0}'
+    msg: "Add up the amounts of each `.txt`; the empty file sums 0 and `README.md` does not count."
   - name: the days come out in the order of their names
     expect: 'list(daily_totals("sales")) == ["2026-10-20", "2026-10-21", "2026-10-22"]'
+    msg: "Sort the paths with `sorted(...)` and use `path.stem` as the key."
   - name: another folder
     expect: 'daily_totals("fair") == {"saturday": 20.5}'
+    msg: "It works with any folder: do not hard-code \"sales\" inside the function."
   - name: uses Path
     source: '\bPath\s*\('
+    msg: "Use `Path(folder).glob(\"*.txt\")`."
 ```
 
 ```exercise
@@ -354,10 +390,13 @@ hints:
 tests:
   - name: adds up the kilos of each product
     expect: 'dict(kilos) == {"lime": 5.5, "ají amarillo": 2.0, "red onion": 4.0}'
+    msg: "Add `float(row[\"kilos\"])` per product: kilos arrive as text."
   - name: the header isn't a product
     expect: '"product" not in kilos'
+    msg: "With `DictReader` the header is not a data row: it must not show up as a product."
   - name: uses DictReader
     source: '\bDictReader\s*\('
+    msg: "Read the file with `csv.DictReader(file)`."
 ```
 
 ```exercise

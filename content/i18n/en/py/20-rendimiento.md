@@ -2,9 +2,11 @@
 
 ## The job
 
-Gamarra, La Victoria, December 20th. Five days to Christmas and the textile emporium never sleeps: the shopping arcades open at five in the morning, tricycles loaded with rolls of fabric push their way through the crowd and in every workshop the overlockers sound like rain. **Doña Felícita Mamani**, of *Confecciones El Hilo de Oro*, has an order for forty thousand T-shirts for a chain of stores and an order system someone wrote for her in Python.
+> **Last time:** Quilla reads and writes files and splits its code into modules. With forty thousand orders the program works, but takes almost an hour: the question is how much work it does.
 
-The system works. The problem is that the nightly report, with every order of the season, **takes almost an hour**, and by then doña Felícita should already be cutting fabric. Maru sent her Quilla, with its siren to clear a way through Jirón Gamarra, and a single instruction: "Don't guess what's slow. **Measure it**." Today Quilla learns to count how much work a program does as the data grows, and to change the step that grows badly.
+Gamarra, La Victoria, December 20th. Five days to Christmas and the textile emporium never sleeps: the arcades open at five and in every workshop the overlockers sound like rain. **Doña Felícita Mamani**, of *Confecciones El Hilo de Oro*, has an order for forty thousand T-shirts for a chain of stores and an order system someone wrote for her in Python.
+
+The system works. The problem is that the nightly report, **takes almost an hour**, and by then doña Felícita should already be cutting fabric. Maru sent her Quilla, and a single instruction: "Don't guess what's slow. **Measure it**." Today Quilla learns to count how much work a program does as the data grows, and to change the step that grows badly.
 
 ```scene
 theme: barranco
@@ -35,6 +37,8 @@ program: |
 
 ## The minimum
 
+### Complexity: how the work grows
+
 A correct program can be useless if it takes too long. What matters isn't how long it takes with ten orders, but **how its work grows** as the orders grow. That's called its **complexity**, and it's written in *big O* notation: `O(n)` grows like the data, `O(n²)` grows with the square.
 
 ```figure
@@ -51,7 +55,9 @@ panes:
 caption: "Ten billion steps is minutes or hours. Doubling the data doubles the work of an `O(n)`, but **quadruples** it in an `O(n²)`."
 ```
 
-**Measure.** `time.perf_counter()` is a high-precision stopwatch: you read it before and after, and the difference is seconds. Measure with data of two sizes; if doubling the data multiplies the time by four, there's a quadratic step.
+### Measuring
+
+To know how long it really takes, instead of guessing. `time.perf_counter()` is a high-precision stopwatch: you read it before and after, and the difference is seconds. Measure with data of two sizes; if doubling the data multiplies the time by four, there's a quadratic step.
 
 ```py
 import time
@@ -61,7 +67,9 @@ report = build_report(orders)
 print(f"{(time.perf_counter() - start) * 1000:.1f} ms")   # for example: 431.7 ms
 ```
 
-**`in` on a list or on a set.** `x in a_list` walks the list until it finds it: `O(n)`. `x in a_set` jumps straight there, like `d[key]` in a dictionary: `O(1)`. Inside a loop, the difference is the one in the table above. This example measures it (it doesn't print the times, which change on every machine, but the comparison):
+### `in` on a list or on a set
+
+Asking whether something is there costs very differently depending on where you keep it. `x in a_list` walks the list until it finds it: `O(n)`. `x in a_set` jumps straight there, like `d[key]` in a dictionary: `O(1)`. Inside a loop, the difference is the one in the table above. This example measures it (it doesn't print the times, which change on every machine, but the comparison):
 
 ```py run
 import time
@@ -78,7 +86,9 @@ in_set = measure(lambda: [-1 in seen for _ in range(20)])
 print(in_list > 50 * in_set)
 ```
 
-**Queues: `pop(0)` or `popleft()`.** `a_list.pop(0)` takes out the first one, but then shifts all the others one place to the left: `O(n)` every time. A `collections.deque` (the one from session 10) takes from both ends in `O(1)`:
+### Queues: `pop(0)` or `popleft()`
+
+Taking from the front looks the same in both, but it is not. `a_list.pop(0)` takes out the first one, but then shifts all the others one place to the left: `O(n)` every time. A `collections.deque` (the one from session 10) takes from both ends in `O(1)`:
 
 ```py
 from collections import deque
@@ -88,7 +98,15 @@ while queue:
     order = queue.popleft()     # not queue.pop(0) on a list
 ```
 
-**`heapq`: always the smallest, without sorting everything.** A *heap* is a list that Python keeps half sorted: the smallest is always at position 0. `heappush` and `heappop` cost `O(log n)`. It's good for two things: the **k best** of a huge list and **priority queues**, where you always deal first with the most urgent or the nearest thing (that's how Dijkstra works, the BFS for paths with different costs: it always takes out the cheapest pending tile).
+<!-- photo: py-dijkstra-1994 -->
+
+> **History:** Edsger Dijkstra said he designed his shortest-path algorithm in about twenty minutes, sitting with his fiancée on a café terrace in Amsterdam. He was wondering how to travel from Rotterdam to Groningen by the shortest route. He conceived it in 1956 and published it in 1959.
+
+<!-- /photo -->
+
+### `heapq`: always the smallest, without sorting everything
+
+To keep the best ones without sorting everything. A *heap* is a list that Python keeps half sorted: the smallest is always at position 0. `heappush` and `heappop` cost `O(log n)`. It's good for two things: the **k best** of a huge list and **priority queues**, where you always deal first with the most urgent or the nearest thing (that's how Dijkstra works, the BFS for paths with different costs: it always takes out the cheapest pending tile).
 
 ```py run
 import heapq
@@ -102,15 +120,31 @@ heapq.heappush(pending, (8, "Parque Cánepa"))
 print(heapq.heappop(pending))
 ```
 
+```steps
+# A priority queue with `heapq`
+## You start with an empty list
+`pending = []`. A heap is an ordinary list that `heapq` keeps half sorted.
+## `heappush` adds each pending item with its priority
+`(5, "Galería Guizado")`, `(2, "Jirón Gamarra")` and `(8, "Parque Cánepa")` go in. The priority comes first in the tuple, because the heap compares the first element.
+## The smallest is always at the front
+After the three `heappush` calls, `(2, "Jirón Gamarra")` is at position 0, even though it went in second.
+## `heappop` takes out the most urgent
+It returns `(2, "Jirón Gamarra")` and the heap rearranges itself so the next smallest, the 5, moves to the front. Each `heappush` and `heappop` costs `O(log n)`.
+```
+
 With tuples, the heap compares the first element first: the priority goes in front.
 
-**Texts: `join`, not `+=`.** Texts are immutable: `report += line` may create a new text and copy everything before it on every turn. Gather the lines in a list and join them at the end with `"\n".join(lines)`.
+### Texts: `join`, not `+=`
+
+Building a long text by gluing pieces can get expensive. Texts are immutable: `report += line` may create a new text and copy everything before it on every turn. Gather the lines in a list and join them at the end with `"\n".join(lines)`.
 
 <!-- legacy: perf-counter -->
 
 <!-- legacy: str-join -->
 
-**Range sums: the prefix.** If you're asked many times "how much was sold between minute `a` and minute `b`?", adding up the range each time is `O(n)` per question. Better to build once the list of **running sums**, with a `0` in front: `prefix[i]` is what was sold before minute `i`. Each question is one subtraction.
+### Range sums: the prefix
+
+To answer many "how much between here and there" questions without walking each time. If you're asked many times "how much was sold between minute `a` and minute `b`?", adding up the range each time is `O(n)` per question. Better to build once the list of **running sums**, with a `0` in front: `prefix[i]` is what was sold before minute `i`. Each question is one subtraction.
 
 ```anim
 title: Running sums, and a range with one subtraction
@@ -128,7 +162,9 @@ notes:
   6: "From minute 1 to 3: what was sold before 4 minus what was sold before 1. 13 − 4 = 9."
 ```
 
-**Two pointers.** In a **sorted** list, to look for a pair that adds up to exactly an amount you don't need two loops: one index starts on the left and another on the right. If the sum is too big, the right one moves back; if it falls short, the left one moves forward. Each step discards one element: `O(n)`.
+### Two pointers
+
+To walk a sorted list from both ends at once. In a **sorted** list, to look for a pair that adds up to exactly an amount you don't need two loops: one index starts on the left and another on the right. If the sum is too big, the right one moves back; if it falls short, the left one moves forward. Each step discards one element: `O(n)`.
 
 ```anim
 title: Two pointers look for a pair that adds up to 25
@@ -360,15 +396,20 @@ tests:
   - name: two orders
     run: 'delivery_note([["Tiendas Sol", 40], ["Bazar Lucy", 12]])'
     equals: "DELIVERY NOTE: 2 orders\nTiendas Sol: 40 doz.\nBazar Lucy: 12 doz."
+    msg: "The first line is `DELIVERY NOTE: n orders` and then one line per order, joined with `\"\\n\".join(...)`."
   - name: with no orders, just the title
     run: delivery_note([])
     equals: "DELIVERY NOTE: 0 orders"
+    msg: "With no orders only the title remains, with no line break at the end."
   - name: ten thousand orders at once
     expect: 'delivery_note([["C", 1]] * 10_000).count("\n") == 10_000'
+    msg: "Collect the lines in a list and join once: with `+=` ten thousand orders would be slow."
   - name: no += on the text
     sourceNot: '\+='
+    msg: "Do not use `+=` to build the text: join the lines with `join`."
   - name: uses join
     source: '\.join\('
+    msg: "Join with `\"\\n\".join(lines)`."
 ```
 
 ```exercise
@@ -1054,4 +1095,4 @@ tests:
 
 That same night, doña Felícita's report finished in four seconds. She didn't understand what a set was, but she understood that at five in the morning she was already cutting fabric, and she gave Quilla a T-shirt embroidered with its name.
 
-Back in Chucuito, Maru found Quilla looking at the sea from Loop's door. Twenty sessions ago it was a robot fresh out of the box that could only move forward and deliver alfajores; now it reads files, waits for servers, catches errors and measures what it does. "You don't need me to tell you what to write anymore," Maru told it. "Now it's up to you to decide which programs are worth writing." Quilla switched on its siren, just once, softly. **The end of the Python course.**
+Back in Chucuito, Maru found Quilla looking at the sea. Twenty sessions ago it was a robot that could only move forward and deliver alfajores; now it reads files, waits for servers, catches errors and measures what it does. "You don't need me to tell you what to write anymore," Maru told it. "Now it's up to you to decide which programs are worth writing." Quilla switched on its siren, just once, softly. **The end of the Python course.**

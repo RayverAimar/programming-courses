@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Chachapoyas, Amazonas. Tres horas de curvas sobre el Utcubamba y luego el teleférico hasta el cerro Barreta, donde está **Kuélap**: la fortaleza de los chachapoyas, con murallas de veinte metros, cuatrocientas casas redondas y frisos de rombos en la piedra. La arqueóloga **Elvira Zuta Culqui** dirige la restauración de sus terrazas, y tiene tres problemas: escaleras que nadie ha contado, cajas de hallazgos metidas dentro de otras cajas, y una cueva bajo el cerro que nadie se atreve a recorrer sin plano.
+> **La vez pasada:** los generadores entregan un valor a la vez, de una fila que no se acaba. Ahora la forma del problema se repite dentro de sí misma: escaleras dentro de escaleras, cajas dentro de cajas.
 
-Maru mandó a Quilla con su **faro en la cabeza**. Los tres problemas tienen la misma forma: una cosa grande hecha de cosas iguales pero más chicas. Una escalera es un escalón más una escalera; una caja es piezas más cajas; una cueva es una casilla más las cuevas que salen de ella. Hoy Quilla aprende a resolver un problema **llamándose a sí misma** con un problema más chico: la **recursión**.
+Chachapoyas, Amazonas. En el cerro Barreta está **Kuélap**: la fortaleza de los chachapoyas, con murallas de veinte metros y cuatrocientas casas redondas. La arqueóloga **Elvira Zuta Culqui** dirige la restauración de sus terrazas, y tiene tres problemas: escaleras sin contar, cajas de hallazgos metidas dentro de otras cajas, y una cueva que nadie se atreve a recorrer sin plano.
+
+Maru mandó a Quilla con su **faro**. Los tres problemas tienen la misma forma: una cosa grande hecha de cosas iguales pero más chicas. Una escalera es un escalón más una escalera; una caja es piezas más cajas; una cueva es una casilla más las cuevas que salen de ella. Hoy Quilla aprende a resolver un problema **llamándose a sí misma** con un problema más chico: la **recursión**.
 
 ```escena
 theme: mina
@@ -33,6 +35,8 @@ program: |
 
 ## Lo mínimo
 
+### Caso base y caso recursivo
+
 Una función **recursiva** se llama a sí misma. Siempre tiene dos partes:
 
 - el **caso base**: un problema tan chico que la respuesta se sabe sin pensar, y ahí se detiene;
@@ -48,6 +52,8 @@ def bajar(terraza):
 
 bajar(3)
 ```
+
+### La pila de llamadas
 
 Cada llamada que todavía no termina espera en la **pila de llamadas**, con sus propios parámetros. La pila crece hasta llegar al caso base y después se desarma: cada caja recibe lo que devolvió la de arriba, le suma su parte y lo entrega a la de abajo.
 
@@ -68,9 +74,13 @@ notes:
   7: "Cada caja sumó su parte al volver: 10, luego 30, luego 60."
 ```
 
+### `RecursionError`
+
 Si el caso base nunca llega, la pila crece sin fin. Python la corta a las mil llamadas, más o menos, con un **`RecursionError`**: *maximum recursion depth exceeded*. Casi siempre es un caso base que falta, o una llamada que no achica el problema (`bajar(terraza)` en vez de `bajar(terraza - 1)`), o uno que se salta el base (`n - 2` desde un impar nunca da 0).
 
-La recursión brilla con datos **anidados**, que tienen la misma forma por dentro: una lista que contiene listas, un diccionario con diccionarios. Un bucle no sabe cuántos niveles hay; la función recursiva entra a cada nivel llamándose otra vez.
+### Datos anidados
+
+La recursión brilla con datos **anidados**, que tienen la misma forma por dentro: una lista que contiene listas, un diccionario con diccionarios. Un bucle no sabe cuántos niveles hay; la función recursiva entra a cada nivel llamándose otra vez. Para saber si un elemento es otra lista, `isinstance(cosa, list)` responde `True` o `False`.
 
 ```py run
 def contar(caja):
@@ -81,6 +91,8 @@ def contar(caja):
 
 print(contar(["olla", ["tupu", ["cuenta", "cuenta"]], "huso"]))
 ```
+
+### Memoización con `@cache`
 
 Algunas recursiones repiten trabajo: `formas(n - 1)` y `formas(n - 2)` vuelven a pedir los mismos valores una y otra vez, y el número de llamadas se duplica con cada `n`. **`@cache`** (de `functools`, la viste en la sesión 11) guarda cada resultado según sus argumentos: la segunda vez que se pide, contesta de memoria. Eso es **memoización**. Sus argumentos tienen que ser hashables: números, textos, tuplas.
 
@@ -98,7 +110,9 @@ print(formas(90))
 
 Sin `@cache`, `formas(90)` tardaría siglos. Con ella, son 91 llamadas.
 
-**Backtracking** es recursión para probar todas las opciones: **elegir** algo, **explorar** lo que sigue con esa elección y **deshacerla** para probar la siguiente. Así salen todos los subconjuntos, todos los órdenes posibles o todos los caminos de un laberinto.
+### Backtracking
+
+El *backtracking* es recursión para probar todas las opciones: **elegir** algo, **explorar** lo que sigue con esa elección y **deshacerla** para probar la siguiente. Así salen todos los subconjuntos, todos los órdenes posibles o todos los caminos de un laberinto.
 
 ```py run
 def elegir(cosas, i, elegidos):
@@ -241,19 +255,25 @@ tests:
   - name: saltos(8) es 4
     run: saltos(8)
     equals: 4
+    msg: "Con 8 escalones son 4 saltos: revisa el caso base."
   - name: saltos(7) es 4
     run: saltos(7)
     equals: 4
+    msg: "Con 7 se cae porque la cuenta nunca pasa por 0: cambia el caso base a `escalones <= 0`."
   - name: saltos(1) es 1
     run: saltos(1)
     equals: 1
+    msg: "Con 1 escalón suelto es un salto: 1 + `saltos(-1)` debe cortar en 0."
   - name: saltos(0) es 0
     run: saltos(0)
     equals: 0
+    msg: "Con 0 escalones no hay saltos: devuelve 0."
   - name: imprime 4 y 4
     output: "4\n4"
+    msg: "La consola debe imprimir 4 y 4."
   - name: sigue siendo recursiva
     source: 'return\s+1\s*\+\s*saltos\('
+    msg: "Mantén la recursión: la función sigue devolviendo `1 + saltos(escalones - 2)`."
 ```
 
 ```exercise
@@ -296,14 +316,18 @@ tests:
   - name: el ejemplo del dibujo
     run: 'aplanar(["spondylus", ["piedra", ["hueso"]], "cobre"])'
     equals: ["spondylus", "piedra", "hueso", "cobre"]
+    msg: "Si la cosa es una lista, se aplana con una llamada recursiva y `extend`; si no, se agrega con `append`."
   - name: bolsitas vacías
     run: 'aplanar([[], [[]], "cobre"])'
     equals: ["cobre"]
+    msg: "Una bolsita vacía no aporta cuentas: la llamada recursiva devuelve `[]`."
   - name: muy anidada
     run: 'aplanar([[[["oro"]]], "plata"])'
     equals: ["oro", "plata"]
+    msg: "La recursión debe bajar a cualquier profundidad: llama a `aplanar(cosa)`."
   - name: imprime la lista
     output: "['spondylus', 'piedra', 'hueso', 'cobre']"
+    msg: "La consola debe mostrar la lista plana en el orden original."
 ```
 
 ```exercise
@@ -394,16 +418,21 @@ tests:
   - name: tres chullpas
     run: 'ordenes(["A", "B", "C"])'
     equals: [["A", "B", "C"], ["A", "C", "B"], ["B", "A", "C"], ["B", "C", "A"], ["C", "A", "B"], ["C", "B", "A"]]
+    msg: "Cada orden empieza con una chullpa y sigue con un orden de las que quedan."
   - name: una sola
     run: 'ordenes(["Pueblo Alto"])'
     equals: [["Pueblo Alto"]]
+    msg: "Con una sola chullpa hay un solo orden: `[[\"Pueblo Alto\"]]`."
   - name: ninguna
     run: ordenes([])
     equals: [[]]
+    msg: "Sin chullpas hay un solo orden, el vacío: `[[]]`."
   - name: cinco chullpas dan 120 órdenes distintos
     expect: 'len({tuple(o) for o in ordenes([1, 2, 3, 4, 5])}) == 120'
+    msg: "Con cinco chullpas deben salir 120 órdenes sin repetir: revisa el resto que pasas a la llamada."
   - name: sin itertools
     sourceNot: '\bitertools\b|\bpermutations\b'
+    msg: "Hazlo con recursión, sin `itertools` ni `permutations`."
 ```
 
 ## El caso

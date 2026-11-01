@@ -2,9 +2,11 @@
 
 ## The job
 
-Puno, near Ananea, almost five thousand metres up. At the **Santa Rosalía** mine, last week's thaw got in through a crack and left the main gallery with water up to the ankles in some places and up to the knees in others. Don Ciriaco Mamani, the foreman, won't send anyone down until he knows where the water is, how much there is, and which quartz crystals have to come out before it rises any further.
+> **Last time:** comprehensions built lists in one line. A mine plan is a list of lists: you have to move in two directions at once.
 
-Maru fitted Quilla with a **headlamp** and a sensor that measures the centimetres of water on each tile. What it returns isn't a list of numbers: it's a **grid**, rows of tiles, like a sheet of squared notebook paper. Today Quilla learns to read it by row and column, to look at the neighbouring tiles without falling off the edge, and to read the whole map of the mine.
+Puno, near Ananea, almost five thousand metres up. At the **Santa Rosalía** mine, the thaw got in through a crack and left the main gallery with water up to the ankles or the knees. Don Ciriaco Mamani, the foreman, won't send anyone down until he knows where the water is, how much there is, and which crystals have to come out before it rises any further.
+
+Maru fitted Quilla with a **headlamp** and a sensor that measures the centimetres of water on each tile. What it returns isn't a list: it's a **grid**, rows of tiles. Today Quilla learns to read it by row and column, to look at the neighbouring tiles without falling off the edge, and to cover the whole map.
 
 ```scene
 theme: mina
@@ -33,6 +35,8 @@ program: |
 
 ## The minimum
 
+### Rows and columns
+
 A grid is a **list of lists**: each element is a row, and each row is a list of tiles. You read it with two indexes, **first the row and then the column**: `water[row][column]`. On a map, the column is `x` (it grows towards the east) and the row is `y` (it grows towards the south), so the tile `(x, y)` is read `water[y][x]`, the other way round from how you say it.
 
 ```py run
@@ -44,6 +48,8 @@ x, y = 2, 1
 print(water[y][x], len(water), len(water[0]))
 print(water[0])
 ```
+
+### Walking through all of it
 
 To walk through all of it you need **two loops, one inside the other**: the outer one goes down the rows and the inner one goes through each tile of that row. With `enumerate` you get the index and the value at once. Watch how Quilla writes down the wet tiles:
 
@@ -94,6 +100,8 @@ notes:
   4: "Here each row is its own: only the top one changes."
 ```
 
+### Neighbours and edges
+
 Often what matters isn't one tile on its own but its **neighbours**. The four neighbours of `(x, y)` are one step to the east, west, south and north. A list of offsets saves you from writing four nearly identical `if`s, and for all eight (with diagonals) you just add four more tuples:
 
 ```py
@@ -113,11 +121,25 @@ panes:
 caption: "On the edge, some neighbours fall outside. That's why you check `0 <= nx < width and 0 <= ny < height` **before** reading."
 ```
 
-- **Python's edge doesn't warn you from below.** `water[5][0]` in a 2-row grid gives an `IndexError`, but `water[-1][0]` **doesn't fail**: it reads the last row, because negative indexes count from the end. A neighbour "above" row 0 silently turns into a tile at the other end. The `0 <= ny` check is what stops it.
-- **Tuples as keys.** A tuple `(x, y)` can be a dictionary key (a list can't): `depth = {(3, 2): 12}` stores only the tiles that matter, and `depth.get((x, y), 0)` reads any tile without going out of anything.
-- **Strings are rows too.** A map like `["#..", ".#."]` is read the same way, `plan[y][x]`, because a string can be indexed like a list.
-- **`robot.map()`** returns the whole map as a list of rows, and each row is a list of one-letter characters: `robot.map()[y][x]`. `"#"` is rock, `"."` floor, `"1"`–`"9"` crystals and `"D"` the lift. With `robot.position.x` and `robot.position.y` you know where Quilla is on that map.
-- **`robot.scan()`** returns only what the headlamp lights up: a 3 × 3 grid with Quilla in the centre, `view[1][1]`. The tile to its north is `view[0][1]`; the one to its east, `view[1][2]`.
+### A negative index does not warn you at the edge
+
+A neighbour outside the plan can read the wrong tile without Python complaining. `water[5][0]` in a 2-row grid gives an `IndexError`, but `water[-1][0]` **doesn't fail**: it reads the last row, because negative indexes count from the end. A neighbour "above" row 0 silently turns into a tile at the other end. The `0 <= ny` check is what stops it.
+
+### Tuples as keys
+
+When the plan is big and mostly empty, storing only what matters is simpler. A tuple `(x, y)` can be a dictionary key (a list can't): `depth = {(3, 2): 12}` stores only the tiles that matter, and `depth.get((x, y), 0)` reads any tile without going out of anything.
+
+### Strings are rows too
+
+Plans often arrive as text. A map like `["#..", ".#."]` is read the same way, `plan[y][x]`, because a string can be indexed like a list.
+
+### `robot.map()`
+
+To decide with the whole plan in hand. **`robot.map()`** returns the whole map as a list of rows, and each row is a list of one-letter characters: `robot.map()[y][x]`. `"#"` is rock, `"."` floor, `"1"`–`"9"` crystals and `"D"` the lift. With `robot.position.x` and `robot.position.y` you know where Quilla is on that map.
+
+### `robot.scan()`
+
+To decide only with what Quilla can see. **`robot.scan()`** returns only what the headlamp lights up: a 3 × 3 grid with Quilla in the centre, `view[1][1]`. The tile to its north is `view[0][1]`; the one to its east, `view[1][2]`.
 
 <!-- mdn: nested-lists -->
 
@@ -225,17 +247,22 @@ tests:
   - name: on the top edge
     run: wet_neighbors([[3, 0, 1], [0, 6, 0]], 1, 0)
     equals: 3
+    msg: "On the top edge the neighbour `y - 1` does not exist: check the bounds before reading."
   - name: in a corner
     run: wet_neighbors([[3, 0, 1], [0, 6, 0]], 0, 1)
     equals: 2
+    msg: "In a corner two neighbours are missing: test `0 <= nx < width` and `0 <= ny < height` before reading."
   - name: in a gallery taller than it is wide
     run: wet_neighbors([[1], [0], [4], [2]], 0, 1)
     equals: 2
+    msg: "`width` is the length of a row and `height` the number of rows; do not mix them up."
   - name: surrounded by dry floor
     run: wet_neighbors([[0, 0, 0], [0, 9, 0], [0, 0, 0]], 1, 1)
     equals: 0
+    msg: "Only neighbours with water above 0 count, not the tile itself."
   - name: the console shows 3
     output: "3"
+    msg: "The console must show just the number, `3`."
 ```
 
 ```exercise
@@ -245,7 +272,7 @@ title: The water that came from the other side
 prompt: |
   `sum_around(water, x, y)` should add up the centimetres of water of the 4 neighbours of `(x, y)`. For the corner `(0, 0)` the neighbours are `(1, 0)` with 1 cm and `(0, 1)` with 3 cm: the total is **4**. The program doesn't crash, but it prints 15.
 
-  The bug is in `level_at`: the `try` catches the tiles that go past the right or the bottom, but not the ones to the left or above. Fix it by checking the bounds before reading, without `try`.
+  The bug is in `level_at`: the `try`/`except IndexError` (which catches the "that position does not exist" error; you will see it in depth in session 16) catches the tiles that go past the right or the bottom, but not the ones to the left or above. Fix it by checking the bounds before reading, without `try`.
 visual:
   figure:
     title: What it really reads
@@ -364,19 +391,25 @@ hints:
 tests:
   - name: the example
     expect: 'puddles([[0, 4], [2, 0]]) == {(1, 0): 4, (0, 1): 2}'
+    msg: "Keys are `(x, y)` tuples with the column first; walk the rows with `enumerate` and store `(x, y): level`."
   - name: a dry gallery has no puddles
     expect: 'puddles([[0, 0, 0]]) == {}'
+    msg: "With no water on any tile, return `{}`."
   - name: a one-column gallery
     expect: 'puddles([[5], [0], [1]]) == {(0, 0): 5, (0, 2): 1}'
+    msg: "With one column, `x` is always 0 and `y` changes: do not swap `x` and `y`."
   - name: level of a wet tile
     run: 'level({(1, 0): 4, (0, 1): 2}, 1, 0)'
     equals: 4
+    msg: "`level(puddles, x, y)` reads with `puddles.get((x, y), 0)`."
   - name: level of a dry or outside tile
     run: '[level({(1, 0): 4}, 0, 0), level({(1, 0): 4}, -3, 9)]'
     equals: [0, 0]
+    msg: "A dry tile or one off the map gives 0, no `KeyError`: use `get` with 0 as default."
   - name: level doesn't mix up the order
     run: 'level({(1, 0): 4, (0, 1): 2}, 0, 1)'
     equals: 2
+    msg: "The key is `(x, y)`, not `(y, x)`: the column goes first."
 ```
 
 ```exercise
@@ -444,6 +477,7 @@ scenarios:
 tests:
   - name: reads the headlamp
     source: 'robot\.scan\(\)'
+    msg: "Store what `robot.scan()` returns in a variable and use it."
 ```
 
 ## The case

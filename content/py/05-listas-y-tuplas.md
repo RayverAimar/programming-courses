@@ -2,6 +2,8 @@
 
 ## El encargo
 
+> **La vez pasada:** las funciones le dieron a Quilla rutinas con nombre, pero cada una recibe valores sueltos. Una fila de caballitos no cabe en una variable por caballito.
+
 Maru mandó a Quilla al norte, a Huanchaco, donde los pescadores todavía salen al mar en **caballitos de totora**, como hace dos mil años. La cooperativa de don Nicanor Ucañán tiene un problema moderno: cada mañana llegan diez, quince caballitos con su pesca, y nadie sabe en qué orden llegaron, cuánto trajo cada uno ni a quién le toca la siguiente caja de hielo.
 
 Doña Felícita, la tesorera, apunta todo en un cuaderno con las hojas mojadas. Quilla ya sabe guardar un valor en una variable; hoy aprende a guardar **muchos en fila**: la lista de cajas, la fila de caballitos en la arena, los pares de kilos y pescador. Y aprende algo que doña Felícita aprendió a la mala: que dos nombres pueden apuntar al mismo cuaderno.
@@ -27,6 +29,8 @@ program: |
 ```
 
 ## Lo mínimo
+
+### Listas, posiciones y tajadas
 
 Una **lista** guarda varios valores en orden, entre corchetes. Cada uno tiene una **posición** (su índice) que empieza en **0**. Los índices **negativos** cuentan desde el final: `-1` es el último. Y una **tajada** (`lista[a:b]`) copia el tramo que va desde `a` hasta **antes** de `b`; un tercer número, `lista[a:b:paso]`, salta de a varios.
 
@@ -59,6 +63,8 @@ notes:
   7: "Con paso 2 toma uno sí y uno no, empezando por el 0."
 ```
 
+### Cambiar una lista
+
 Una lista **cambia**: se le agregan y se le quitan cosas.
 
 - `append(x)` agrega al final; `insert(i, x)` mete `x` en la posición `i` y corre a los demás.
@@ -76,6 +82,8 @@ print(sorted(kilos), kilos, sum(kilos), min(kilos), max(kilos))
 ```
 
 > **Trampa común:** `kilos = kilos.sort()` deja `kilos` en `None`. `sort()` ordena la lista en su sitio y devuelve `None`, y esa línea guarda justamente ese `None`. Escribe `kilos.sort()` solo, o `ordenados = sorted(kilos)` si quieres conservar la original.
+
+### Un nombre, no una caja: alias y copias
 
 Ahora lo más importante de hoy, y es lo que ya viste en la sesión 1: un nombre es una etiqueta, no una caja. Con una lista se nota: la variable no **contiene** la lista, la **señala**. Si escribes `otra = cuaderno`, no sacas una fotocopia; le pegas un segundo nombre al mismo cuaderno. Para tener una lista aparte, cópiala con `.copy()`.
 
@@ -98,6 +106,8 @@ notes:
   4: "Se agrega por otra… y cuaderno cambia también, porque es la misma lista."
   6: "is pregunta si dos nombres señalan el mismo objeto: True para otra, False para copia."
 ```
+
+### Tuplas y desempaquetar
 
 Una **tupla** es como una lista que no cambia: va entre paréntesis (o solo con comas) y sirve para datos que viajan juntos, como `(kilos, pescador)`. Las tuplas y las listas se **desempaquetan**: cada valor va a su nombre, y un nombre con `*` se lleva lo que sobra. Así también se intercambian dos variables, sin una auxiliar.
 
@@ -227,10 +237,13 @@ hints:
 tests:
   - name: atendieron a Moncho
     expect: 'atendido == "Moncho"'
+    msg: "`pop()` sin número saca el último; para atender al primero necesitas la posición 0."
   - name: la cola queda Tato, Lucho, Chalo
     expect: 'cola == ["Tato", "Lucho", "Chalo"]'
+    msg: "Revisa el orden: Chalo al final con `append`, Moncho al inicio con `insert(0, …)` y Pepe fuera con `remove`."
   - name: imprime al atendido y la cola
     output: "Moncho ['Tato', 'Lucho', 'Chalo']"
+    msg: "Imprime con `print(atendido, cola)` después de los cuatro pasos, sin tocar la última línea."
 ```
 
 ```exercise
@@ -552,7 +565,7 @@ solution: |
 hints:
   - "Lleva un dedo en cada lista (`i` y `j`). Compara los kilos de las dos pesadas que señalan, agrega la menor y avanza ese dedo."
   - "En el empate gana la mañana: usa `<=`. Cuando una lista se acaba, lo que queda de la otra va tal cual: `manana[i:]`."
-  - "Atajo válido: `sorted(manana + tarde, key=lambda par: par[0])` respeta el orden de los empates. Sin `key`, ordenaría también por nombre."
+  - "Atajo válido (con `lambda`, que verás en la sesión 8): `sorted(manana + tarde, key=lambda par: par[0])` respeta el orden de los empates. Sin `key`, ordenaría también por nombre."
 samples:
   - args: [[[5, "Tato"], [9, "Nico"], [9, "Beto"]], [[4, "Pepe"], [9, "Ana"], [12, "Lucho"]]]
     returns: [[4, "Pepe"], [5, "Tato"], [9, "Nico"], [9, "Beto"], [9, "Ana"], [12, "Lucho"]]

@@ -2,9 +2,11 @@
 
 ## The job
 
-Catacaos, in the Bajo Piura, half a block from Calle Comercio, where the filigree shops glitter from the pavement. There, on a second floor that smells of café de olla, **Radio La Filigrana** is on the air: the voice of doña **Hermelinda Sosa** wakes the town at five with announcements, greetings and dedications. People call, dictate their message and the intern writes it down as best he can: with extra spaces, all in capitals or all in lowercase, sometimes in code.
+> **Last time:** with dictionaries and sets, Quilla looks things up in one jump. What comes over the radio isn't tidy data but dirty text, and it has to be cleaned before you can look anything up.
 
-Hermelinda asked Maru for "a robot that reads nicely", and Quilla was sent by bus all the way to Piura. The messages are **text**, and today Quilla learns to clean them, cut them, search inside them and format them. At the end of the day it will carry the orders dictated over the radio, house by house.
+Catacaos, in the Bajo Piura, half a block from Calle Comercio. There, on a second floor that smells of café de olla, **Radio La Filigrana** is on the air: the voice of doña **Hermelinda Sosa** wakes the town at five with announcements, greetings and dedications. People call, dictate their message and the intern writes it down as best he can: with extra spaces, all in capitals or all in lowercase.
+
+Hermelinda asked Maru for "a robot that reads nicely", and Quilla was sent by bus. The messages are **text**, and today Quilla learns to clean them, cut them, search inside them and format them. At the end of the day it will carry the orders dictated over the radio, house by house.
 
 ```scene
 theme: barranco
@@ -27,6 +29,8 @@ program: |
 
 ## The minimum
 
+### Text methods
+
 A text (`str`) is a row of characters. Python comes with dozens of **methods** for working with them: you call them with a dot, `text.method()`, and **each one returns a new text**.
 
 ```py run
@@ -41,6 +45,8 @@ print(clean.replace("Wilmer", "her nephew Wilmer"))
 - **`strip()`** removes the spaces (and line breaks) at both ends; **`lower()`** / **`upper()`** switch to lowercase / uppercase.
 - **`split(sep)`** cuts the text into a list of pieces; **with no argument**, it cuts on any number of spaces and drops the empty pieces. **`sep.join(list)`** does the opposite: it glues the pieces together with `sep` in between. `" ".join(text.split())` leaves a single space between words.
 - **`replace(old, new)`** changes every occurrence; **`startswith`** / **`endswith`** ask about the beginning and the end; **`find`** tells you at which position something appears (or `-1` if it isn't there); **`count`** counts how many times it appears.
+
+### Positions and slices
 
 Each character has a **position**, starting at 0. With square brackets you take one, or a **slice** `[start:stop:step]`, just like with lists: `stop` is not included and negatives count from the end.
 
@@ -60,6 +66,8 @@ print(code[::-1])
 print("STRAWHAT" in code, len(code))
 ```
 
+### Walking through a text
+
 A `for` walks through a text **character by character**, and `in` asks whether a character (or a piece) is inside another text. Watch Quilla count the vowels in a greeting:
 
 ```anim
@@ -77,7 +85,9 @@ notes:
   6: "The space and the consonants added nothing."
 ```
 
-**Formatting inside f-strings.** After `:` goes how to write the value: `{x:>8}` aligns it to the right in 8 spaces (`<` to the left, `^` centred), `{x:.2f}` with two decimals, `{x:,}` with a thousands separator and `{x:05d}` padded with zeros up to 5 digits. They combine: `{x:>10,.2f}`.
+### Formatting inside f-strings
+
+To line up columns and fix decimals. After `:` goes how to write the value: `{x:>8}` aligns it to the right in 8 spaces (`<` to the left, `^` centred), `{x:.2f}` with two decimals, `{x:,}` with a thousands separator and `{x:05d}` padded with zeros up to 5 digits. They combine: `{x:>10,.2f}`.
 
 ```py run
 customer = "Petronila"
@@ -86,7 +96,9 @@ print(f"[{customer:<12}][{customer:>12}][{customer:^12}]")
 print(f"S/ {total:>10,.2f}  Order {7:05d}")
 ```
 
-**Characters are numbers.** `ord("A")` gives the letter's code (65) and `chr(65)` goes the way back. Since the letters from `A` to `Z` have consecutive codes, with `ord` and `chr` you can "move" a letter: `chr(ord("A") + 2)` is `"C"`.
+### Characters are numbers
+
+To shift letters (encrypting, counting) you have to treat them as numbers. `ord("A")` gives the letter's code (65) and `chr(65)` goes the way back. Since the letters from `A` to `Z` have consecutive codes, with `ord` and `chr` you can "move" a letter: `chr(ord("A") + 2)` is `"C"`.
 
 ```py run
 print(ord("A"), ord("B"), ord("Z"))
@@ -297,18 +309,23 @@ tests:
   - name: the association
     run: initials("Asociación  de Artesanos de Catacaos")
     equals: AAC
+    msg: "Split with `split()`, skip the short words and join the capitalised initial of the rest."
   - name: with mixed capitals and lowercase
     run: initials("radio LA filigrana DEL bajo piura")
     equals: RFBP
+    msg: "Compare the short words in lowercase (`word.lower()`) and uppercase the initial."
   - name: with spaces at the ends
     run: initials("   feria y fiesta   ")
     equals: FF
+    msg: "`split()` with no argument already ignores outer and repeated spaces."
   - name: an empty name
     run: initials("")
     equals: ""
+    msg: "An empty name has no words: return the empty text `\"\"`."
   - name: with accents
     run: initials("úrsula ñique")
     equals: ÚÑ
+    msg: "`word[0].upper()` keeps accents and ñ: do not use `ord` or letter lists."
 ```
 
 ```exercise
@@ -318,7 +335,7 @@ title: The dedication slip
 prompt: |
   Write `read_dedication(slip)`, which returns the sentence Hermelinda reads on air: `Wilmer dedicates “Cholo soy” to aunt Chabuca`.
 
-  The intern fills in one slip per call, with three fields separated by `|`: `FROM:`, `TO:` and `SONG:`, **in any order** and with extra spaces around them. Go through the fields, clean them and recognise each one by how it starts (`startswith`), removing its label with `removeprefix`.
+  The intern fills in one slip per call, with three fields separated by `|`: `FROM:`, `TO:` and `SONG:`, **in any order** and with extra spaces around them. Go through the fields, clean them and recognise each one by how it starts (`startswith`), removing its label with `removeprefix` (`"FROM: Ana".removeprefix("FROM:")` gives `" Ana"`: it removes that start if it is there).
 visual:
   figure:
     title: A slip, field by field

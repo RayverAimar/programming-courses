@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Puno, cerca de Ananea, a casi cinco mil metros de altura. En la mina **Santa Rosalía** el deshielo de la semana pasada se metió por una grieta y dejó la galería principal con agua hasta los tobillos en unas partes y hasta las rodillas en otras. Don Ciriaco Mamani, el capataz, no quiere mandar a nadie hasta saber dónde hay agua, cuánta, y qué cristales de cuarzo hay que sacar antes de que suba más.
+> **La vez pasada:** las comprensiones armaron listas en una línea. Un plano de mina es una lista de listas: hay que moverse en dos direcciones a la vez.
 
-Maru le montó a Quilla un **faro en la cabeza** y un sensor que mide los centímetros de agua de cada casilla. Lo que devuelve no es una lista de números: es una **cuadrícula**, filas de casillas, como la hoja cuadriculada de un cuaderno. Hoy Quilla aprende a leerla por fila y columna, a mirar las casillas vecinas sin salirse del borde y a leer el plano entero de la mina.
+Puno, cerca de Ananea, a casi cinco mil metros de altura. En la mina **Santa Rosalía** el deshielo se metió por una grieta y dejó la galería con agua hasta los tobillos o las rodillas. Don Ciriaco Mamani, el capataz, no quiere mandar a nadie hasta saber dónde hay agua, cuánta, y qué cristales hay que sacar antes de que suba más.
+
+Maru le montó a Quilla un **faro en la cabeza** y un sensor que mide los centímetros de agua de cada casilla. Lo que devuelve no es una lista: es una **cuadrícula**, filas de casillas, como la hoja cuadriculada de un cuaderno. Hoy Quilla aprende a leerla por fila y columna, a mirar las casillas vecinas sin salirse del borde y a recorrer el plano entero.
 
 ```escena
 theme: mina
@@ -33,6 +35,8 @@ program: |
 
 ## Lo mínimo
 
+### Filas y columnas
+
 Una cuadrícula es una **lista de listas**: cada elemento es una fila, y cada fila es una lista de casillas. Se lee con dos índices, **primero la fila y después la columna**: `agua[fila][columna]`. En un plano, la columna es la `x` (crece hacia el este) y la fila es la `y` (crece hacia el sur), así que la casilla `(x, y)` se lee `agua[y][x]`, al revés de como se dice.
 
 ```py run
@@ -44,6 +48,8 @@ x, y = 2, 1
 print(agua[y][x], len(agua), len(agua[0]))
 print(agua[0])
 ```
+
+### Recorrerla entera
 
 Para recorrerla entera hacen falta **dos bucles, uno dentro del otro**: el de afuera baja por las filas y el de adentro recorre cada casilla de esa fila. Con `enumerate` tienes el índice y el valor a la vez. Mira cómo Quilla anota las casillas mojadas:
 
@@ -94,6 +100,8 @@ notes:
   4: "Aquí cada fila es suya: solo cambia la de arriba."
 ```
 
+### Vecinas y bordes
+
 Muchas veces no importa una casilla sola sino sus **vecinas**. Las cuatro vecinas de `(x, y)` están a un paso al este, al oeste, al sur y al norte. Una lista de desplazamientos evita escribir cuatro `if` casi iguales, y para las ocho (con diagonales) basta con agregar cuatro tuplas más:
 
 ```py
@@ -113,11 +121,25 @@ panes:
 caption: "En el borde, algunas vecinas caen fuera. Por eso se revisa `0 <= nx < ancho and 0 <= ny < alto` **antes** de leer."
 ```
 
-- **El borde en Python no avisa por abajo.** `agua[5][0]` en una cuadrícula de 2 filas da `IndexError`, pero `agua[-1][0]` **no falla**: lee la última fila, porque los índices negativos cuentan desde el final. Una vecina "de arriba" de la fila 0 se convierte en silencio en una casilla del otro extremo. La revisión `0 <= ny` es la que la frena.
-- **Tuplas como claves.** Una tupla `(x, y)` puede ser clave de un diccionario (una lista no): `profundidad = {(3, 2): 12}` guarda solo las casillas que importan, y `profundidad.get((x, y), 0)` lee cualquier casilla sin salirse de nada.
-- **Los textos también son filas.** Un plano como `["#..", ".#."]` se lee igual, `plano[y][x]`, porque un texto se indexa como una lista.
-- **`robot.mapa()`** devuelve el plano completo como una lista de filas, y cada fila es una lista de caracteres de una letra: `robot.mapa()[y][x]`. `"#"` es roca, `"."` piso, `"1"`–`"9"` cristales y `"D"` el montacargas. Con `robot.posicion.x` y `robot.posicion.y` sabes dónde está Quilla en ese plano.
-- **`robot.escanear()`** devuelve solo lo que alumbra el faro: una cuadrícula de 3 × 3 con Quilla en el centro, `vista[1][1]`. La casilla de su norte es `vista[0][1]`; la de su este, `vista[1][2]`.
+### Un índice negativo no avisa en el borde
+
+Una vecina fuera del plano puede leer una casilla equivocada sin que Python se queje. `agua[5][0]` en una cuadrícula de 2 filas da `IndexError`, pero `agua[-1][0]` **no falla**: lee la última fila, porque los índices negativos cuentan desde el final. Una vecina "de arriba" de la fila 0 se convierte en silencio en una casilla del otro extremo. La revisión `0 <= ny` es la que la frena.
+
+### Tuplas como claves
+
+Cuando el plano es grande y casi vacío, guardar solo lo que importa es más simple. Una tupla `(x, y)` puede ser clave de un diccionario (una lista no): `profundidad = {(3, 2): 12}` guarda solo las casillas que importan, y `profundidad.get((x, y), 0)` lee cualquier casilla sin salirse de nada.
+
+### Los textos también son filas
+
+Los planos suelen venir como textos. Un plano como `["#..", ".#."]` se lee igual, `plano[y][x]`, porque un texto se indexa como una lista.
+
+### `robot.mapa()`
+
+Para decidir con el plano completo en la mano. **`robot.mapa()`** devuelve el plano completo como una lista de filas, y cada fila es una lista de caracteres de una letra: `robot.mapa()[y][x]`. `"#"` es roca, `"."` piso, `"1"`–`"9"` cristales y `"D"` el montacargas. Con `robot.posicion.x` y `robot.posicion.y` sabes dónde está Quilla en ese plano.
+
+### `robot.escanear()`
+
+Para decidir solo con lo que Quilla alcanza a ver. **`robot.escanear()`** devuelve solo lo que alumbra el faro: una cuadrícula de 3 × 3 con Quilla en el centro, `vista[1][1]`. La casilla de su norte es `vista[0][1]`; la de su este, `vista[1][2]`.
 
 <!-- mdn: nested-lists -->
 
@@ -225,17 +247,22 @@ tests:
   - name: en el borde de arriba
     run: vecinas_mojadas([[3, 0, 1], [0, 6, 0]], 1, 0)
     equals: 3
+    msg: "En el borde de arriba la vecina `y - 1` no existe: revisa los límites antes de leer."
   - name: en una esquina
     run: vecinas_mojadas([[3, 0, 1], [0, 6, 0]], 0, 1)
     equals: 2
+    msg: "En la esquina faltan dos vecinas: compara `0 <= nx < ancho` y `0 <= ny < alto` antes de leer."
   - name: en una galería más alta que ancha
     run: vecinas_mojadas([[1], [0], [4], [2]], 0, 1)
     equals: 2
+    msg: "`ancho` es el largo de una fila y `alto` la cantidad de filas; no las mezcles."
   - name: rodeada de piso seco
     run: vecinas_mojadas([[0, 0, 0], [0, 9, 0], [0, 0, 0]], 1, 1)
     equals: 0
+    msg: "Solo cuentan las vecinas con agua mayor que 0, no la casilla misma."
   - name: la consola muestra 3
     output: "3"
+    msg: "La consola debe mostrar solo el número, `3`."
 ```
 
 ```exercise
@@ -245,7 +272,7 @@ title: El agua que venía del otro lado
 prompt: |
   `suma_alrededor(agua, x, y)` debería sumar los centímetros de agua de las 4 vecinas de `(x, y)`. Para la esquina `(0, 0)` las vecinas son `(1, 0)` con 1 cm y `(0, 1)` con 3 cm: el total es **4**. El programa no se cae, pero imprime 15.
 
-  El error está en `nivel_en`: el `try` atrapa las casillas que se pasan por la derecha o por abajo, pero no las de la izquierda ni las de arriba. Arréglalo revisando los límites antes de leer, sin `try`.
+  El error está en `nivel_en`: el `try`/`except IndexError` (que atrapa el error de "esa posición no existe"; lo verás a fondo en la sesión 16) atrapa las casillas que se pasan por la derecha o por abajo, pero no las de la izquierda ni las de arriba. Arréglalo revisando los límites antes de leer, sin `try`.
 visual:
   figure:
     title: Lo que lee de verdad
@@ -364,19 +391,25 @@ hints:
 tests:
   - name: el ejemplo
     expect: 'charcos([[0, 4], [2, 0]]) == {(1, 0): 4, (0, 1): 2}'
+    msg: "Las claves son tuplas `(x, y)` con la columna primero; recorre filas con `enumerate` y guarda `(x, y): nivel`."
   - name: una galería seca no tiene charcos
     expect: 'charcos([[0, 0, 0]]) == {}'
+    msg: "Sin agua en ninguna casilla, devuelve `{}`."
   - name: una galería de una columna
     expect: 'charcos([[5], [0], [1]]) == {(0, 0): 5, (0, 2): 1}'
+    msg: "Con una columna, `x` siempre vale 0 y `y` cambia: no inviertas `x` e `y`."
   - name: nivel de una casilla mojada
     run: 'nivel({(1, 0): 4, (0, 1): 2}, 1, 0)'
     equals: 4
+    msg: "`nivel(charcos, x, y)` lee con `charcos.get((x, y), 0)`."
   - name: nivel de una casilla seca o de afuera
     run: '[nivel({(1, 0): 4}, 0, 0), nivel({(1, 0): 4}, -3, 9)]'
     equals: [0, 0]
+    msg: "Una casilla seca o fuera del mapa da 0, sin `KeyError`: usa `get` con 0 por defecto."
   - name: nivel no se confunde de orden
     run: 'nivel({(1, 0): 4, (0, 1): 2}, 0, 1)'
     equals: 2
+    msg: "La clave es `(x, y)`, no `(y, x)`: la columna va primero."
 ```
 
 ```exercise
@@ -444,6 +477,7 @@ scenarios:
 tests:
   - name: lee el faro
     source: 'robot\.escanear\(\)'
+    msg: "Guarda en una variable lo que devuelve `robot.escanear()` y úsalo."
 ```
 
 ## El caso

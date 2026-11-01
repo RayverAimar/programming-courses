@@ -2,9 +2,11 @@
 
 ## The job
 
-Nazca, seven in the morning. At the María Reiche airfield, the light planes warm up their engines to fly tourists over the Hummingbird, the Monkey and the Whale, three-hundred-metre figures that only make sense from the air. The control tower is a two-storey hut with a radio, a fan and **Eusebio Ccahuana**, the controller, who has spent thirty years saying "OB-1622, maintain three hundred" without losing his patience.
+> **Last time:** Quilla learned to raise and catch errors with names of their own. Now the mess is in the data: messages of all kinds that must be recognised before they are used.
 
-Now all kinds of messages reach the tower: positions with altitudes, radio calls, runway requests, tourists' drones that shouldn't be there. Maru lent Quilla, siren and all, to sort them out and, at night, to do the rounds of the museum in María Reiche's house. Today Quilla learns to **say what shape its data has** (types), to name fixed states (`Enum`) and to **recognise the shape of a message** with `match`.
+Nazca, seven in the morning. At the María Reiche airfield, the light planes warm up their engines to fly tourists over the Hummingbird, the Monkey and the Whale. The control tower is a hut with a radio, a fan and **Eusebio Ccahuana**, the controller, who has spent thirty years saying "OB-1622, maintain three hundred" without losing his patience.
+
+Now all kinds of messages reach the tower: positions with altitudes, radio calls, runway requests, tourists' drones that shouldn't be there. Maru lent Quilla to sort them out. Today Quilla learns to **say what shape its data has** (types), to name fixed states (`Enum`) and to **recognise the shape of a message** with `match`.
 
 ```scene
 theme: museo
@@ -32,6 +34,8 @@ program: |
 
 ## The minimum
 
+### Type annotations
+
 A **type annotation** says what a function expects and what it returns: `altitudes: list[int]` is "a list of integers" and `-> float` is "returns a decimal number". The everyday types accept square brackets: `list[int]`, `dict[str, float]`, `tuple[int, int]`, `set[str]`.
 
 ```py run
@@ -42,9 +46,23 @@ minimums: dict[str, float] = {"Hummingbird": 300.0, "Monkey": 350.0}
 print(average([300, 450, 600]), minimums["Monkey"])
 ```
 
-- **`X | None`** is "an `X` or nothing": `def find(registration: str) -> int | None:` may return `None`. `int | str` is "one or the other".
-- **`Callable[[int], int]`** (from `collections.abc`) is "a function that takes an `int` and returns an `int`".
-- **Python doesn't check annotations when it runs.** They're documentation read by people, the editor and tools like `mypy`; `average((1, 2))` works even though it says `list[int]`.
+### `X | None`
+
+To say that a value may be missing. **`X | None`** is "an `X` or nothing": `def find(registration: str) -> int | None:` may return `None`. `int | str` is "one or the other".
+
+### `Callable`
+
+To annotate a function that takes another function. **`Callable[[int], int]`** (from `collections.abc`) is "a function that takes an `int` and returns an `int`".
+
+### Python doesn't check annotations
+
+So you do not expect from them what they do not do. **Python doesn't check annotations when it runs.** They're documentation read by people, the editor and tools like `mypy`; `average((1, 2))` works even though it says `list[int]`.
+
+<!-- photo: js-mars-climate-orbiter -->
+
+> **History:** In September 1999, NASA's Mars Climate Orbiter was lost on reaching Mars: it came in too close to the planet and was destroyed in its atmosphere. One program computed the thrusters' impulse in pound-force seconds, and the one computing the trajectory expected newton-seconds, a factor of 4.45. Each program worked on its own; what failed was what they promised each other. That is why a function should say what it takes, what it gives back, and in which unit.
+
+<!-- /photo -->
 
 ```py run
 from collections.abc import Callable
@@ -54,6 +72,8 @@ def correct(altitudes: list[int], rule: Callable[[int], int]) -> list[int]:
 
 print(correct([250, 400], lambda altitude: max(altitude, 300)), correct("ab", str.upper))
 ```
+
+### `TypedDict` and `Protocol`
 
 For dictionaries with fixed keys there's **`TypedDict`**, and to say "anything that has this method" there's **`Protocol`** (session 13's *duck typing*, with a name). Both are only types: at run time a `TypedDict` is a plain `dict`.
 
@@ -76,6 +96,8 @@ def notify(thing: WithReport) -> str:   # any object with report() will do
     return "Tower: " + thing.report()
 ```
 
+### Generic functions
+
 A **generic** function declares its type parameter in square brackets, `def f[T](…)`: `T` is "the same type, whatever it is". `first` returns a `str` if you give it texts and an `int` if you give it numbers.
 
 ```py run
@@ -84,6 +106,8 @@ def first[T](items: list[T], if_empty: T) -> T:
 
 print(first(["Hummingbird", "Monkey"], "none"), first([], 0))
 ```
+
+### `Enum`: named values
 
 An **`Enum`** gathers a fixed set of named values. You can't misspell `Runway.CLOSED` without Python complaining, which a text like `"closd"` happily allows.
 
@@ -97,6 +121,8 @@ class Runway(Enum):
 state = Runway("closed")
 print(state.name, state.value, state is Runway.CLOSED, [r.name for r in Runway])
 ```
+
+### `match`: patterns
 
 And now the star: **`match`** compares a value with several **patterns**, top to bottom, and runs the **first** `case` that fits. A pattern doesn't just compare: it also **pulls the parts out** into variables. Watch how the tower reads three messages:
 
@@ -291,10 +317,13 @@ hints:
 tests:
   - name: prints the state and the list
     output: "OCCUPIED hold in the circuit\n['clear', 'occupied', 'closed']"
+    msg: "Check the console: the state as a member (`OCCUPIED`) and the list of values."
   - name: state is a member of Runway
     expect: state is Runway.OCCUPIED
+    msg: "Convert the text with `Runway(\"occupied\")` to get the member `Runway.OCCUPIED`."
   - name: a closed runway diverts to Ica
     expect: 'clearance(Runway.CLOSED) == "divert to Ica"'
+    msg: "In the `match`, the case `Runway.CLOSED` (with a dot) answers `divert to Ica`."
 ```
 
 ```exercise
@@ -396,16 +425,22 @@ hints:
 tests:
   - name: the example in the picture
     expect: 'group_by([250, 450, 280, 600], lambda altitude: altitude >= 300) == {False: [250, 280], True: [450, 600]}'
+    msg: "Group by what `key(element)` returns; groups keep their order of appearance."
   - name: figures by their initial
     expect: 'group_by(["Monkey", "Hummingbird", "Hands", "Condor"], lambda figure: figure[0]) == {"M": ["Monkey"], "H": ["Hummingbird", "Hands"], "C": ["Condor"]}'
+    msg: "With `figure[0]` as key, those that start the same stay together and in order."
   - name: with len as the key
     expect: 'group_by(["Monkey", "Whale", "Parrot"], len) == {6: ["Monkey", "Parrot"], 5: ["Whale"]}'
+    msg: "`len` also works as a key: it is a function like any other."
   - name: with no items
     expect: group_by([], len) == {}
+    msg: "With no elements return an empty dictionary."
   - name: declares the type parameters
     source: 'def\s+group_by\s*\[\s*T\s*,\s*K\s*\]'
+    msg: "The signature has `[T, K]` right after the name: `def group[T, K](…)`."
   - name: annotates the key with Callable
     source: 'key\s*:\s*Callable\['
+    msg: "Annotate the parameter as `key: Callable[[T], K]`."
 ```
 
 ```exercise
@@ -480,20 +515,26 @@ tests:
   - name: a low plane
     run: 'instruction(Plane("OB-1501", 250))'
     equals: "OB-1501: climb now"
+    msg: "A light plane below 300 m: class pattern with guard `if altitude < 300`."
   - name: a plane right at 300
     run: 'instruction(Plane("OB-1622", 300))'
     equals: "OB-1622: continue"
+    msg: "At exactly 300 m it is no longer low: it falls into the general `case Plane(...)`."
   - name: a high drone
     run: 'instruction(Drone("Yolanda", 150))'
     equals: "Yolanda's drone: descend to 120"
+    msg: "A drone above 120 m must descend: guard `altitude > 120`."
   - name: a drone right at 120
     run: 'instruction(Drone("Fermín", 120))'
     equals: "Fermín's drone: ok"
+    msg: "At exactly 120 m the drone is fine: it falls into the general `Dron` case."
   - name: something else
     run: 'instruction("condor")'
     equals: unidentified
+    msg: "Anything else ends up in `case _:` with `\"unidentified\"`."
   - name: uses class patterns
     source: 'case\s+Plane\('
+    msg: "Use class patterns such as `case Plane(registration=r, altitude=a)`."
 ```
 
 ## The case
@@ -1074,7 +1115,7 @@ visual:
 prompt: |
   **Write `evaluate(expr: Expr, env: dict[str, int]) -> int`, which computes a formula written as nested tuples.** For people who already code.
 
-  Eusebio stores the fuel formulas as trees, so he can change them without touching the program. Declare the type with a recursive alias, `type Expr = int | str | tuple[...]` (the `type` statement, a cousin of `def f[T]`), and solve it with a single `match`:
+  Eusebio stores the fuel formulas as trees, so he can change them without touching the program. Declare the type with a recursive alias, `type Expr = int | str | tuple[...]` (the `type` statement gives a type a name, and that name can be used inside its own definition; it is a cousin of `def f[T]`), and solve it with a single `match`:
 
   - an `int` is worth itself; a `str` is a variable and is worth `env[name]`;
   - `("+", a, b)`, `("-", a, b)`, `("*", a, b)`: the operation with both sides evaluated;

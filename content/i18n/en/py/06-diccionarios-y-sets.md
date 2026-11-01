@@ -2,9 +2,11 @@
 
 ## The job
 
-Túcume, Lambayeque: the valley of the pyramids. Twenty-six adobe huacas slowly crumble in the sun, and at the foot of the Huaca Larga stands the site museum, where the director **Rosa Llontop** looks after thousands of pieces: bowls, copper tumis, ear spools, spondylus beads and a ceramic hairless dog every schoolkid wants to touch. The inventory lives in a notebook from 1998 and in three spreadsheets that can't agree with each other.
+> **Last time:** a list keeps things in a row and finds them by position. With four thousand pieces, walking the whole list to find one is slow: you need to look things up by name.
 
-Maru lent her Quilla, which now has its siren, for the night rounds and to sort out the inventory. But finding "which showcase is tumi T-114 in?" by going through a list of four thousand pieces is slow and boring. Today Quilla learns to keep things **by their name**: dictionaries, to ask "where is it?" in a single jump, and sets, to ask "who is on both sides?".
+Túcume, Lambayeque: the valley of the pyramids. Twenty-six adobe huacas slowly crumble in the sun, and at the foot of the Huaca Larga stands the site museum, where the director **Rosa Llontop** looks after thousands of pieces: bowls, copper tumis, ear spools, spondylus beads. The inventory lives in a notebook from 1998 and in three spreadsheets that can't agree with each other.
+
+Maru lent her Quilla for the night rounds and to sort out the inventory. But finding "which showcase is tumi T-114 in?" by going through a list of four thousand pieces is slow. Today Quilla learns to keep things **by their name**: dictionaries, to ask "where is it?" in a single jump, and sets, to ask "who is on both sides?".
 
 ```scene
 theme: museo
@@ -29,6 +31,8 @@ program: |
 
 ## The minimum
 
+### Key: value pairs
+
 A **dictionary** (`dict`) keeps **key: value** pairs. Instead of searching by position, as in a list, you search by the key: `showcases["tumi"]` goes straight to the tumi's showcase, whether the museum has ten pieces or ten thousand.
 
 ```py run
@@ -39,12 +43,18 @@ showcases["idol"] = "V2"
 print(list(showcases))
 ```
 
+### Reading, writing and looping
+
+Four operations cover everyday use:
+
 - **Read.** `d[key]` gives the value, and if the key doesn't exist it's a `KeyError`. `d.get(key)` gives `None` if it doesn't exist, and `d.get(key, other)` gives `other`.
 - **Write.** `d[key] = value` adds the key, or changes its value if it was already there.
 - **Ask.** `key in d` looks at **the keys**, never the values.
 - **Loop.** `for key in d` gives the keys; `d.keys()`, `d.values()` and `d.items()` give the keys, the values and the `(key, value)` pairs: `for room, visits in d.items():`.
 - **The order** is insertion order: keys come out in the order they went in. Changing the value of a key that was already there doesn't move it.
 - **Merge.** `base | changes` creates a new dictionary with the keys of both; if one is repeated, the one on the right wins.
+
+### Counting with `get`
 
 The star use of a dictionary is **counting**. `counts.get(room, 0)` gives what you've counted so far, or 0 the first time. Watch the dictionary fill up:
 
@@ -63,6 +73,8 @@ notes:
   5: The rooms come out in the order they first appeared.
 ```
 
+### Nested dictionaries and grouping with `setdefault`
+
 A value can be anything, including a list or another dictionary: that's a **nested dictionary**, and you read it with two square brackets in a row. To group, `setdefault(key, [])` returns that key's list and, if there wasn't one, creates it first:
 
 ```py run
@@ -72,6 +84,8 @@ for piece, material in pieces:
     by_material.setdefault(material, []).append(piece)
 print(by_material, by_material["copper"][1])
 ```
+
+### Sets: a bag with no repeats
 
 A **set** is a bag with no repeats and no order: it's for asking "have I seen it already?" and for comparing groups. It's written with curly braces (`{"Ana", "Beto"}`), but the empty set is `set()`, because `{}` is an empty dictionary.
 
@@ -85,7 +99,9 @@ print(len(monday), "Wilmer" in monday)
 
 `|` joins both, `&` keeps what's in both and `-` what's in the first and not in the second. Since a set has no order, here it's printed with `sorted()`.
 
-**What can be a key?** Dictionary keys and set elements have to be **immutable** (*hashable*): numbers, strings, tuples. A list can't, because it could change after being stored. That's why an excavation square is stored as `finds[(3, 4)]`, with a tuple, and not as `finds[[3, 4]]`, which gives `TypeError: unhashable type: 'list'`.
+### What can be a key?
+
+Dictionary keys and set elements have to be **immutable** (*hashable*): numbers, strings, tuples. A list can't, because it could change after being stored. That's why an excavation square is stored as `finds[(3, 4)]`, with a tuple, and not as `finds[[3, 4]]`, which gives `TypeError: unhashable type: 'list'`.
 
 > **Common trap:** `d[key]` with a key that doesn't exist doesn't give `None`: it stops the program with a `KeyError`. If the key might be missing, ask first with `in` or use `d.get(key, default)`.
 
@@ -187,10 +203,13 @@ tests:
   - name: counts each material
     run: counts
     equals: { "ceramic": 3, "copper": 2, "shell": 1 }
+    msg: "Start with an empty dictionary and add 1 for each material: `count[material] = count.get(material, 0) + 1`."
   - name: prints in the order they appeared
     output: "ceramic: 3\ncopper: 2\nshell: 1"
+    msg: "Print with `.items()`: the order is each material's first appearance."
   - name: counts with get
     source: '\.get\(\s*material\s*,\s*0\s*\)'
+    msg: "Use `get(material, 0)` so the first time starts at 0 instead of raising `KeyError`."
 ```
 
 ```exercise
@@ -268,10 +287,13 @@ hints:
 tests:
   - name: prints the find in the square
     output: At (2, 5) there is a bowl
+    msg: "Change the three lists into tuples with parentheses: a list cannot be a key."
   - name: the tumi was stored too
     expect: 'finds[(4, 1)] == "tumi"'
+    msg: "If you only fixed `[2, 5]`, the tumi's key is missing: `(4, 1)` must be a tuple too."
   - name: the keys are tuples
     expect: all(type(key) == tuple for key in finds)
+    msg: "All keys must be tuples, including the one you search with."
 ```
 
 ```exercise
@@ -308,14 +330,18 @@ tests:
   - name: the example in the drawing
     run: 'build_inventory([("T-114", "Huaca Larga", "V3"), ("C-020", "Templo", "V1"), ("T-115", "Huaca Larga", "V3"), ("O-007", "Huaca Larga", "V5")])'
     equals: { "Huaca Larga": { V3: ["T-114", "T-115"], V5: ["O-007"] }, Templo: { V1: ["C-020"] } }
+    msg: "Compare with the drawing: `inventory[room][case]` is a list of codes, in arrival order."
   - name: a single piece
     run: 'build_inventory([("P-001", "Las Balsas", "V2")])'
     equals: { "Las Balsas": { V2: ["P-001"] } }
+    msg: "With a single piece you must get `{room: {case: [code]}}`; check you create the room and the case before appending."
   - name: no pieces
     run: build_inventory([])
     equals: {}
+    msg: "With no pieces return an empty dictionary `{}`, not `None`."
   - name: rooms come out in the order they appear
     expect: 'list(build_inventory([("A", "Templo", "V1"), ("B", "Huaca 1", "V1")])) == ["Templo", "Huaca 1"]'
+    msg: "Rooms must come out in the order they appear: do not sort the keys."
 ```
 
 ## The case
@@ -531,7 +557,7 @@ prompt: |
   - Each group is a list with its labels in the order they appear, repeats included.
   - The groups go in the order their first label appears.
 
-  A hint for the dictionary key: two labels go together if `sorted(label)` gives the same thing. But `sorted` returns a list, and a list can't be a key.
+  A hint for the dictionary key: two labels go together if `sorted(label)` (which sorts the label's letters and returns them in a list) gives the same thing. But `sorted` returns a list, and a list can't be a key.
 
   **Constraints:** 0 ≤ `len(labels)` ≤ 25 · each label has 1 to 6 uppercase letters.
 starter: |

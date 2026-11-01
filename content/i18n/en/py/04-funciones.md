@@ -2,6 +2,8 @@
 
 ## The job
 
+> **Last time:** with `while` and `for`, Quilla repeats a job without counting by hand. Now the problem is different: the same seven instructions, copied fifty times.
+
 Sunday, noon, on the Chorrillos seafront. **El Bote de Tito** is a six-table cevichería right next to the fishermen's pier: the fish arrives at eleven, by twelve there's a queue and by one there's no jalea left. Tito Panta cooks, his daughter Yesenia takes the money and the waiter quit on Friday to go surfing in Punta Hermosa.
 
 Maru bolted a **serving arm with a tray** onto Quilla and sent it over in a combi. The problem: taking one dish to one table is six or seven instructions, and on a Sunday fifty dishes go out. Copying and pasting 300 lines isn't programming. Today Quilla learns to **give a routine a name**, hand it data and get a result back.
@@ -71,14 +73,31 @@ notes:
   9: "total keeps what bill returned."
 ```
 
-What you need for today:
+### Without `return`, a function returns `None`
 
-- **Without `return`, a function returns `None`.** `print` shows something on the console, but doesn't hand it to the program: to use a result, return it.
-- **Default values**: `quantity=1` is used when that argument isn't passed. They go at the end of the parameter list.
-- **Keyword arguments**: `subtotal(quantity=3, price=9)`. With names, the order doesn't matter and the call reads by itself.
-- **`*args` and `**kwargs`**: a parameter with `*` gathers the leftover loose arguments into a **tuple**; one with `**` gathers the named ones into a **dictionary**.
-- **Docstring**: the text between `"""` right below the `def` explains what the function does. `help(subtotal)` shows it.
-- **Local variables**: what you assign inside a function lives only there and disappears when it ends. You can **read** a variable from outside (a global), but if you assign to it inside, Python treats it as local in the whole function.
+A function that "shows" a result and one that "hands it over" are not the same. `print` shows something on the console, but doesn't hand it to the program: to use a result, return it.
+
+<!-- photo: js-tony-hoare -->
+
+> **History:** In 1965, Tony Hoare was designing the type system for references in the ALGOL W language and, as he told it years later, could not resist adding the null reference, simply because it was so easy to implement. He called it his "billion-dollar mistake" for the countless errors it caused. `None` is a relative of that invention: a function without `return` hands it to you without warning, and if you use it as a number, Python only complains at that point.
+
+<!-- /photo -->
+
+### Default values
+
+So the caller does not have to repeat the same value every time. `quantity=1` is used when that argument isn't passed. They go at the end of the parameter list.
+
+### Keyword arguments
+
+When a function takes several values, the name prevents mixing up the order. `subtotal(quantity=3, price=9)`. With names, the order doesn't matter and the call reads by itself.
+
+### Docstring
+
+Whoever reads your function (you, in a month) will want to know what it does without reading all its code. The text between `"""` right below the `def` explains what the function does. `help(subtotal)` shows it.
+
+### `*args` and `**kwargs`
+
+For functions that take a number of values you cannot know in advance. A parameter with `*` gathers the leftover loose arguments into a **tuple** (several values together, like `("ceviche", "jalea")`; session 5); one with `**` gathers the named ones into a **dictionary** (`key: value` pairs; session 6).
 
 ```py run
 def write_down(table, *dishes, **extras):
@@ -87,6 +106,22 @@ def write_down(table, *dishes, **extras):
 write_down(4, "ceviche", "chicha", no_onion=True)
 write_down(6)
 ```
+
+```steps
+# How Python hands out the arguments of `write_down(4, "ceviche", "chicha", no_onion=True)`
+## First, the parameters with their own name
+`table` is the first parameter, so it gets the first argument: `table = 4`.
+## Then, the loose leftovers
+`*dishes` gathers into a **tuple** the unnamed arguments that are left: `dishes = ("ceviche", "chicha")`.
+## Last, what came with a name
+`**extras` gathers into a **dictionary** the named arguments no parameter was expecting: `extras = {"no_onion": True}`.
+## And if nothing is left over
+In `write_down(6)` only `table` gets filled: `dishes` is an empty tuple `()` and `extras` an empty dictionary `{}`.
+```
+
+### Local variables
+
+To know which names each function sees and which disappear when it ends. What you assign inside a function lives only there and disappears when it ends. You can **read** a variable from outside (a global), but if you assign to it inside, Python treats it as local in the whole function.
 
 ```py run
 tip = 0.1  # global: visible from everywhere
@@ -206,7 +241,7 @@ id: py4-predice-comanda
 type: predict
 title: The ticket that repeats
 prompt: |
-  This function puts together each table's kitchen ticket. Table 1 orders ceviche and table 2 orders jalea. What does it print?
+  This function puts together each table's kitchen ticket. Table 1 orders ceviche and table 2 orders jalea. (`append` adds one item at the end of a list; lists come in session 5.) What does it print?
 code: |
   def new_ticket(dish, ticket=[]):
       ticket.append(dish)
@@ -231,7 +266,7 @@ id: py4-completa-anotar
 type: complete
 title: Yesenia's notebook
 prompt: |
-  `write_order` takes the table, **any number of dishes** and **any number of named special requests** (`no_onion=True`, `to_go=True`…). Fill in the `___` so that `dishes` gathers the dishes into a tuple and `extras` gathers the special requests into a dictionary.
+  `write_order` takes the table, **any number of dishes** and **any number of named special requests** (`no_onion=True`, `to_go=True`…). Fill in the `___` so that `dishes` gathers the dishes into a tuple and `extras` gathers the special requests into a dictionary. (`len(dishes)` counts how many items `dishes` has.)
 starter: |
   def write_order(table, ___dishes, ___extras):
       """Returns the notebook line for a table."""
@@ -252,14 +287,18 @@ tests:
   - name: three dishes and one extra
     run: write_order(7, "ceviche", "jalea", "chicha", no_onion=True)
     equals: "Table 7, dishes: 3, extras: {'no_onion': True}"
+    msg: "One asterisk in `*dishes` gathers the loose dishes into a tuple and two in `**extras` gathers the named requests into a dictionary."
   - name: a table with nothing
     run: write_order(2)
     equals: "Table 2, dishes: 0, extras: {}"
+    msg: "With no dishes or extras, `dishes` must be an empty tuple and `extras` an empty dictionary; check the asterisks in the signature."
   - name: two named extras
     run: write_order(5, "sudado", to_go=True, cutlery=2)
     equals: "Table 5, dishes: 1, extras: {'to_go': True, 'cutlery': 2}"
+    msg: "Named requests (`to_go=True`) go to the `extras` dictionary; did you put two asterisks before `extras`?"
   - name: the console shows both lines
     output: "Table 7, dishes: 3, extras: {'no_onion': True}\nTable 2, dishes: 0, extras: {}"
+    msg: "Compare each printed line with the expected one: the text from `write_order` must stay exactly as is."
 ```
 
 ```exercise
@@ -386,6 +425,8 @@ prompt: |
   Five old classmates from a Chorrillos school celebrated at El Bote de Tito. They agreed that each one pays **their own share plus a 10 % tip**, except **Renzo, whose birthday it is and who pays no tip** (call it with `tip=0`). When she closed the till, Yesenia counted and money was missing: someone underpaid.
 
   Print one line per person that starts with their name, with the share rounded to two decimals at the end: `print("Kiara:", round(share(kiara_dishes), 2))`. The board compares it with what they paid.
+
+  Each person's dishes already come in a list, like `[36, 9]` (lists are studied in session 5), and `sum(list)` adds up its numbers.
 visual:
   board:
     for: py4-caso-propina
@@ -475,7 +516,7 @@ title: The table's bill
 prompt: |
   **Write `table_bill(dishes, tip=0.1, people=1)`, which returns how much each person at a table pays, and its two helpers `subtotal` and `with_tip`.**
 
-  Yesenia wants Quilla to take the money. Each table comes as a list of `[price, quantity]` pairs: `[[36, 2], [9, 3]]` is two dishes at 36 soles and three at 9. Write three functions; the judge tests all three:
+  Yesenia wants Quilla to take the money. Each table comes as a list of `[price, quantity]` pairs: `[[36, 2], [9, 3]]` is two dishes at 36 soles and three at 9 (lists are studied in session 5; here you only walk through them with `for`). Write three functions; the judge tests all three:
 
   - `subtotal(dishes)`: the sum of `price × quantity` over all the pairs. `for price, quantity in dishes:` takes the two numbers out of each pair.
   - `with_tip(amount, tip=0.1)`: the amount plus the tip, which is a **fraction** of the amount (`0.1` is 10 %). If it isn't passed, it's 0.1.
@@ -813,8 +854,8 @@ solution: |
 
   print(ticket(4, "ceviche", "jalea", no_onion="ceviche"))
 hints:
-  - "Gather the lines in a list and join them at the end with `\"\\n\".join(lines)`."
-  - "`notes.items()` gives you each `(key, value)` pair, and `key.replace(\"_\", \" \")` changes the underscores."
+  - "Keep adding each line to a list with `lines.append(...)` and join them at the end with `\"\\n\".join(lines)`, which glues the list's texts together with a line break in between (you will see it in depth in sessions 5 and 7)."
+  - "`notes.items()` gives you each `(key, value)` pair of the notes dictionary (dictionaries: session 6), and `key.replace(\"_\", \" \")` changes the underscores."
 tests:
   - name: two dishes and one note
     run: 'ticket(4, "ceviche", "jalea", no_onion="ceviche")'

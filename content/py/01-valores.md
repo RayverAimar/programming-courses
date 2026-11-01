@@ -2,9 +2,9 @@
 
 ## El encargo
 
-Loop abrió una sucursal en Chucuito, en el Callao, a una cuadra del muelle, donde todo huele a mar y a pintura fresca. La ingeniera **Maru Chumpitaz** acaba de abrir la caja que llegó en el último barco: adentro está **Quilla**, un robot repartidor nuevecito que solo entiende Python. No sabe cómo se llama, no sabe cuánta batería tiene y nunca ha cruzado una calle.
+Loop abrió una sucursal en Chucuito, en el Callao, donde todo huele a mar y a pintura fresca. La ingeniera **Maru Chumpitaz** acaba de abrir la caja que llegó en el último barco: adentro está **Quilla**, un robot repartidor nuevecito que solo entiende Python. No sabe cómo se llama, no sabe cuánta batería tiene y nunca ha cruzado una calle.
 
-Y ya hay pedido. Don Teodoro, que vende alfajores de penca en el Rímac desde hace cuarenta años, quiere que le lleven una caja a su comadre, que vive frente a la Alameda de los Descalzos. Maru sube a Quilla a una mototaxi hasta la tienda; de ahí en adelante, Quilla camina solo. Hoy le enseñas a guardar lo que sabe y a decirlo en voz alta.
+Y ya hay pedido. Don Teodoro, que vende alfajores de penca en el Rímac desde hace cuarenta años, quiere que le lleven una caja a su comadre, que vive frente a la Alameda de los Descalzos. Maru lo lleva en mototaxi hasta la tienda; de ahí, Quilla camina solo. Hoy le enseñas a guardar lo que sabe y a decirlo en voz alta.
 
 ```escena
 theme: barranco
@@ -44,9 +44,13 @@ Quilla solo entiende Python, y no es capricho de fábrica. Para saber por qué l
 
 **Guido van Rossum** trabajaba en el **CWI**, un instituto de investigación en matemáticas e informática de los Países Bajos. Antes había sido parte del equipo de **ABC**, un lenguaje para enseñar a programar: clarísimo de leer, pero cerrado; no se podía extender ni hablaba bien con el sistema operativo (archivos, procesos, la red). Después pasó al proyecto **Amoeba**, un sistema operativo distribuido, y ahí chocó con el problema de siempre: escribir herramientas de administración en **C** tomaba demasiado tiempo, y los scripts de la terminal (*shell*) se quedaban cortos en cuanto la tarea se complicaba.
 
-¿Qué es eso de "hablar con el sistema operativo"? Tu programa no toca el disco ni la red por su cuenta: se lo **pide** al sistema operativo (Windows, Linux o, en el caso de Guido, Amoeba), que es el que manda sobre la máquina. Cada pedido se llama una **llamada al sistema**: "abre este archivo", "dame lo que dice", "arranca este otro programa". Un lenguaje sirve para administrar computadoras solo si sabe hacer esas llamadas, y mientras más fácil, mejor:
-
 <!-- /photo -->
+
+### ¿Qué es eso de "hablar con el sistema operativo"?
+
+Tu programa no toca el disco ni la red por su cuenta: se lo **pide** al sistema operativo (Windows, Linux o, en el caso de Guido, Amoeba), que es el que manda sobre la máquina. Cada pedido se llama una **llamada al sistema**: "abre este archivo", "dame lo que dice", "arranca este otro programa". Un lenguaje sirve para administrar computadoras solo si sabe hacer esas llamadas, y mientras más fácil, mejor.
+
+Antes de mirar el diagrama, apuesta: de los tres caminos que Guido tenía a mano (ABC, C o el shell), ¿cuál crees que le alcanzaba?
 
 ```red
 title: Pedirle algo al sistema, en cada lenguaje
@@ -111,7 +115,11 @@ steps:
 caption: Lo de Amoeba y el shell lo cuenta el propio Python en su FAQ general, en "¿Por qué se creó Python en primer lugar?".
 ```
 
+### ¿Y qué hizo Guido?
+
 Le faltaba algo en medio: tan fácil de leer como ABC, pero capaz de hacer todo lo que hace C llamando al sistema. En las vacaciones de Navidad de 1989 empezó a escribirlo como pasatiempo. Le puso **Python** por *Monty Python's Flying Circus*, el programa de comedia británico, no por la serpiente. En **febrero de 1991** publicó la versión 0.9.0 en Usenet (los foros de internet de la época).
+
+> **Para llevar:** Python nació en 1989 de una necesidad práctica: un lenguaje tan fácil de leer como ABC y capaz de llegar al sistema como C. El nombre viene de un programa de comedia, no de una serpiente.
 
 ```figura
 title: Python en el tiempo
@@ -157,7 +165,9 @@ print(f"{nombre} tiene {bateria}% de batería")
 print(type(nombre), type(bateria), type(1.5), type(True), type(None))
 ```
 
-Una variable es un **nombre** que le pegas a un valor, como una etiqueta. El valor vive aparte y el nombre solo lo **señala**: con `=` pegas la etiqueta, la lees cuando quieras, y si asignas otra vez, la etiqueta se despega y se pega a otro valor. Dale a ▶ y mira moverse cada etiqueta línea por línea; los valores que se quedan sin nombre se descartan:
+### Variables: un nombre pegado a un valor
+
+Para reutilizar un valor sin escribirlo de nuevo, le pones nombre. Una variable es un **nombre** que le pegas a un valor, como una etiqueta. El valor vive aparte y el nombre solo lo **señala**: con `=` pegas la etiqueta, la lees cuando quieras, y si asignas otra vez, la etiqueta se despega y se pega a otro valor. Dale a ▶ y mira moverse cada etiqueta línea por línea; los valores que se quedan sin nombre se descartan:
 
 ```anima
 title: Un nombre es una etiqueta pegada a un valor
@@ -180,13 +190,21 @@ notes:
   7: La f delante de las comillas mete los valores dentro del texto.
 ```
 
-Lo que necesitas para hoy:
+### Nombres en `snake_case`
 
-- **Nombres en `snake_case`.** En Python las variables van en minúsculas con guion bajo: `precio_por_kilo`, `lleva_carga`. Nada de `precioPorKilo`.
-- **f-strings.** Una `f` antes de las comillas y cada `{…}` adentro se reemplaza por su valor: `f"Pedido {numero}"`.
-- **`print` acepta varias cosas** separadas por comas y las imprime con un espacio en medio. `sep=` cambia ese separador y `end=` cambia lo que va al final (normalmente, un salto de línea).
-- **Tres divisiones.** `/` siempre da un `float` (`7 / 2` es `3.5`); `//` da cuántas veces cabe, sin decimales (`7 // 2` es `3`); `%` da lo que sobra (`7 % 2` es `1`).
-- **Convertir.** `int("12")` da el número 12, `float("2.5")` da 2.5 y `str(30)` da el texto `"30"`.
+Los nombres se escriben mucho más de lo que parece, así que conviene que todos sigan la misma regla. En Python las variables van en minúsculas con guion bajo: `precio_por_kilo`, `lleva_carga`. Nada de `precioPorKilo`.
+
+### f-strings: texto con valores adentro
+
+Para mostrar un mensaje con datos cambiantes sin pegar pedazos a mano. Una `f` antes de las comillas y cada `{…}` adentro se reemplaza por su valor: `f"Pedido {numero}"`.
+
+### `print` con varias cosas
+
+Para mostrar varios valores de una vez y decidir cómo se separan. `print` acepta varias cosas separadas por comas y las imprime con un espacio en medio. `sep=` cambia ese separador y `end=` cambia lo que va al final (normalmente, un salto de línea).
+
+### Tres divisiones
+
+Repartir en cajas, en monedas o en minutos pide saber cuánto cabe y cuánto sobra. `/` siempre da un `float` (`7 / 2` es `3.5`); `//` da cuántas veces cabe, sin decimales (`7 // 2` es `3`); `%` da lo que sobra (`7 % 2` es `1`).
 
 ```py run
 alfajores = 14
@@ -195,6 +213,16 @@ print(alfajores / por_caja, alfajores // por_caja, alfajores % por_caja, sep=" |
 print("Cajas llenas:", alfajores // por_caja, end="")
 print(" (y sobran", alfajores % por_caja, "alfajores)")
 ```
+
+### Convertir entre tipos
+
+Los datos suelen llegar en el tipo equivocado (un peso como texto, por ejemplo) y hay que cambiarlos antes de calcular. `int("12")` da el número 12, `float("2.5")` da 2.5 y `str(30)` da el texto `"30"`.
+
+<!-- photo: js-ariane-501 -->
+
+> **Historia:** El 4 de junio de 1996, el primer vuelo del cohete europeo Ariane 5 se desvió de su ruta 37 segundos después de despegar y se autodestruyó. Un programa reutilizado del Ariane 4 convirtió un decimal de 64 bits en un entero de 16 bits; en el Ariane 5 el número era tan grande que no cabía, y el sistema de navegación se detuvo. En Python un `int` no se desborda, pero la lección vale: convertir un valor de un tipo a otro merece que pienses qué pasa con los casos extremos.
+
+<!-- /photo -->
 
 > **Trampa común:** en Python, `"3" + 2` no da `"32"` ni `5`: es un `TypeError`, porque Python no mezcla textos con números por su cuenta. Si un número te llega como texto (de `input()`, de un sensor), conviértelo primero: `int("3") + 2` da `5`, y `"3" + str(2)` da `"32"`.
 

@@ -2,9 +2,9 @@
 
 ## The job
 
-Loop has opened a branch in Chucuito, in the Callao, a block from the pier, where everything smells of sea and fresh paint. The engineer **Maru Chumpitaz** has just opened the crate that came on the last ship: inside is **Quilla**, a brand-new delivery robot that only understands Python. It doesn't know its name, it doesn't know how much battery it has and it has never crossed a street.
+Loop has opened a branch in Chucuito, in the Callao, where everything smells of sea and fresh paint. The engineer **Maru Chumpitaz** has just opened the crate that came on the last ship: inside is **Quilla**, a brand-new delivery robot that only understands Python. It doesn't know its name or its battery level and has never crossed a street.
 
-And there's already an order. Don Teodoro, who has sold *alfajores de penca* in the Rímac for forty years, wants a box taken to his comadre, who lives across from the Alameda de los Descalzos. Maru takes Quilla to the shop in a mototaxi; from there on, Quilla walks alone. Today you teach it to keep what it knows and to say it out loud.
+And there's already an order. Don Teodoro, who has sold *alfajores de penca* in the Rímac for forty years, wants a box taken to his comadre, who lives across from the Alameda de los Descalzos. Maru takes it to the shop by mototaxi; from there, it walks alone. Today you teach it to keep what it knows and to say it out loud.
 
 ```scene
 theme: barranco
@@ -44,9 +44,13 @@ Quilla only understands Python, and that's no factory whim. To see why the Calla
 
 **Guido van Rossum** worked at **CWI**, a research institute for mathematics and computer science in the Netherlands. Earlier he had been on the team behind **ABC**, a language for teaching programming: wonderfully easy to read, but closed; you couldn't extend it and it didn't talk well to the operating system (files, processes, the network). Then he moved to the **Amoeba** project, a distributed operating system, and ran into the usual problem: writing admin tools in **C** took far too long, and terminal scripts (*shell*) fell short as soon as the task got complicated.
 
-What does "talking to the operating system" mean? Your program doesn't touch the disk or the network by itself: it **asks** the operating system (Windows, Linux or, in Guido's case, Amoeba), which is the one in charge of the machine. Each request is called a **system call**: "open this file", "give me what it says", "start this other program". A language is only useful for running computers if it can make those calls, and the easier the better:
-
 <!-- /photo -->
+
+### What does "talking to the operating system" mean?
+
+Your program doesn't touch the disk or the network by itself: it **asks** the operating system (Windows, Linux or, in Guido's case, Amoeba), which is the one in charge of the machine. Each request is called a **system call**: "open this file", "give me what it says", "start this other program". A language is only useful for running computers if it can make those calls, and the easier the better.
+
+Before looking at the diagram, bet: of the three roads Guido had at hand (ABC, C or the shell), which do you think was enough?
 
 ```network
 title: Asking the system for something, in each language
@@ -111,7 +115,11 @@ steps:
 caption: The Amoeba and shell part comes from Python's own General FAQ, under "Why was Python created in the first place?".
 ```
 
+### So what did Guido do?
+
 Something was missing in between: as easy to read as ABC, but able to do everything C does by calling the system. Over the Christmas holidays of 1989 he started writing it as a hobby. He called it **Python** after *Monty Python's Flying Circus*, the British comedy show, not after the snake. In **February 1991** he published version 0.9.0 on Usenet (the internet forums of the day).
+
+> **Takeaway:** Python was born in 1989 from a practical need: a language as easy to read as ABC that could reach the system like C. The name comes from a comedy show, not a snake.
 
 ```figure
 title: Python over time
@@ -157,7 +165,9 @@ print(f"{name} has {battery}% battery")
 print(type(name), type(battery), type(1.5), type(True), type(None))
 ```
 
-A variable is a **name** you stick on a value, like a label. The value lives on its own and the name just **points to** it: with `=` you stick the label on, you read it whenever you like, and if you assign again, the label peels off and sticks to another value. Press ▶ and watch each label move line by line; values left without a name get discarded:
+### Variables: a name stuck on a value
+
+To reuse a value without typing it again, you give it a name. A variable is a **name** you stick on a value, like a label. The value lives on its own and the name just **points to** it: with `=` you stick the label on, you read it whenever you like, and if you assign again, the label peels off and sticks to another value. Press ▶ and watch each label move line by line; values left without a name get discarded:
 
 ```anim
 title: A name is a label stuck on a value
@@ -180,13 +190,21 @@ notes:
   7: The f before the quotes drops the values into the text.
 ```
 
-What you need for today:
+### Names in `snake_case`
 
-- **Names in `snake_case`.** In Python, variables are lowercase with underscores: `price_per_kilo`, `has_cargo`. No `pricePerKilo`.
-- **f-strings.** An `f` before the quotes, and every `{…}` inside is replaced by its value: `f"Order {number}"`.
-- **`print` takes several things** separated by commas and prints them with a space in between. `sep=` changes that separator and `end=` changes what goes at the end (normally a line break).
-- **Three divisions.** `/` always gives a `float` (`7 / 2` is `3.5`); `//` gives how many times it fits, without decimals (`7 // 2` is `3`); `%` gives what's left over (`7 % 2` is `1`).
-- **Converting.** `int("12")` gives the number 12, `float("2.5")` gives 2.5 and `str(30)` gives the text `"30"`.
+You write names far more often than it seems, so they should all follow the same rule. In Python, variables are lowercase with underscores: `price_per_kilo`, `has_cargo`. No `pricePerKilo`.
+
+### f-strings: text with values inside
+
+To show a message with changing data without gluing pieces by hand. An `f` before the quotes, and every `{…}` inside is replaced by its value: `f"Order {number}"`.
+
+### `print` with several things
+
+To show several values at once and choose how they are separated. `print` takes several things separated by commas and prints them with a space in between. `sep=` changes that separator and `end=` changes what goes at the end (normally a line break).
+
+### Three divisions
+
+Splitting into boxes, coins or minutes asks how many fit and how many are left. `/` always gives a `float` (`7 / 2` is `3.5`); `//` gives how many times it fits, without decimals (`7 // 2` is `3`); `%` gives what's left over (`7 % 2` is `1`).
 
 ```py run
 alfajor_count = 14
@@ -195,6 +213,16 @@ print(alfajor_count / per_box, alfajor_count // per_box, alfajor_count % per_box
 print("Full boxes:", alfajor_count // per_box, end="")
 print(" (with", alfajor_count % per_box, "alfajores left over)")
 ```
+
+### Converting between types
+
+Data often arrives in the wrong type (a weight as text, say) and you must change it before calculating. `int("12")` gives the number 12, `float("2.5")` gives 2.5 and `str(30)` gives the text `"30"`.
+
+<!-- photo: js-ariane-501 -->
+
+> **History:** On 4 June 1996, the maiden flight of Europe's Ariane 5 rocket veered off course 37 seconds after launch and destroyed itself. A program reused from the Ariane 4 converted a 64-bit decimal into a 16-bit integer; on the Ariane 5 the number was so large it did not fit, and the navigation system shut down. In Python an `int` does not overflow, but the lesson holds: converting a value from one type to another deserves a thought about the extreme cases.
+
+<!-- /photo -->
 
 > **Common trap:** in Python, `"3" + 2` is neither `"32"` nor `5`: it's a `TypeError`, because Python doesn't mix text and numbers on its own. If a number reaches you as text (from `input()`, from a sensor), convert it first: `int("3") + 2` gives `5`, and `"3" + str(2)` gives `"32"`.
 

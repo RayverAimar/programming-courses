@@ -2,9 +2,11 @@
 
 ## The job
 
-Tacna, Sunday at seven in the morning, two blocks from the Arco Parabólico. **Panadería El Arco** already has a queue: Tacna families coming for their pan de yema, and tourists from Arica who crossed the border to have pastel de choclo for breakfast and ask for "marraqueta", to which doña **Eulalia Copaja** replies, very seriously, that it's called pan francés.
+> **Last time:** closures gave a function a private memory. A bakery has ovens, trays and debts, each with its own data and rules: you need a mould.
 
-Her granddaughter **Ximena** keeps the books: the ovens, the trays, the WhatsApp orders and the credit notebook. Until yesterday all of that was loose dictionaries and functions all over the place, and somebody ended up writing down a debt of −40 soles. Maru sent Quilla with its waiter's arm and an idea: that every thing in the bakery be an **object** that keeps its data **and** knows what can be done with it, and that refuses to end up in an impossible state. Today Quilla learns to write **classes**.
+Tacna, Sunday at seven, by the Arco Parabólico. **Panadería El Arco** already has a queue: Tacna families coming for their pan de yema, and tourists from Arica who crossed the border for breakfast and ask for "marraqueta", to which doña **Eulalia Copaja** replies, very seriously, that it's called pan francés.
+
+Her granddaughter **Ximena** keeps the books: the ovens, the trays, the orders and the credit notebook. Until yesterday all of that was loose dictionaries and functions, and somebody wrote down a debt of −40 soles. Maru sent Quilla with an idea: that every thing in the bakery be an **object** that keeps its data **and** knows what can be done with it, and that refuses to end up in an impossible state. Today Quilla learns to write **classes**.
 
 ```scene
 theme: cocina
@@ -37,6 +39,8 @@ program: |
 
 ## The minimum
 
+### Class, object and method
+
 A **class** is a mould; each **object** (an *instance*) that comes out of it has its own data. You define it with `class` (capitalised, `Oven`) and create an object by calling it like a function: `Oven("wood-fired", 220)`. The functions inside are **methods**; the first one, `__init__`, sets up the newly created object.
 
 ```py run
@@ -52,7 +56,9 @@ wood_fired = Oven("wood-fired", 220)
 print(wood_fired.describe(), wood_fired.temperature)
 ```
 
-**`self` is the object itself.** `wood_fired.describe()` is the same as `Oven.describe(wood_fired)`: Python passes the object as the first argument. That's why every method receives `self`, and `self.name = …` sticks an **attribute** onto that particular object. Watch the object fill up step by step:
+### `self`, the object itself
+
+Inside a method you need a way to talk about the specific object that called it. `wood_fired.describe()` is the same as `Oven.describe(wood_fired)`: Python passes the object as the first argument. That's why every method receives `self`, and `self.name = …` sticks an **attribute** onto that particular object. Watch the object fill up step by step:
 
 ```anim
 title: self is the object doing the work
@@ -82,7 +88,9 @@ notes:
   16: "print uses __repr__ to show the object (we'll see it below)."
 ```
 
-**Class attributes and instance attributes.** What you assign in the body of the class (outside the methods) belongs **to the class**: a single value, shared by all the objects. What you assign with `self.` belongs **to each object**. When reading `a.capacity`, Python looks in the object first and, if it isn't there, in the class.
+### Class attributes and instance attributes
+
+Some data belongs to each object and some belongs to all of them. What you assign in the body of the class (outside the methods) belongs **to the class**: a single value, shared by all the objects. What you assign with `self.` belongs **to each object**. When reading `a.capacity`, Python looks in the object first and, if it isn't there, in the class.
 
 ```py run
 class Tray:
@@ -110,7 +118,9 @@ steps:
 ```
 
 
-**How an object is shown.** `__str__` gives the text for people (`print` and `str` use it); `__repr__` gives the text for programmers (lists, the console and `repr` use it) and, if there's no `__str__`, `print` too. In an f-string, `!r` asks for a value's `repr`: `{self.name!r}` comes out with quotes.
+### How an object is shown
+
+By default an object prints as an unreadable address. `__str__` gives the text for people (`print` and `str` use it); `__repr__` gives the text for programmers (lists, the console and `repr` use it) and, if there's no `__str__`, `print` too. In an f-string, `!r` asks for a value's `repr`: `{self.name!r}` comes out with quotes.
 
 ```py run
 class Bread:
@@ -125,7 +135,9 @@ yolk_bread = Bread("yema", 0.6)
 print(yolk_bread, [yolk_bread])
 ```
 
-**`@property`: a watched attribute.** With `@property` a method is read like an attribute (`bag.loaves`, no parentheses), and with `@loaves.setter` you decide what happens when someone assigns to it. The real data lives in `self._loaves` (the underscore says "don't touch it from outside"). If the value is no good, the setter rejects it with **`raise ValueError(…)`**, which stops the operation; whoever wants to carry on catches it with **`try` / `except ValueError`** (errors have their own session; this is enough for today).
+### `@property`: a watched attribute
+
+To reject bad values right when someone assigns them. With `@property` a method is read like an attribute (`bag.loaves`, no parentheses), and with `@loaves.setter` you decide what happens when someone assigns to it. The real data lives in `self._loaves` (the underscore says "don't touch it from outside"). If the value is no good, the setter rejects it with **`raise ValueError(…)`**, which stops the operation; whoever wants to carry on catches it with **`try` / `except ValueError`** (errors have their own session; this is enough for today).
 
 ```py run
 class Bag:
@@ -151,7 +163,9 @@ except ValueError as error:
 print(bag.loaves)
 ```
 
-**Other constructors and helpers.** A `@classmethod` receives the class (`cls`) instead of the object: it's for making objects another way, like "from a piece of text". A `@staticmethod` receives neither the class nor the object: it's a function that lives inside the class because it has to do with it.
+### Other constructors and helpers
+
+To create objects in another way or keep a function next to its class. A `@classmethod` receives the class (`cls`) instead of the object: it's for making objects another way, like "from a piece of text". A `@staticmethod` receives neither the class nor the object: it's a function that lives inside the class because it has to do with it.
 
 ```py run
 class Price:
@@ -171,7 +185,9 @@ yolk_price = Price.from_board("yema=0.60")
 print(yolk_price.bread, yolk_price.amount, Price.dozens(40))
 ```
 
-**`@dataclass` writes the boring parts for you.** You declare the fields with their type and Python generates `__init__`, `__repr__` and `__eq__`. A default list is asked for with `field(default_factory=list)` (a new list for each object). `order=True` adds `<`, `>`, `sorted` and `min`, comparing field by field in order; `frozen=True` makes the object immutable (assigning to it is an error) and that's why it can go in a set or be a dictionary key.
+### `@dataclass` writes the boring parts for you
+
+Many classes only hold data, and writing `__init__` and `__repr__` gets tiring. You declare the fields with their type and Python generates `__init__`, `__repr__` and `__eq__`. A default list is asked for with `field(default_factory=list)` (a new list for each object). `order=True` adds `<`, `>`, `sorted` and `min`, comparing field by field in order; `frozen=True` makes the object immutable (assigning to it is an error) and that's why it can go in a set or be a dictionary key.
 
 ```py run
 from dataclasses import dataclass, field
@@ -187,7 +203,9 @@ print(a)
 print(min(a, b).bread, a == Batch("06:30", "yema"))
 ```
 
-**Inheritance.** `class Pastry(Product):` makes a class that **is** a `Product` and inherits all its methods; you only write what changes. Inside, `super()` calls the parent's version: `super().__init__(…)` so the parent sets up its part, `super().label()` to reuse what it already did.
+### Inheritance
+
+To reuse a class and write only what changes. `class Pastry(Product):` makes a class that **is** a `Product` and inherits all its methods; you only write what changes. Inside, `super()` calls the parent's version: `super().__init__(…)` so the parent sets up its part, `super().label()` to reuse what it already did. And `isinstance(object, Class)` asks whether an object is of that class (or a child of it): `True` or `False`.
 
 ```py run
 class Product:
@@ -204,6 +222,18 @@ class Pastry(Product):
         return super().label() + f" ({self.filling} filling)"
 
 print(Pastry("empanada", 4.5, "cheese").label(), isinstance(Pastry("e", 1, "x"), Product))
+```
+
+```steps
+# What happens in `Pastry("empanada", 4.5, "cheese").label()`
+## The pastry is created
+Python calls `Pastry.__init__`, the child's one, because `Pastry` defines its own.
+## `super().__init__` lets the parent set up its part
+Inside, `super().__init__(name, price)` runs the `__init__` of `Product`, which sticks `name` and `price` onto the object. Then the child adds `filling`.
+## You call `label()`
+Python looks for it in `Pastry` first and finds it: the child's version runs.
+## `super().label()` reuses the parent's
+That line runs the `label` of `Product`, which returns `"empanada: S/ 4.50"`, and the child adds `" (cheese filling)"` to it.
 ```
 
 > **Common trap:** a list written in the body of the class (`loaves = []`) is **a single list for all the objects**. `self.loaves.append(…)` doesn't create a new list: it looks for `loaves`, doesn't find it in the object, finds it in the class and appends there, so whatever you put on one tray shows up on all of them. Each object's lists are created in `__init__` (`self.loaves = []`) or, in a dataclass, with `field(default_factory=list)`.
@@ -308,10 +338,13 @@ hints:
 tests:
   - name: it reads like an attribute
     expect: Oven("wood", 200).temperature == 200
+    msg: "Reading `oven.temperature` must return the stored value: the getter returns `self._temperature`."
   - name: rejects what's outside 120…260
     expect: 'trials == ["ok", "rejected", "ok", "rejected"]'
+    msg: "The setter must raise `ValueError` if the value is not between 120 and 260, both included."
   - name: the data lives in _temperature
     expect: 'vars(Oven("wood", 150)) == {"name": "wood", "_temperature": 150}'
+    msg: "Store the value in `self._temperature` (with underscore); otherwise the setter calls itself."
 ```
 
 ```exercise
@@ -366,12 +399,16 @@ hints:
 tests:
   - name: the wood oven's tray has its two loaves
     expect: 'wood.loaves == ["yema", "yema"]'
+    msg: "Each tray needs its own list: create `self.loaves = []` inside `__init__`."
   - name: the electric one has only its own
     expect: 'electric.loaves == ["francés"]'
+    msg: "The electric tray must hold only its French bread; if it has more, it shares the list with the other."
   - name: a new tray starts empty
     expect: Tray("new").loaves == []
+    msg: "A freshly created tray starts empty, not with another one's bread."
   - name: the list is created in __init__
     source: 'self\.loaves\s*=\s*\[\]'
+    msg: "Create the list with `self.loaves = []` in `__init__`, not in the class body."
 ```
 
 ```exercise
@@ -421,17 +458,21 @@ solution: |
   yolk_bread.price = 0.7
   print(yolk_bread.name, yolk_bread.price)
 hints:
-  - "Inside the setter, `self.price = value` calls the setter again, which assigns again, which calls again… until the `RecursionError`. The same happens to the getter."
+  - "Inside the setter, `self.price = value` calls the setter again, which assigns again, which calls again… until the `RecursionError` (a function calling itself without stopping; recursion is session 15). The same happens to the getter."
   - "The data has to live under another name: `self._price`, in the getter and in the setter."
 tests:
   - name: the price can be changed
     expect: yolk_bread.price == 0.7
+    msg: "The price must be changeable: store into `self._price` from the setter."
   - name: the console says so
     output: pan de yema 0.7
+    msg: "The console must say `yema bread 0.7`: check the getter returns `self._price`."
   - name: the data lives in _price
     expect: '"_price" in vars(yolk_bread)'
+    msg: "The real value lives in `_price`; if it stays in `price`, the setter calls itself."
   - name: the validation is still there
     source: 'raise\s+ValueError'
+    msg: "Do not remove the validation: the setter still raises `ValueError` if the price is not positive."
 ```
 
 ```exercise
@@ -561,13 +602,17 @@ tests:
   - name: three batches with 7 kg
     run: '(o := WoodOven("Copaja", 7), o.bake("yema"), o.bake("tacneño"), o.bake("francés"), o.batches, o.wood_kg)[1:]'
     equals: ["Copaja: yema ready", "Copaja: tacneño ready", "Copaja: out of wood", 2, 1]
+    msg: "Each batch uses 3 kg and returns the parent's text; without enough wood it returns `\"<name>: out of wood\"`."
   - name: without wood it doesn't bake; after loading, it does
     run: '(o := WoodOven("Eulalia", 2), o.bake("yema"), o.load(4), o.bake("yema"), o.wood_kg)[1:]'
     equals: ["Eulalia: out of wood", null, "Eulalia: yema ready", 3]
+    msg: "After `load(kg)` the oven must be able to bake again; an oven with no wood does not count the batch."
   - name: a wood oven is an oven
     expect: isinstance(WoodOven("a", 0), Oven)
+    msg: "`WoodOven` must inherit from `Oven`: `class WoodOven(Oven):`."
   - name: uses super() in __init__ and in bake
     source: 'super\(\)\.__init__\([\s\S]*super\(\)\.bake\('
+    msg: "Call `super().__init__(name)` in `__init__` and `super().bake(bread)` in `bake`."
 ```
 
 ## The case

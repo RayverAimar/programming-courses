@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Jirón de la Unión, a media cuadra de la Plaza San Martín. Entre una zapatería y una tienda de uniformes escolares hay una galería angosta, y al fondo, **Numismática y Filatelia Valdivieso**: tres vitrinas de monedas peruanas, un mostrador de estampillas con lupa de bronce y, detrás de una reja, las bóvedas de la casona donde doña **Hortensia Valdivieso** guarda lo que no se vende ni a su sobrino.
+> **La vez pasada:** las clases guardan datos y reglas en un solo lugar, pero `sorted`, `==` y `len` no saben qué hacer con ellas. Hoy les enseñamos el idioma de Python.
 
-Hortensia ya pasó su inventario a Python, con una clase `Moneda` y una clase `Estampilla`. El problema es que sus objetos no se portan como los de Python: `sorted` no sabe ordenarlos, dos monedas idénticas no son "iguales", un `set` no los acepta y `len` de un álbum da error. Maru le mandó a Quilla, que ya trae linterna para las bóvedas, con una tarea: enseñarles a esas clases a hablar el idioma de Python, el de `==`, `<`, `len`, `in`, `for`, `+` y `with`.
+Jirón de la Unión, a media cuadra de la Plaza San Martín. Hay una galería angosta, y al fondo, **Numismática y Filatelia Valdivieso**: tres vitrinas de monedas peruanas, un mostrador de estampillas y, detrás de una reja, las bóvedas donde doña **Hortensia Valdivieso** guarda lo que no se vende ni a su sobrino.
+
+Hortensia ya pasó su inventario a Python, con una clase `Moneda` y una clase `Estampilla`. Pero sus objetos no se portan como los de Python: `sorted` no sabe ordenarlos, dos monedas idénticas no son "iguales", un `set` no los acepta y `len` de un álbum da error. Maru le mandó a Quilla con una tarea: enseñarles a esas clases a hablar el idioma de Python, el de `==`, `<`, `len`, `in`, `for`, `+` y `with`.
 
 ```escena
 theme: barranco
@@ -30,6 +32,8 @@ program: |
 
 ## Lo mínimo
 
+### Métodos dunder: lo que Python llama por ti
+
 Cuando escribes `a < b`, Python no sabe nada de monedas: llama a un método de `a` con un nombre especial, `a.__lt__(b)`. Esos métodos con dos guiones bajos a cada lado se llaman **métodos dunder** (*double underscore*), y son el **modelo de datos** de Python: si tu clase los define, tus objetos funcionan con los operadores y las funciones de siempre.
 
 | escribes | Python llama |
@@ -40,7 +44,9 @@ Cuando escribes `a < b`, Python no sabe nada de monedas: llama a un método de `
 | `for x in a`, `x in a` | `a.__iter__()`, `a.__contains__(x)` |
 | `a + b`, `if a:` | `a.__add__(b)`, `a.__bool__()` |
 
-**Comparar.** Sin `__eq__`, `==` solo es `True` si los dos nombres apuntan **al mismo objeto**. Con `__eq__` decides tú qué significa "igual". Para ordenar basta `__lt__` (`sorted`, `min` y `max` solo usan `<`), y si además quieres `<=`, `>` y `>=`, el decorador `functools.total_ordering` los arma a partir de `__eq__` y `__lt__`.
+### Comparar
+
+Para que tus objetos se comparen y se ordenen como los números. Sin `__eq__`, `==` solo es `True` si los dos nombres apuntan **al mismo objeto**. Con `__eq__` decides tú qué significa "igual". Para ordenar basta `__lt__` (`sorted`, `min` y `max` solo usan `<`), y si además quieres `<=`, `>` y `>=`, el decorador `functools.total_ordering` los arma a partir de `__eq__` y `__lt__`.
 
 ```py run
 from functools import total_ordering
@@ -82,7 +88,9 @@ notes:
   6: "print usa __repr__ para mostrar cada moneda."
 ```
 
-**Hashear.** Un `set` o un diccionario guardan cada objeto según su `hash`, y exigen que dos objetos iguales tengan el mismo hash. Por eso, **si defines `__eq__`, Python borra el `__hash__` heredado** y tus objetos ya no entran en un `set`: tienes que escribir `__hash__` con los mismos datos que usa `__eq__`.
+### Hashear
+
+Para poder usar tus objetos en sets y como claves. Un `set` o un diccionario guardan cada objeto según su `hash`, y exigen que dos objetos iguales tengan el mismo hash. Por eso, **si defines `__eq__`, Python borra el `__hash__` heredado** y tus objetos ya no entran en un `set`: tienes que escribir `__hash__` con los mismos datos que usa `__eq__`.
 
 ```py run
 class Sello:
@@ -97,7 +105,9 @@ lote = {Sello("llama", 1866), Sello("llama", 1866), Sello("escudo", 1858)}
 print(len(lote), Sello("llama", 1866) in lote)
 ```
 
-**Ser una colección.** Con `__len__` funciona `len`; con `__getitem__`, los corchetes (con índices negativos y rebanadas, si se los pasas a una lista); con `__iter__`, el `for`; con `__contains__`, el `in`; con `__add__`, el `+`; y con `__bool__`, el `if`. Sin `__bool__`, Python mira `__len__`: una colección vacía es falsa.
+### Ser una colección
+
+Para que tu objeto responda a `len`, `[]`, `for`, `in` y `+`. Con `__len__` funciona `len`; con `__getitem__`, los corchetes (con índices negativos y rebanadas, si se los pasas a una lista); con `__iter__`, el `for`; con `__contains__`, el `in`; con `__add__`, el `+`; y con `__bool__`, el `if`. Sin `__bool__`, Python mira `__len__`: una colección vacía es falsa.
 
 ```py run
 class Album:
@@ -120,9 +130,15 @@ album = Album(["Llama 1866", "Escudo 1858"]) + Album(["Paita 1857"])
 print(len(album), album[-1], "llama 1866" in album, bool(Album([])))
 ```
 
-**Duck typing.** A Python no le importa de qué clase es un objeto, sino qué sabe hacer: "si camina como pato y hace cuac como pato, es un pato". `def contar(coleccion): return len(coleccion)` sirve igual para una lista, un texto o un `Album`, porque los tres tienen `__len__`. Nadie tuvo que heredar de nada.
+### Duck typing
 
-**Abrir y cerrar.** El `with` que usas con `open` también es modelo de datos: `with algo as x:` llama a `algo.__enter__()` al entrar (lo que devuelve va a `x`) y a `algo.__exit__(tipo, error, traza)` al salir, **aunque el bloque termine con un error**. Así una vitrina nunca queda abierta. Escribirlo como clase es lo clásico; `contextlib.contextmanager` lo hace con una función: lo que va antes del `yield` abre, lo que sale del `yield` va al `as`, y lo que va en el `finally` cierra pase lo que pase.
+Para escribir funciones que sirvan con cualquier objeto, sin obligarlo a heredar de nada. A Python no le importa de qué clase es un objeto, sino qué sabe hacer: "si camina como pato y hace cuac como pato, es un pato". `def contar(coleccion): return len(coleccion)` sirve igual para una lista, un texto o un `Album`, porque los tres tienen `__len__`. Nadie tuvo que heredar de nada.
+
+### Abrir y cerrar: `with`
+
+Para que algo que se abre (una vitrina, un archivo) siempre se cierre, incluso si hay un error. `with algo as x:` llama a `algo.__enter__()` al entrar (lo que devuelve va a `x`) y a `algo.__exit__(tipo, error, traza)` al salir, **aunque el bloque termine con un error**. (En la sesión 19 lo verás con `open`.)
+
+Escribirlo como clase es lo clásico; `contextlib.contextmanager` lo hace con una función: lo que va antes del `yield` abre (`yield` entrega un valor y pausa la función; sesión 14), lo que sale del `yield` va al `as`, y lo que va en el `finally` cierra siempre (`try`/`finally`: sesión 16).
 
 ```py run
 from contextlib import contextmanager
@@ -139,7 +155,21 @@ with vitrina(4) as n:
     print("saca la peseta de la vitrina", n)
 ```
 
-**Escribir el pato.** `typing.Protocol` pone por escrito el *duck typing*: describe qué métodos debe tener algo, y cualquier clase que los tenga encaja, sin heredar. Python no lo revisa al ejecutar; lo usan el editor y los verificadores de tipos para avisarte antes.
+```steps
+# El orden de un `with vitrina(4) as n:`
+## Antes del `yield`: se abre
+Al entrar al `with`, Python corre la función hasta el `yield`: imprime `abre la vitrina 4`.
+## El `yield` entrega el valor al `as`
+`n` recibe lo que salió del `yield`: el 4. La función queda pausada ahí.
+## Corre tu bloque
+El cuerpo del `with` hace lo suyo: imprime `saca la peseta de la vitrina 4`.
+## El `finally` cierra pase lo que pase
+Al terminar el bloque (con error o sin él), la función despierta y corre el `finally`: `cierra la vitrina 4`.
+```
+
+### Escribir el pato
+
+Para dejar por escrito qué métodos espera una función. `typing.Protocol` pone por escrito el *duck typing*: describe qué métodos debe tener algo, y cualquier clase que los tenga encaja, sin heredar. Python no lo revisa al ejecutar; lo usan el editor y los verificadores de tipos para avisarte antes.
 
 ```py run
 from typing import Protocol
@@ -264,16 +294,22 @@ hints:
 tests:
   - name: ordena de la más antigua a la más nueva
     output: "[dinero (1863), peseta (1880), sol (1914)]\nTrue"
+    msg: "`sorted` solo usa `<`: el orden sale de `__lt__`, que compara los años."
   - name: max da la más nueva
     expect: max(monedas).anio == 1914
+    msg: "`max` también usa `<`: comparar por `anio` da la más nueva."
   - name: ">= funciona"
     expect: Moneda("sol", 1866) >= Moneda("medio sol", 1864)
+    msg: "Para que `>=` funcione, agrega `@functools.total_ordering` y define `__eq__` y `__lt__`."
   - name: "<= con el mismo año"
     expect: Moneda("sol", 1900) <= Moneda("peseta", 1900)
+    msg: "Dos monedas del mismo año deben ser iguales: `__eq__` compara solo el año."
   - name: "> funciona"
     expect: not (Moneda("sol", 1864) > Moneda("peseta", 1880))
+    msg: "`>` se deriva de `__lt__` y `__eq__` con `total_ordering`; revisa ambos métodos."
   - name: usa total_ordering
     source: '@functools\.total_ordering'
+    msg: "Pon el decorador `@functools.total_ordering` sobre la clase."
 ```
 
 ```exercise
@@ -511,11 +547,14 @@ tests:
   - name: sin error, anota la salida y la vuelta
     run: probar(prestamo, False)
     equals: ["sale sol de 1863", "mira sol de 1863", "todo bien", "vuelve sol de 1863"]
+    msg: "Antes del `yield` anota `\"sale <pieza>\"`; después, `\"vuelve <pieza>\"`; y haz `yield pieza`."
   - name: con error, la pieza vuelve igual
     run: probar(prestamo, True)
     equals: ["sale sol de 1863", "mira sol de 1863", "vuelve sol de 1863", "error"]
+    msg: "Si el bloque falla, la vuelta debe anotarse igual: ponla en un `finally`."
   - name: usa try y finally
     source: '\btry\s*:[\s\S]*\byield\b[\s\S]*\bfinally\s*:'
+    msg: "Envuelve el `yield` en `try:` y deja lo de la vuelta en `finally:`."
 ```
 
 ```exercise

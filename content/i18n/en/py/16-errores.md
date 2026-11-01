@@ -2,9 +2,11 @@
 
 ## The job
 
-Paita, Piura, five in the afternoon. In the port's customs warehouse, containers of mango, frozen jumbo squid, scallops and coffee from Jaén are stacked up waiting for their ship. Don **Eleodoro Querevalú**, head of the warehouse since the days of carbon paper, has a problem: the program that reads the manifests never crashes. Never. And that, Maru explained to him over the phone, is exactly what's wrong.
+> **Last time:** recursion solved problems that repeat inside themselves, but when something fails halfway, the program doesn't know what to do. Today it learns to fail well.
 
-Someone put an `except: pass` in it "so it doesn't get in the way", and ever since then every odd line vanishes without a trace: a mistyped weight, a product that isn't in the rate list, a whole container. Maru sent Quilla, with its freshly calibrated siren, to do things properly: errors should **be seen**, each one should have its own name, and the program should know which ones it can fix and which it can't.
+Paita, Piura, five in the afternoon. In the port's customs warehouse, containers of mango, squid and coffee from Jaén are stacked up. Don **Eleodoro Querevalú**, head of the warehouse since the days of carbon paper, has a problem: the program that reads the manifests never crashes. Never. And that, Maru explained to him, is exactly what's wrong.
+
+Someone put an `except: pass` "so it doesn't get in the way", and every odd line vanishes without a trace: a mistyped weight, a product that isn't in the rate list, a whole container. Maru sent Quilla to do things properly: errors should **be seen**, each one should have its own name, and the program should know which ones it can fix and which it can't.
 
 ```scene
 theme: barranco
@@ -29,6 +31,8 @@ program: |
 
 ## The minimum
 
+### `try` and `except`
+
 When something goes wrong, Python **raises an exception**: an object with a type (`ValueError`, `KeyError`…) and a message. If nobody catches it, the program stops. With **`try` / `except`** you catch it and decide what to do:
 
 ```py run
@@ -46,6 +50,12 @@ for text in ["18400", "12,5"]:
 - **`try`**: the code that may fail. Keep it short: only what can really raise.
 - **`except Type as error`**: runs if the code above raised that type (or one that **inherits** from it). Several types go in a tuple: `except (ValueError, KeyError):`.
 - **`else`**: runs only if there was **no** error. **`finally`**: runs **always**, whether there was an error, a `return` or anything else: the place to release the crane or close the gate.
+
+<!-- photo: js-first-computer-bug -->
+
+> **History:** On 9 September 1947, the operators of the Harvard Mark II computer found a moth trapped between the contacts of a relay (number 70, panel F). They taped it into the logbook with the note "First actual case of bug being found". The word *bug* was already used for faults; the joke was that this time the bug was real.
+
+<!-- /photo -->
 
 Watch the jump: when `int` fails inside `weigh`, the function stops at that line, its box leaves the stack and the program lands in the `except` of whoever called it.
 
@@ -69,6 +79,8 @@ notes:
   9: "The error came up from weigh and this except catches it. The loop goes on with the next reading."
   11: "Only the two good readings were added."
 ```
+
+### The exception climbs through the calls
 
 An exception doesn't stay where it's born: it **leaves the call and climbs up**, call by call, until someone catches it. Watch it cross three calls up to the `try` in `main`, and what happens if there is none:
 
@@ -116,7 +128,9 @@ steps:
   - { line: 7, vars: {}, stack: [], out: "Traceback (most recent call last):\n  File \"program.py\", line 7, in <module>\n  File \"program.py\", line 5, in weigh\n  File \"program.py\", line 2, in read\nValueError: invalid literal for int() with base 10: '12,5'", note: "The stack emptied without finding an `except`: the program **stops** and the traceback lists the calls the exception went through, from the first to the last. Line 8 never runs." }
 ```
 
-**Raising your own errors.** `raise ValueError("message")` stops the function and warns whoever called it. For your business's errors, create a **hierarchy** of classes that inherit from `Exception`: that way an `except` can catch just one of them or a whole family.
+### Raising your own errors
+
+To report yourself that something is not valid. `raise ValueError("message")` stops the function and warns whoever called it. For your business's errors, create a **hierarchy** of classes that inherit from `Exception`: that way an `except` can catch just one of them or a whole family.
 
 ```py run
 class CustomsError(Exception):
@@ -131,13 +145,21 @@ except CustomsError as error:
     print(type(error).__name__, error, isinstance(error, BrokenSeal))
 ```
 
-**`raise … from`.** When you translate a technical error into one of your business's, chain them: `raise MissingManifest(code) from error` keeps the original `KeyError` in `__cause__`, and the traceback shows both.
+### `raise … from`
 
-**Asking forgiveness or asking permission.** *LBYL* (look before you leap) asks first: `if code in manifests:`. *EAFP* (it's easier to ask forgiveness than permission) tries it and catches the error: `try: manifests[code]` / `except KeyError:`. Python prefers EAFP when the odd case is rare, because it doesn't repeat the lookup and nothing slips through between the question and the use. For the robot it's the other way round: its errors (hitting a wall, running out of battery) **aren't `Exception`s**, not even `except Exception` hides them, and a crash is a crash. There, look first with `robot.wall_ahead()`.
+So you do not lose the original error when translating it into one of your business. When you translate a technical error into one of your business's, chain them: `raise MissingManifest(code) from error` keeps the original `KeyError` in `__cause__`, and the traceback shows both.
 
-**`assert condition, "message"`** checks something that **your own code** guarantees (`assert total >= 0`); if it fails, it's your bug and it raises `AssertionError`. It doesn't validate outside data: Python can run with the `assert`s switched off.
+### Asking forgiveness or asking permission
 
-**Many errors at once.** So as not to stop at the first one, gather them in an **`ExceptionGroup`** and handle them with **`except*`**: each `except*` gets a group with the ones of its type, and several can run.
+There are two styles for handling a case that may fail. *LBYL* (look before you leap) asks first: `if code in manifests:`. *EAFP* (it's easier to ask forgiveness than permission) tries it and catches the error: `try: manifests[code]` / `except KeyError:`. Python prefers EAFP when the odd case is rare, because it doesn't repeat the lookup and nothing slips through between the question and the use. For the robot it's the other way round: its errors (hitting a wall, running out of battery) **aren't `Exception`s**, not even `except Exception` hides them, and a crash is a crash. There, look first with `robot.wall_ahead()`.
+
+### `assert`
+
+To write down something your own code takes for granted. **`assert condition, "message"`** checks something that **your own code** guarantees (`assert total >= 0`); if it fails, it's your bug and it raises `AssertionError`. It doesn't validate outside data: Python can run with the `assert`s switched off.
+
+### Many errors at once
+
+So you do not stop at the first error when there are several. So as not to stop at the first one, gather them in an **`ExceptionGroup`** and handle them with **`except*`**: each `except*` gets a group with the ones of its type, and several can run.
 
 ```py run
 try:
@@ -277,13 +299,17 @@ hints:
 tests:
   - name: prints the error and its cause
     output: "Held: SUDU-5150 has no manifest | cause: KeyError('SUDU-5150')"
+    msg: "Use `raise MissingManifest(...) from error` and show the cause with `error.__cause__`."
   - name: MissingManifest is a CustomsError
     expect: issubclass(MissingManifest, CustomsError)
+    msg: "`MissingManifest` must inherit from `CustomsError`: `class MissingManifest(CustomsError):`."
   - name: a code with a manifest returns its kilos
     run: declared_weight("MSKU-4410")
     equals: 18400
+    msg: "If the code is in the dictionary, return its kilos without raising anything."
   - name: chains with from
     source: 'raise\s+MissingManifest\([\s\S]*\)\s*from\s+error'
+    msg: "Chain with `from error` so you do not lose the original `KeyError`."
 ```
 
 ```exercise
@@ -404,22 +430,29 @@ tests:
   - name: cleans and returns a good seal
     run: attempt(" pe-004512 ")
     equals: PE-004512
+    msg: "A good seal is returned clean and uppercase: `\" pe-004512 \"` → `PE-004512`."
   - name: too short
     run: attempt("PE-12")
     equals: InvalidSeal
+    msg: "`PE-12` has fewer than 6 digits: raise `InvalidSeal`."
   - name: another prefix
     run: attempt("XX-004512")
     equals: InvalidSeal
+    msg: "Check that it starts exactly with `PE-`."
   - name: letters where digits go
     run: attempt("PE-00451A")
     equals: InvalidSeal
+    msg: "The 6 characters after `PE-` must all be digits (`isdigit()`)."
   - name: seven digits
     run: attempt("PE-0045123")
     equals: InvalidSeal
+    msg: "Seven digits is too many: require exactly 6."
   - name: the message is the original text
     expect: 'str(InvalidSeal("pe-1")) == "pe-1" and issubclass(InvalidSeal, CustomsError)'
+    msg: "`InvalidSeal(text)` must keep the original text and inherit from `CustomsError`."
   - name: raises the error with raise
     source: 'raise\s+InvalidSeal\('
+    msg: "Raise the error with `raise InvalidSeal(text)`; do not return a message."
 ```
 
 ```exercise

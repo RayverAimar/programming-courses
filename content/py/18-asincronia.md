@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Callao, seis de la mañana, Muelle Sur. El *Mama Ocllo*, un portacontenedores que viene de Valparaíso, ya está amarrado, y **Gladys Huamán**, la coordinadora de grúas del terminal, tiene que decidir qué contenedor baja primero. El horario de cada grúa pórtico lo sabe un servidor viejo de la torre de control, que contesta cuando quiere: a veces en un parpadeo, a veces cuando ya se enfrió el café, y a veces con un `503`.
+> **La vez pasada:** los tipos y `match` le enseñaron a reconocer la forma de un mensaje. Ahora el mensaje tarda en llegar, y esperarlo parado hace zarpar el barco sin la carga.
 
-Maru mandó a Quilla desde Chucuito con la sirena puesta y una advertencia: "Si le preguntas a la torre grúa por grúa y te quedas parado esperando cada respuesta, el barco zarpa con la carga adentro". Hoy Quilla aprende a **pedir varias cosas a la vez**, a no esperar para siempre y a insistir con paciencia cuando el servidor falla.
+Callao, seis de la mañana, Muelle Sur. El *Mama Ocllo*, un portacontenedores que viene de Valparaíso, ya está amarrado, y **Gladys Huamán**, coordinadora de grúas, tiene que decidir qué contenedor baja primero. El horario de cada grúa pórtico lo sabe un servidor viejo de la torre de control, que contesta cuando quiere: a veces en un parpadeo, a veces cuando ya se enfrió el café, y a veces con un `503`.
+
+Maru mandó a Quilla con una advertencia: "Si le preguntas a la torre grúa por grúa y te quedas parado esperando cada respuesta, el barco zarpa con la carga adentro". Hoy Quilla aprende a **pedir varias cosas a la vez**, a no esperar para siempre y a insistir con paciencia cuando el servidor falla.
 
 ```escena
 theme: barranco
@@ -28,11 +30,21 @@ program: |
 
 ## Lo mínimo
 
+### Esperar sin quedarse parado
+
 Hasta ahora cada línea terminaba antes de que empezara la siguiente. Preguntarle algo a un servidor no es así: la respuesta **tarda**, y mientras tanto el programa podría estar haciendo otra cosa, como pedir lo siguiente.
 
-- **`async def`** define una **función de corrutina**. Llamarla no ejecuta nada todavía: devuelve una **corrutina**, una receta lista para correr.
-- **`await corrutina`** la ejecuta y espera su resultado. Mientras espera, el **bucle de eventos** (el que reparte el turno entre corrutinas, una a la vez) atiende a otras. `await` solo se puede escribir dentro de un `async def`.
-- **`asyncio.run(principal())`** arranca el bucle de eventos, corre la corrutina principal hasta el final y lo cierra. Es la puerta de entrada: se llama una vez, desde código normal.
+### `async def`
+
+Para marcar una función que puede esperar sin bloquear al resto. **`async def`** define una **función de corrutina**. Llamarla no ejecuta nada todavía: devuelve una **corrutina**, una receta lista para correr.
+
+### `await`
+
+Para decir dónde la función espera una respuesta. **`await corrutina`** la ejecuta y espera su resultado. Mientras espera, el **bucle de eventos** (el que reparte el turno entre corrutinas, una a la vez) atiende a otras. `await` solo se puede escribir dentro de un `async def`.
+
+### `asyncio.run`
+
+Para poner en marcha todo desde el código normal. **`asyncio.run(principal())`** arranca el bucle de eventos, corre la corrutina principal hasta el final y lo cierra. Es la puerta de entrada: se llama una vez, desde código normal.
 
 ```py run
 import asyncio
@@ -50,7 +62,9 @@ asyncio.run(principal())
 
 En los ejercicios con servidor, la torre se llama `taller`: `await taller.pedir("STS-1")` trae un recurso y `taller.ahora()` dice cuántos milisegundos van. Si falla, lanza `ErrorServidor`, con el código en `error.status` (`503` si no contestó, `404` si no existe). El tiempo es **simulado**: nada espera de verdad, pero las demoras y las fallas son las mismas cada vez que corres. Sin servidor, `asyncio.get_running_loop().time()` da el reloj en segundos.
 
-**Uno tras otro o a la vez.** Dos `await` seguidos esperan el primero completo antes de pedir el segundo: los tiempos se suman. **`asyncio.gather(c1, c2, …)`** lanza todas las corrutinas a la vez y devuelve sus resultados **en el orden en que las pasaste**, no en el que llegaron.
+### Uno tras otro o a la vez
+
+Dos `await` seguidos esperan el primero completo antes de pedir el segundo: los tiempos se suman. **`asyncio.gather(c1, c2, …)`** lanza todas las corrutinas a la vez y devuelve sus resultados **en el orden en que las pasaste**, no en el que llegaron.
 
 Antes del código, mira **quién hace qué** cuando hay dos pedidos en el aire. El **bucle de eventos** es el que reparte el turno: en cada momento corre **una sola** corrutina, y cuando esa dice `await`, el bucle le da el turno a otra.
 
@@ -152,7 +166,9 @@ panes:
   - { label: "con gather: 310 ms", text: "        0   100  200  300  400  500\nSTS-1   ████████████████\nSTS-2   ███████████" }
 ```
 
-**Tareas.** `asyncio.create_task(corrutina)` la pone a correr **ya**, en segundo plano, y te da una tarea; más tarde, `await tarea` recoge su resultado. Para lanzar varias y esperarlas todas, **`async with asyncio.TaskGroup() as grupo:`** es lo moderno: creas las tareas con `grupo.create_task(…)` y, al salir del bloque, todas terminaron. Si una falla, el grupo cancela las demás y te entrega el error.
+### Tareas
+
+Para empezar algo y seguir con otra cosa mientras tanto. `asyncio.create_task(corrutina)` la pone a correr **ya**, en segundo plano, y te da una tarea; más tarde, `await tarea` recoge su resultado. Para lanzar varias y esperarlas todas, **`async with asyncio.TaskGroup() as grupo:`** es lo moderno: creas las tareas con `grupo.create_task(…)` y, al salir del bloque, todas terminaron. Si una falla, el grupo cancela las demás y te entrega el error.
 
 ```py run
 import asyncio
@@ -170,7 +186,9 @@ async def principal():
 asyncio.run(principal())
 ```
 
-**Plazos.** `async with asyncio.timeout(segundos):` le pone un límite a todo lo que esperes dentro del bloque. Si se vence, cancela lo que estaba esperando y lanza `TimeoutError`, que atrapas con `try`/`except` como cualquier error.
+### Plazos
+
+Para no esperar para siempre a un servidor que no responde. `async with asyncio.timeout(segundos):` le pone un límite a todo lo que esperes dentro del bloque. Si se vence, cancela lo que estaba esperando y lanza `TimeoutError`, que atrapas con `try`/`except` como cualquier error.
 
 ```py run
 import asyncio
@@ -495,8 +513,10 @@ tests:
   - name: las dos grúas se reparten los cinco contenedores
     run: descargados
     equals: ["STS-1 MSKU-1", "STS-2 CMAU-2", "STS-1 HLXU-3", "STS-2 TGHU-4", "STS-1 MRKU-5"]
+    msg: "Cada grúa saca con `get`, trabaja y llama a `task_done()`; el camión pone con `put`."
   - name: espera la cola con join
     source: 'await\s+cola\.join\(\)'
+    msg: "El programa principal debe esperar con `await cola.join()`."
 ```
 
 ## El caso

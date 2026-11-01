@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Túcume, Lambayeque: el valle de las pirámides. Veintiséis huacas de adobe se deshacen despacito al sol, y al pie de la Huaca Larga está el museo de sitio, donde la directora **Rosa Llontop** guarda miles de piezas: cuencos, tumis de cobre, orejeras, cuentas de spondylus y un perro sin pelo de cerámica que todos los escolares quieren tocar. El inventario está en un cuaderno de 1998 y en tres hojas de cálculo que no se ponen de acuerdo.
+> **La vez pasada:** una lista guarda cosas en fila y las encuentra por su posición. Con cuatro mil piezas, recorrerla entera para hallar una sola es lento: hay que buscar por nombre.
 
-Maru le prestó a Quilla, que ya trae su sirena, para la ronda de noche y para ordenar el inventario. Pero buscar "¿en qué vitrina está el tumi T-114?" recorriendo una lista de cuatro mil piezas es lento y aburrido. Hoy Quilla aprende a guardar las cosas **por su nombre**: diccionarios, para preguntar "¿dónde está?" de un salto, y sets, para preguntar "¿quién está en los dos lados?".
+Túcume, Lambayeque: el valle de las pirámides. Veintiséis huacas de adobe se deshacen despacito al sol, y al pie de la Huaca Larga está el museo de sitio, donde la directora **Rosa Llontop** guarda miles de piezas: cuencos, tumis de cobre, orejeras, cuentas de spondylus. El inventario está en un cuaderno de 1998 y en tres hojas de cálculo que no se ponen de acuerdo.
+
+Maru le prestó a Quilla para la ronda de noche y para ordenar el inventario. Pero buscar "¿en qué vitrina está el tumi T-114?" recorriendo una lista de cuatro mil piezas es lento. Hoy Quilla aprende a guardar las cosas **por su nombre**: diccionarios, para preguntar "¿dónde está?" de un salto, y sets, para preguntar "¿quién está en los dos lados?".
 
 ```escena
 theme: museo
@@ -29,6 +31,8 @@ program: |
 
 ## Lo mínimo
 
+### Pares clave: valor
+
 Un **diccionario** (`dict`) guarda pares **clave: valor**. En vez de buscar por posición, como en una lista, buscas por la clave: `vitrinas["tumi"]` va directo a la vitrina del tumi, tenga el museo diez piezas o diez mil.
 
 ```py run
@@ -39,12 +43,18 @@ vitrinas["ídolo"] = "V2"
 print(list(vitrinas))
 ```
 
+### Leer, escribir y recorrer
+
+Cuatro operaciones bastan para el día a día:
+
 - **Leer.** `d[clave]` da el valor, y si la clave no existe es un `KeyError`. `d.get(clave)` da `None` si no existe, y `d.get(clave, otro)` da `otro`.
 - **Escribir.** `d[clave] = valor` agrega la clave o cambia su valor si ya estaba.
 - **Preguntar.** `clave in d` mira **las claves**, nunca los valores.
 - **Recorrer.** `for clave in d` da las claves; `d.keys()`, `d.values()` y `d.items()` dan las claves, los valores y los pares `(clave, valor)`: `for sala, visitas in d.items():`.
 - **El orden** es el de inserción: las claves salen en el orden en que entraron. Cambiar el valor de una clave que ya estaba no la mueve de sitio.
 - **Unir.** `base | cambios` crea un diccionario nuevo con las claves de los dos; si una se repite, gana la de la derecha.
+
+### Contar con `get`
 
 El uso estrella de un diccionario es **contar**. `conteo.get(sala, 0)` da lo que llevas contado, o 0 la primera vez. Mira cómo se llena el diccionario:
 
@@ -63,6 +73,8 @@ notes:
   5: Las salas salen en el orden en que aparecieron por primera vez.
 ```
 
+### Diccionarios anidados y agrupar con `setdefault`
+
 Un valor puede ser cualquier cosa, también una lista u otro diccionario: eso es un **diccionario anidado**, y se lee con dos corchetes seguidos. Para agrupar, `setdefault(clave, [])` devuelve la lista de esa clave y, si no había, la crea primero:
 
 ```py run
@@ -72,6 +84,8 @@ for pieza, material in piezas:
     por_material.setdefault(material, []).append(pieza)
 print(por_material, por_material["cobre"][1])
 ```
+
+### Sets: una bolsa sin repetidos
 
 Un **set** es una bolsa sin repeticiones y sin orden: sirve para preguntar "¿ya lo vi?" y para comparar grupos. Se escribe con llaves (`{"Ana", "Beto"}`), pero el set vacío es `set()`, porque `{}` es un diccionario vacío.
 
@@ -85,7 +99,9 @@ print(len(lunes), "Wilmer" in lunes)
 
 `|` junta los dos, `&` deja lo que está en ambos y `-` lo que está en el primero y no en el segundo. Como un set no tiene orden, aquí se imprime con `sorted()`.
 
-**¿Qué puede ser clave?** Las claves de un diccionario y los elementos de un set tienen que ser **inmutables** (*hashables*): números, textos, tuplas. Una lista no, porque puede cambiar después de guardada. Por eso un cuadro de excavación se guarda como `hallazgos[(3, 4)]`, con tupla, y no como `hallazgos[[3, 4]]`, que da `TypeError: unhashable type: 'list'`.
+### ¿Qué puede ser clave?
+
+Las claves de un diccionario y los elementos de un set tienen que ser **inmutables** (*hashables*): números, textos, tuplas. Una lista no, porque puede cambiar después de guardada. Por eso un cuadro de excavación se guarda como `hallazgos[(3, 4)]`, con tupla, y no como `hallazgos[[3, 4]]`, que da `TypeError: unhashable type: 'list'`.
 
 > **Trampa común:** `d[clave]` con una clave que no existe no da `None`: detiene el programa con un `KeyError`. Si la clave puede faltar, pregunta antes con `in` o usa `d.get(clave, por_defecto)`.
 
@@ -187,10 +203,13 @@ tests:
   - name: cuenta cada material
     run: conteo
     equals: { "cerámica": 3, "cobre": 2, "concha": 1 }
+    msg: "Empieza con un diccionario vacío y suma 1 por cada material: `conteo[material] = conteo.get(material, 0) + 1`."
   - name: imprime en el orden en que aparecieron
     output: "cerámica: 3\ncobre: 2\nconcha: 1"
+    msg: "Imprime con `.items()`: el orden es el de la primera aparición de cada material."
   - name: cuenta con get
     source: '\.get\(\s*material\s*,\s*0\s*\)'
+    msg: "Usa `get(material, 0)` para que la primera vez parta de 0 en lugar de dar `KeyError`."
 ```
 
 ```exercise
@@ -268,10 +287,13 @@ hints:
 tests:
   - name: imprime el hallazgo del cuadro
     output: En (2, 5) hay un cuenco
+    msg: "Cambia las tres listas por tuplas con paréntesis: una lista no puede ser clave."
   - name: el tumi también quedó guardado
     expect: 'hallazgos[(4, 1)] == "tumi"'
+    msg: "Si arreglaste solo `[2, 5]`, falta la clave del tumi: `(4, 1)` también debe ser una tupla."
   - name: las claves son tuplas
     expect: all(type(clave) == tuple for clave in hallazgos)
+    msg: "Todas las claves deben ser tuplas, también la que usas para buscar."
 ```
 
 ```exercise
@@ -308,14 +330,18 @@ tests:
   - name: el ejemplo del dibujo
     run: 'inventariar([("T-114", "Huaca Larga", "V3"), ("C-020", "Templo", "V1"), ("T-115", "Huaca Larga", "V3"), ("O-007", "Huaca Larga", "V5")])'
     equals: { "Huaca Larga": { V3: ["T-114", "T-115"], V5: ["O-007"] }, Templo: { V1: ["C-020"] } }
+    msg: "Compara con el dibujo: `inventario[sala][vitrina]` es una lista de códigos, en el orden de llegada."
   - name: una sola pieza
     run: 'inventariar([("P-001", "Las Balsas", "V2")])'
     equals: { "Las Balsas": { V2: ["P-001"] } }
+    msg: "Con una sola pieza debe salir `{sala: {vitrina: [codigo]}}`; revisa que crees la sala y la vitrina antes de agregar."
   - name: sin piezas
     run: inventariar([])
     equals: {}
+    msg: "Sin piezas devuelve un diccionario vacío `{}`, no `None`."
   - name: las salas salen en el orden en que aparecen
     expect: 'list(inventariar([("A", "Templo", "V1"), ("B", "Huaca 1", "V1")])) == ["Templo", "Huaca 1"]'
+    msg: "Las salas deben salir en el orden en que aparecen: no ordenes las claves."
 ```
 
 ## El caso
@@ -531,7 +557,7 @@ prompt: |
   - Cada grupo es una lista con sus etiquetas en el orden en que aparecen, repetidas incluidas.
   - Los grupos van en el orden en que aparece su primera etiqueta.
 
-  Una pista para la clave del diccionario: dos etiquetas van juntas si `sorted(etiqueta)` da lo mismo. Pero `sorted` devuelve una lista, y una lista no puede ser clave.
+  Una pista para la clave del diccionario: dos etiquetas van juntas si `sorted(etiqueta)` (que ordena las letras de la etiqueta y las devuelve en una lista) da lo mismo. Pero `sorted` devuelve una lista, y una lista no puede ser clave.
 
   **Restricciones:** 0 ≤ `len(etiquetas)` ≤ 25 · cada etiqueta tiene de 1 a 6 letras mayúsculas.
 starter: |

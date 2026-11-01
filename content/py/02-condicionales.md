@@ -2,6 +2,8 @@
 
 ## El encargo
 
+> **La vez pasada:** Quilla aprendió a guardar valores en variables y a mostrarlos con `print`. Guardar no es decidir: cada noche el museo pide algo distinto.
+
 El Museo Larco, en Pueblo Libre, guarda miles de huacos, una sala entera de oro y plata y un jardín de buganvilias que de noche se queda a oscuras. Don Alipio, su vigilante nocturno de toda la vida, se jubila el viernes, y la directora llamó a Maru Chumpitaz: ¿podría Quilla hacer la ronda?
 
 Maru le atornilló una **sirena** en la cabeza y un sensor que lee la puerta de cada sala: si quedó abierta y si algo se mueve adentro. Pero ninguna noche es igual a otra. Un robot que hace siempre lo mismo le cierra la puerta en la cara a la señora de la limpieza o deja pasar a un ladrón de huacos. Hoy Quilla aprende a **decidir**.
@@ -64,13 +66,25 @@ notes:
   9: Una decisión en una sola línea, como valor de una variable.
 ```
 
-Lo que necesitas para hoy:
+### Comparar
 
-- **Comparar:** `==` (igual), `!=` (distinto), `<`, `>`, `<=`, `>=`. Python las **encadena** como en matemáticas: `9 <= hora < 18` es "hora entre 9 y 18, sin incluir el 18".
-- **Combinar** se escribe con palabras: `and` (las dos), `or` (al menos una), `not` (lo contrario).
-- **Verdadero y falso sin booleanos.** Un `if` acepta cualquier valor. Cuentan como falsos (*falsy*) `False`, `0`, `0.0`, `""` (texto vacío), `[]` (lista vacía) y `None`; todo lo demás es verdadero, incluso los textos `"0"` y `"False"`.
-- **`is None`.** `==` compara valores. `is` pregunta si es **el mismo objeto**, y solo lo usarás con `None`: `if lectura is None:`. Para todo lo demás, `==`.
-- **Una decisión en una línea:** `a if condicion else b` vale `a` cuando se cumple y `b` cuando no: `estado = "abierta" if abierta else "cerrada"`.
+Casi toda condición empieza preguntando si algo es igual, mayor o menor. `==` (igual), `!=` (distinto), `<`, `>`, `<=`, `>=`. Python las **encadena** como en matemáticas: `9 <= hora < 18` es "hora entre 9 y 18, sin incluir el 18".
+
+### Combinar condiciones
+
+A veces una sola pregunta no alcanza y hay que juntar dos. **Combinar** se escribe con palabras: `and` (las dos), `or` (al menos una), `not` (lo contrario).
+
+### Una decisión en una línea
+
+Cuando solo cambia un valor según una condición, un `if` de cuatro líneas sobra. `a if condicion else b` vale `a` cuando se cumple y `b` cuando no: `estado = "abierta" if abierta else "cerrada"`.
+
+### Verdadero y falso sin booleanos
+
+Un `if` no necesita un `True` exacto: mira si el valor "tiene algo". Cuentan como falsos (*falsy*) `False`, `0`, `0.0`, `""` (texto vacío), `[]` (lista vacía) y `None`; todo lo demás es verdadero, incluso los textos `"0"` y `"False"`.
+
+### `is None`
+
+Para preguntar si un valor "todavía no existe" se usa una comparación especial. `==` compara valores. `is` pregunta si es **el mismo objeto**, y solo lo usarás con `None`: `if lectura is None:`. Para todo lo demás, `==`.
 
 ```py run
 visitantes = 0

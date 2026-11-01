@@ -2,6 +2,8 @@
 
 ## The job
 
+> **Last time:** Quilla learned to keep values in variables and show them with `print`. Keeping is not deciding: every night the museum needs something different.
+
 The Museo Larco, in Pueblo Libre, keeps thousands of huacos, a whole room of gold and silver and a bougainvillea garden that goes dark at night. Don Alipio, its lifelong night watchman, retires on Friday, and the director called Maru Chumpitaz: could Quilla do the night round?
 
 Maru bolted a **siren** onto its head and a sensor that reads each room's door: whether it was left open and whether something is moving inside. But no two nights are alike. A robot that always does the same thing slams the door in the cleaning lady's face or lets a huaco thief through. Today Quilla learns to **decide**.
@@ -64,13 +66,25 @@ notes:
   9: A decision in a single line, as the value of a variable.
 ```
 
-What you need for today:
+### Comparing
 
-- **Comparing:** `==` (equal), `!=` (not equal), `<`, `>`, `<=`, `>=`. Python **chains** them like in maths: `9 <= hour < 18` is "hour between 9 and 18, not including 18".
-- **Combining** is written with words: `and` (both), `or` (at least one), `not` (the opposite).
-- **True and false without booleans.** An `if` accepts any value. These count as false (*falsy*): `False`, `0`, `0.0`, `""` (empty text), `[]` (empty list) and `None`; everything else is true, even the texts `"0"` and `"False"`.
-- **`is None`.** `==` compares values. `is` asks whether it's **the same object**, and you'll only use it with `None`: `if reading is None:`. For everything else, `==`.
-- **A decision in one line:** `a if condition else b` is `a` when it holds and `b` when it doesn't: `status = "open" if is_open else "closed"`.
+Almost every condition starts by asking whether something is equal, bigger or smaller. `==` (equal), `!=` (not equal), `<`, `>`, `<=`, `>=`. Python **chains** them like in maths: `9 <= hour < 18` is "hour between 9 and 18, not including 18".
+
+### Combining conditions
+
+Sometimes one question is not enough and you must join two. **Combining** is written with words: `and` (both), `or` (at least one), `not` (the opposite).
+
+### A decision in one line
+
+When only one value changes depending on a condition, a four-line `if` is too much. `a if condition else b` is `a` when it holds and `b` when it doesn't: `status = "open" if is_open else "closed"`.
+
+### True and false without booleans
+
+An `if` does not need an exact `True`: it checks whether the value "has something". These count as false (*falsy*): `False`, `0`, `0.0`, `""` (empty text), `[]` (empty list) and `None`; everything else is true, even the texts `"0"` and `"False"`.
+
+### `is None`
+
+To ask whether a value "does not exist yet" there is a special comparison. `==` compares values. `is` asks whether it's **the same object**, and you'll only use it with `None`: `if reading is None:`. For everything else, `==`.
 
 ```py run
 visitors = 0

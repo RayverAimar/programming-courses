@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Paita, Piura, cinco de la tarde. En el almacén aduanero del puerto se apilan contenedores de mango, pota congelada, conchas de abanico y café de Jaén esperando su barco. Don **Eleodoro Querevalú**, jefe del almacén desde que los papeles eran de carbón, tiene un problema: el programa que lee los manifiestos nunca se cae. Nunca. Y eso, le explicó Maru por teléfono, es justamente lo malo.
+> **La vez pasada:** la recursión resolvió problemas que se repiten dentro de sí mismos, pero cuando algo falla a mitad de camino, el programa no sabe qué hacer. Hoy aprende a fallar bien.
 
-Alguien le puso un `except: pass` "para que no moleste", y desde entonces cada línea rara desaparece sin dejar rastro: un peso mal tipeado, un producto que no está en la tarifa, un contenedor entero. Maru mandó a Quilla, con su sirena recién calibrada, a hacer las cosas bien: que los errores **se vean**, que cada uno tenga su nombre y que el programa sepa cuáles puede arreglar y cuáles no.
+Paita, Piura, cinco de la tarde. En el almacén aduanero del puerto se apilan contenedores de mango, pota y café de Jaén esperando su barco. Don **Eleodoro Querevalú**, jefe del almacén desde que los papeles eran de carbón, tiene un problema: el programa que lee los manifiestos nunca se cae. Nunca. Y eso, le explicó Maru, es justamente lo malo.
+
+Alguien le puso un `except: pass` "para que no moleste", y desde entonces cada línea rara desaparece sin dejar rastro: un peso mal tipeado, un producto que no está en la tarifa, un contenedor entero. Maru mandó a Quilla a hacer las cosas bien: que los errores **se vean**, que cada uno tenga su nombre y que el programa sepa cuáles puede arreglar y cuáles no.
 
 ```escena
 theme: barranco
@@ -29,6 +31,8 @@ program: |
 
 ## Lo mínimo
 
+### `try` y `except`
+
 Cuando algo sale mal, Python **lanza una excepción**: un objeto con un tipo (`ValueError`, `KeyError`…) y un mensaje. Si nadie la atrapa, el programa se detiene. Con **`try` / `except`** la atrapas y decides qué hacer:
 
 ```py run
@@ -46,6 +50,12 @@ for texto in ["18400", "12,5"]:
 - **`try`**: el código que puede fallar. Mantenlo corto: solo lo que de verdad puede lanzar.
 - **`except Tipo as error`**: corre si lo de arriba lanzó ese tipo (o uno que **hereda** de él). Varios tipos van en una tupla: `except (ValueError, KeyError):`.
 - **`else`**: corre solo si **no** hubo error. **`finally`**: corre **siempre**, haya error, `return` o lo que sea: el lugar para soltar la grúa o cerrar el portón.
+
+<!-- photo: js-first-computer-bug -->
+
+> **Historia:** El 9 de septiembre de 1947, los operadores de la computadora Harvard Mark II hallaron una polilla atrapada entre los contactos de un relé (el 70 del panel F). La pegaron en el cuaderno de registro con la nota "First actual case of bug being found": el primer caso real de un bicho encontrado. La palabra *bug* ya se usaba para hablar de fallas; la gracia era que esta vez el bicho era de verdad.
+
+<!-- /photo -->
 
 Mira el salto: cuando `int` falla dentro de `kilos`, la función se corta en esa línea, su caja sale de la pila y el programa aterriza en el `except` de quien la llamó.
 
@@ -69,6 +79,8 @@ notes:
   9: "El error subió desde kilos y lo atrapa este except. El bucle sigue con la siguiente lectura."
   11: "Se sumaron solo las dos lecturas buenas."
 ```
+
+### La excepción sube por las llamadas
 
 Una excepción no se queda donde nace: **sale de la llamada y sube**, llamada por llamada, hasta que alguien la atrapa. Mira cómo cruza tres llamadas hasta el `try` de `principal`, y qué pasa si no hay ninguno:
 
@@ -116,7 +128,9 @@ steps:
   - { line: 7, vars: {}, stack: [], out: "Traceback (most recent call last):\n  File \"program.py\", line 7, in <module>\n  File \"program.py\", line 5, in pesar\n  File \"program.py\", line 2, in leer\nValueError: invalid literal for int() with base 10: '12,5'", note: "La pila se vació sin encontrar un `except`: el programa **se detiene** y el traceback lista las llamadas por las que pasó la excepción, de la primera a la última. La línea 8 nunca corre." }
 ```
 
-**Lanzar tus propios errores.** `raise ValueError("mensaje")` detiene la función y avisa a quien la llamó. Para errores de tu negocio, crea una **jerarquía** de clases que heredan de `Exception`: así un `except` puede atrapar uno solo o toda una familia.
+### Lanzar tus propios errores
+
+Para avisar tú mismo que algo no es válido. `raise ValueError("mensaje")` detiene la función y avisa a quien la llamó. Para errores de tu negocio, crea una **jerarquía** de clases que heredan de `Exception`: así un `except` puede atrapar uno solo o toda una familia.
 
 ```py run
 class ErrorAduana(Exception):
@@ -131,13 +145,21 @@ except ErrorAduana as error:
     print(type(error).__name__, error, isinstance(error, PrecintoRoto))
 ```
 
-**`raise … from`.** Cuando traduces un error técnico a uno de tu negocio, encadénalos: `raise SinManifiesto(codigo) from error` guarda el `KeyError` original en `__cause__`, y el traceback muestra los dos.
+### `raise … from`
 
-**Pedir perdón o pedir permiso.** *LBYL* (mira antes de saltar) pregunta primero: `if codigo in manifiestos:`. *EAFP* (es más fácil pedir perdón) lo intenta y atrapa el error: `try: manifiestos[codigo]` / `except KeyError:`. En Python se prefiere EAFP cuando el caso raro es raro, porque no repite la búsqueda y no se le escapa nada entre la pregunta y el uso. Para el robot es al revés: sus errores (chocar con una pared, quedarse sin batería) **no son `Exception`**, ni `except Exception` los esconde, y un choque es un choque. Ahí mira antes con `robot.hay_pared()`.
+Para no perder el error original al traducirlo a uno de tu negocio. Cuando traduces un error técnico a uno de tu negocio, encadénalos: `raise SinManifiesto(codigo) from error` guarda el `KeyError` original en `__cause__`, y el traceback muestra los dos.
 
-**`assert condicion, "mensaje"`** comprueba algo que **tu propio código** garantiza (`assert total >= 0`); si falla, es un bug tuyo y lanza `AssertionError`. No valida datos de afuera: Python puede ejecutarse con los `assert` apagados.
+### Pedir perdón o pedir permiso
 
-**Muchos errores a la vez.** Para no detenerte en el primero, júntalos en un **`ExceptionGroup`** y atiéndelos con **`except*`**: cada `except*` recibe un grupo con los de su tipo, y pueden correr varios.
+Hay dos estilos para tratar un caso que puede fallar. *LBYL* (mira antes de saltar) pregunta primero: `if codigo in manifiestos:`. *EAFP* (es más fácil pedir perdón) lo intenta y atrapa el error: `try: manifiestos[codigo]` / `except KeyError:`. En Python se prefiere EAFP cuando el caso raro es raro, porque no repite la búsqueda y no se le escapa nada entre la pregunta y el uso. Para el robot es al revés: sus errores (chocar con una pared, quedarse sin batería) **no son `Exception`**, ni `except Exception` los esconde, y un choque es un choque. Ahí mira antes con `robot.hay_pared()`.
+
+### `assert`
+
+Para dejar escrito algo que tu propio código da por seguro. **`assert condicion, "mensaje"`** comprueba algo que **tu propio código** garantiza (`assert total >= 0`); si falla, es un bug tuyo y lanza `AssertionError`. No valida datos de afuera: Python puede ejecutarse con los `assert` apagados.
+
+### Muchos errores a la vez
+
+Para no detenerte en el primer error cuando hay varios. Para no detenerte en el primero, júntalos en un **`ExceptionGroup`** y atiéndelos con **`except*`**: cada `except*` recibe un grupo con los de su tipo, y pueden correr varios.
 
 ```py run
 try:
@@ -277,13 +299,17 @@ hints:
 tests:
   - name: imprime el error y su causa
     output: "Retenido: SUDU-5150 no tiene manifiesto | causa: KeyError('SUDU-5150')"
+    msg: "Usa `raise SinManifiesto(...) from error` y muestra la causa con `error.__cause__`."
   - name: SinManifiesto es un ErrorAduana
     expect: issubclass(SinManifiesto, ErrorAduana)
+    msg: "`SinManifiesto` debe heredar de `ErrorAduana`: `class SinManifiesto(ErrorAduana):`."
   - name: un código con manifiesto devuelve sus kilos
     run: kilos_declarados("MSKU-4410")
     equals: 18400
+    msg: "Si el código está en el diccionario, devuelve sus kilos sin lanzar nada."
   - name: encadena con from
     source: 'raise\s+SinManifiesto\([\s\S]*\)\s*from\s+error'
+    msg: "Encadena con `from error` para no perder el `KeyError` original."
 ```
 
 ```exercise
@@ -404,22 +430,29 @@ tests:
   - name: limpia y devuelve un precinto bueno
     run: probar(" pe-004512 ")
     equals: PE-004512
+    msg: "Un buen precinto se devuelve limpio y en mayúsculas: `\" pe-004512 \"` → `PE-004512`."
   - name: muy corto
     run: probar("PE-12")
     equals: PrecintoInvalido
+    msg: "`PE-12` tiene menos de 6 dígitos: lanza `PrecintoInvalido`."
   - name: otro prefijo
     run: probar("XX-004512")
     equals: PrecintoInvalido
+    msg: "Revisa que empiece exactamente con `PE-`."
   - name: letras donde van dígitos
     run: probar("PE-00451A")
     equals: PrecintoInvalido
+    msg: "Los 6 caracteres después de `PE-` deben ser todos dígitos (`isdigit()`)."
   - name: siete dígitos
     run: probar("PE-0045123")
     equals: PrecintoInvalido
+    msg: "Siete dígitos son demasiados: exige exactamente 6."
   - name: el mensaje es el texto original
     expect: 'str(PrecintoInvalido("pe-1")) == "pe-1" and issubclass(PrecintoInvalido, ErrorAduana)'
+    msg: "`PrecintoInvalido(texto)` debe guardar el texto original y heredar de `ErrorAduana`."
   - name: lanza el error con raise
     source: 'raise\s+PrecintoInvalido\('
+    msg: "Lanza el error con `raise PrecintoInvalido(texto)`; no devuelvas un mensaje."
 ```
 
 ```exercise

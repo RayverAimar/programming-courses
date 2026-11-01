@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Nazca, siete de la mañana. En el aeródromo María Reiche, las avionetas calientan motores para llevar turistas sobre el Colibrí, el Mono y la Ballena, figuras de trescientos metros que solo se entienden desde el aire. La torre de control es una caseta de dos pisos con una radio, un ventilador y **Eusebio Ccahuana**, el controlador, que lleva treinta años diciendo "OB-1622, mantenga trescientos" sin perder la paciencia.
+> **La vez pasada:** Quilla aprendió a lanzar y atrapar errores con nombre propio. Ahora el desorden está en los datos: mensajes de todo tipo que hay que reconocer antes de usarlos.
 
-Ahora a la torre le llegan mensajes de todo tipo: posiciones con altura, avisos de radio, pedidos de pista, drones de los turistas que no deberían estar ahí. Maru le prestó a Quilla, con su sirena, para que los clasifique y, de noche, haga la ronda del museo de la casa de María Reiche. Hoy Quilla aprende a **decir qué forma tienen sus datos** (tipos), a nombrar estados fijos (`Enum`) y a **reconocer la forma de un mensaje** con `match`.
+Nazca, siete de la mañana. En el aeródromo María Reiche, las avionetas calientan motores para llevar turistas sobre el Colibrí, el Mono y la Ballena. La torre de control es una caseta con una radio, un ventilador y **Eusebio Ccahuana**, el controlador, que lleva treinta años diciendo "OB-1622, mantenga trescientos" sin perder la paciencia.
+
+Ahora a la torre le llegan mensajes de todo tipo: posiciones con altura, avisos de radio, pedidos de pista, drones de los turistas que no deberían estar ahí. Maru le prestó a Quilla para que los clasifique. Hoy Quilla aprende a **decir qué forma tienen sus datos** (tipos), a nombrar estados fijos (`Enum`) y a **reconocer la forma de un mensaje** con `match`.
 
 ```escena
 theme: museo
@@ -32,6 +34,8 @@ program: |
 
 ## Lo mínimo
 
+### Anotaciones de tipo
+
 Una **anotación de tipo** dice qué espera una función y qué devuelve: `alturas: list[int]` es "una lista de enteros" y `-> float` es "devuelve un decimal". Los tipos de siempre aceptan corchetes: `list[int]`, `dict[str, float]`, `tuple[int, int]`, `set[str]`.
 
 ```py run
@@ -42,9 +46,23 @@ minimos: dict[str, float] = {"Colibrí": 300.0, "Mono": 350.0}
 print(promedio([300, 450, 600]), minimos["Mono"])
 ```
 
-- **`X | None`** es "un `X` o nada": `def buscar(matricula: str) -> int | None:` puede devolver `None`. `int | str` es "uno u otro".
-- **`Callable[[int], int]`** (de `collections.abc`) es "una función que recibe un `int` y devuelve un `int`".
-- **Python no revisa las anotaciones al ejecutar.** Son documentación que leen las personas, el editor y herramientas como `mypy`; `promedio((1, 2))` funciona aunque diga `list[int]`.
+### `X | None`
+
+Para decir que un valor puede faltar. **`X | None`** es "un `X` o nada": `def buscar(matricula: str) -> int | None:` puede devolver `None`. `int | str` es "uno u otro".
+
+### `Callable`
+
+Para anotar una función que recibe otra función. **`Callable[[int], int]`** (de `collections.abc`) es "una función que recibe un `int` y devuelve un `int`".
+
+### Python no revisa las anotaciones
+
+Para no esperar de ellas lo que no hacen. **Python no revisa las anotaciones al ejecutar.** Son documentación que leen las personas, el editor y herramientas como `mypy`; `promedio((1, 2))` funciona aunque diga `list[int]`.
+
+<!-- photo: js-mars-climate-orbiter -->
+
+> **Historia:** En septiembre de 1999, la sonda Mars Climate Orbiter de la NASA se perdió al llegar a Marte: entró demasiado cerca del planeta y se destruyó en su atmósfera. Un programa calculaba el impulso de los propulsores en libras-fuerza por segundo, y el que calculaba la trayectoria esperaba newtons por segundo, una diferencia de 4,45 veces. Cada programa funcionaba por separado; lo que falló fue lo que se prometían entre ellos. Por eso conviene que una función diga qué recibe y qué entrega, y en qué unidad.
+
+<!-- /photo -->
 
 ```py run
 from collections.abc import Callable
@@ -54,6 +72,8 @@ def corregir(alturas: list[int], regla: Callable[[int], int]) -> list[int]:
 
 print(corregir([250, 400], lambda altura: max(altura, 300)), corregir("ab", str.upper))
 ```
+
+### `TypedDict` y `Protocol`
 
 Para diccionarios con claves fijas está **`TypedDict`**, y para decir "cualquier cosa que tenga este método" está **`Protocol`** (el *duck typing* de la sesión 13, con nombre). Los dos son solo tipos: en tiempo de ejecución un `TypedDict` es un `dict` común.
 
@@ -76,6 +96,8 @@ def avisar(cosa: ConReporte) -> str:   # vale cualquier objeto con reporte()
     return "Torre: " + cosa.reporte()
 ```
 
+### Funciones genéricas
+
 Una función **genérica** declara su parámetro de tipo entre corchetes, `def f[T](…)`: `T` es "el mismo tipo, sea cual sea". `primero` devuelve un `str` si le das textos y un `int` si le das números.
 
 ```py run
@@ -84,6 +106,8 @@ def primero[T](elementos: list[T], si_no_hay: T) -> T:
 
 print(primero(["Colibrí", "Mono"], "ninguna"), primero([], 0))
 ```
+
+### `Enum`: valores con nombre
 
 Un **`Enum`** reúne un conjunto fijo de valores con nombre. `Pista.CERRADA` no se puede escribir mal sin que Python avise, cosa que un texto `"cerada"` sí permite.
 
@@ -97,6 +121,8 @@ class Pista(Enum):
 estado = Pista("cerrada")
 print(estado.name, estado.value, estado is Pista.CERRADA, [p.name for p in Pista])
 ```
+
+### `match`: patrones
 
 Y ahora la estrella: **`match`** compara un valor con varios **patrones**, de arriba abajo, y ejecuta el **primer** `case` que encaja. Un patrón no solo compara: también **saca las partes** a variables. Mira cómo la torre lee tres mensajes:
 
@@ -291,10 +317,13 @@ hints:
 tests:
   - name: imprime el estado y la lista
     output: "OCUPADA espere en circuito\n['libre', 'ocupada', 'cerrada']"
+    msg: "Revisa la consola: el estado como miembro (`OCUPADA`) y la lista de valores."
   - name: estado es un miembro de Pista
     expect: estado is Pista.OCUPADA
+    msg: "Convierte el texto con `Pista(\"ocupada\")` para obtener el miembro `Pista.OCUPADA`."
   - name: la pista cerrada desvía a Ica
     expect: 'permiso(Pista.CERRADA) == "desvíe a Ica"'
+    msg: "En el `match`, el caso `Pista.CERRADA` (con punto) responde `desvíe a Ica`."
 ```
 
 ```exercise
@@ -396,16 +425,22 @@ hints:
 tests:
   - name: el ejemplo del dibujo
     expect: 'agrupar([250, 450, 280, 600], lambda altura: altura >= 300) == {False: [250, 280], True: [450, 600]}'
+    msg: "Agrupa por lo que devuelve `clave(elemento)`; los grupos conservan el orden de aparición."
   - name: figuras por su inicial
     expect: 'agrupar(["Mono", "Colibrí", "Manos", "Cóndor"], lambda figura: figura[0]) == {"M": ["Mono", "Manos"], "C": ["Colibrí", "Cóndor"]}'
+    msg: "Con `figura[0]` como clave, las que empiezan igual quedan juntas y en orden."
   - name: con len como clave
     expect: 'agrupar(["Mono", "Árbol", "Loro"], len) == {4: ["Mono", "Loro"], 5: ["Árbol"]}'
+    msg: "`len` también sirve de clave: es una función como cualquier otra."
   - name: sin elementos
     expect: agrupar([], len) == {}
+    msg: "Sin elementos devuelve un diccionario vacío."
   - name: declara los parámetros de tipo
     source: 'def\s+agrupar\s*\[\s*T\s*,\s*K\s*\]'
+    msg: "La firma lleva `[T, K]` justo después del nombre: `def agrupar[T, K](…)`."
   - name: anota la clave con Callable
     source: 'clave\s*:\s*Callable\['
+    msg: "Anota el parámetro como `clave: Callable[[T], K]`."
 ```
 
 ```exercise
@@ -480,20 +515,26 @@ tests:
   - name: una avioneta baja
     run: 'instruccion(Avioneta("OB-1501", 250))'
     equals: "OB-1501: suba ya"
+    msg: "Una avioneta por debajo de 300 m: patrón de clase con guarda `if altura < 300`."
   - name: una avioneta justo a 300
     run: 'instruccion(Avioneta("OB-1622", 300))'
     equals: "OB-1622: siga"
+    msg: "A 300 m justos ya no es baja: cae en el `case Avioneta(...)` general."
   - name: un dron alto
     run: 'instruccion(Dron("Yolanda", 150))'
     equals: "dron de Yolanda: baje a 120"
+    msg: "Un dron a más de 120 m debe bajar: guarda `altura > 120`."
   - name: un dron justo a 120
     run: 'instruccion(Dron("Fermín", 120))'
     equals: "dron de Fermín: ok"
+    msg: "A 120 m justos el dron está bien: cae en el caso general de `Dron`."
   - name: otra cosa
     run: 'instruccion("cóndor")'
     equals: no identificado
+    msg: "Cualquier otra cosa termina en `case _:` con `\"no identificado\"`."
   - name: usa patrones de clase
     source: 'case\s+Avioneta\('
+    msg: "Usa patrones de clase como `case Avioneta(matricula=m, altura=a)`."
 ```
 
 ## El caso
@@ -1074,7 +1115,7 @@ visual:
 prompt: |
   **Escribe `evaluar(expr: Expr, entorno: dict[str, int]) -> int`, que calcula una fórmula escrita como tuplas anidadas.** Para quien ya programa.
 
-  Eusebio guarda las fórmulas de combustible como árboles, para poder cambiarlas sin tocar el programa. Declara el tipo con un alias recursivo, `type Expr = int | str | tuple[...]` (la sentencia `type`, prima de `def f[T]`), y resuélvelo con un solo `match`:
+  Eusebio guarda las fórmulas de combustible como árboles, para poder cambiarlas sin tocar el programa. Declara el tipo con un alias recursivo, `type Expr = int | str | tuple[...]` (la sentencia `type` le da un nombre a un tipo, y ese nombre puede usarse dentro de su propia definición; es prima de `def f[T]`), y resuélvelo con un solo `match`:
 
   - un `int` vale lo que es; un `str` es una variable y vale `entorno[nombre]`;
   - `("+", a, b)`, `("-", a, b)`, `("*", a, b)`: la operación con los dos lados evaluados;

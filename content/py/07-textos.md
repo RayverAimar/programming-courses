@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Catacaos, en el Bajo Piura, a media cuadra de la calle Comercio, donde las tiendas de filigrana brillan desde la vereda. Ahí, en un segundo piso que huele a café de olla, transmite **Radio La Filigrana**: la voz de doña **Hermelinda Sosa** despierta al pueblo a las cinco con avisos, saludos y dedicatorias. La gente llama, dicta su mensaje y el practicante lo apunta como puede: con espacios de más, todo en mayúsculas o todo en minúsculas, a veces en clave.
+> **La vez pasada:** con diccionarios y sets Quilla busca de un salto. Lo que llega por la radio no son datos ordenados, sino texto sucio, y hay que limpiarlo antes de buscar nada.
 
-Hermelinda le pidió a Maru "un robot que lea bonito" y a Quilla lo mandaron en bus hasta Piura. Los mensajes son **texto**, y hoy Quilla aprende a limpiarlos, cortarlos, buscar dentro de ellos y darles formato. Al final del día llevará los encargos dictados por la radio, casa por casa.
+Catacaos, en el Bajo Piura, a media cuadra de la calle Comercio, donde las tiendas de filigrana brillan desde la vereda. Ahí, en un segundo piso que huele a café de olla, transmite **Radio La Filigrana**: la voz de doña **Hermelinda Sosa** despierta al pueblo a las cinco con avisos, saludos y dedicatorias. La gente llama, dicta su mensaje y el practicante lo apunta como puede: con espacios de más, todo en mayúsculas o todo en minúsculas.
+
+Hermelinda le pidió a Maru "un robot que lea bonito" y mandaron a Quilla en bus. Los mensajes son **texto**, y hoy Quilla aprende a limpiarlos, cortarlos, buscar dentro de ellos y darles formato. Al final del día llevará los encargos dictados por la radio, casa por casa.
 
 ```escena
 theme: barranco
@@ -27,6 +29,8 @@ program: |
 
 ## Lo mínimo
 
+### Métodos de texto
+
 Un texto (`str`) es una fila de caracteres. Python trae decenas de **métodos** para trabajar con ellos: se llaman con un punto, `texto.metodo()`, y **cada uno devuelve un texto nuevo**.
 
 ```py run
@@ -41,6 +45,8 @@ print(limpio.replace("Wilmer", "su sobrino Wilmer"))
 - **`strip()`** quita los espacios (y saltos de línea) de los extremos; **`lower()`** / **`upper()`** cambian a minúsculas / mayúsculas.
 - **`split(sep)`** parte el texto en una lista de trozos; **sin argumento**, parte por cualquier cantidad de espacios y descarta los vacíos. **`sep.join(lista)`** hace lo contrario: une los trozos poniendo `sep` en medio. `" ".join(texto.split())` deja un solo espacio entre palabras.
 - **`replace(viejo, nuevo)`** cambia todas las apariciones; **`startswith`** / **`endswith`** preguntan por el comienzo y el final; **`find`** dice en qué posición aparece algo (o `-1` si no está); **`count`** cuenta cuántas veces aparece.
+
+### Posiciones y cortes
 
 Cada carácter tiene una **posición**, que empieza en 0. Con corchetes sacas uno o un **corte** `[desde:hasta:paso]`, igual que en las listas: `hasta` no se incluye y los negativos cuentan desde el final.
 
@@ -60,6 +66,8 @@ print(codigo[::-1])
 print("SOMBRERO" in codigo, len(codigo))
 ```
 
+### Recorrer un texto
+
 Un `for` recorre un texto **carácter por carácter**, y `in` pregunta si un carácter (o un trozo) está dentro de otro texto. Mira cómo Quilla cuenta las vocales de un saludo:
 
 ```anima
@@ -77,7 +85,9 @@ notes:
   6: "El espacio y las consonantes no sumaron nada."
 ```
 
-**Formato dentro de las f-strings.** Después de `:` va cómo escribir el valor: `{x:>8}` lo alinea a la derecha en 8 espacios (`<` a la izquierda, `^` al centro), `{x:.2f}` con dos decimales, `{x:,}` con separador de miles y `{x:05d}` con ceros a la izquierda hasta 5 cifras. Se combinan: `{x:>10,.2f}`.
+### Formato dentro de las f-strings
+
+Para alinear columnas y fijar decimales. Después de `:` va cómo escribir el valor: `{x:>8}` lo alinea a la derecha en 8 espacios (`<` a la izquierda, `^` al centro), `{x:.2f}` con dos decimales, `{x:,}` con separador de miles y `{x:05d}` con ceros a la izquierda hasta 5 cifras. Se combinan: `{x:>10,.2f}`.
 
 ```py run
 cliente = "Petronila"
@@ -86,7 +96,9 @@ print(f"[{cliente:<12}][{cliente:>12}][{cliente:^12}]")
 print(f"S/ {total:>10,.2f}  Pedido {7:05d}")
 ```
 
-**Los caracteres son números.** `ord("A")` da el código de la letra (65) y `chr(65)` hace el camino de vuelta. Como las letras de la `A` a la `Z` tienen códigos seguidos, con `ord` y `chr` se puede "mover" una letra: `chr(ord("A") + 2)` es `"C"`.
+### Los caracteres son números
+
+Para mover letras (cifrar, contar) hay que tratarlas como números. `ord("A")` da el código de la letra (65) y `chr(65)` hace el camino de vuelta. Como las letras de la `A` a la `Z` tienen códigos seguidos, con `ord` y `chr` se puede "mover" una letra: `chr(ord("A") + 2)` es `"C"`.
 
 ```py run
 print(ord("A"), ord("B"), ord("Z"))
@@ -297,18 +309,23 @@ tests:
   - name: la asociación
     run: siglas("Asociación  de Artesanos de Catacaos")
     equals: AAC
+    msg: "Parte con `split()`, salta las palabras cortas y junta la inicial de las demás en mayúscula."
   - name: con mayúsculas y minúsculas mezcladas
     run: siglas("radio LA filigrana DEL bajo piura")
     equals: RFBP
+    msg: "Compara las palabras cortas en minúscula (`palabra.lower()`) y pasa la inicial a mayúscula."
   - name: con espacios en los extremos
     run: siglas("   feria y fiesta   ")
     equals: FF
+    msg: "`split()` sin argumento ya ignora los espacios de los extremos y los repetidos."
   - name: un nombre vacío
     run: siglas("")
     equals: ""
+    msg: "Un nombre vacío no tiene palabras: devuelve el texto vacío `\"\"`."
   - name: con tildes
     run: siglas("úrsula ñique")
     equals: ÚÑ
+    msg: "`palabra[0].upper()` conserva las tildes y la ñ: no uses `ord` ni listas de letras."
 ```
 
 ```exercise
@@ -318,7 +335,7 @@ title: La ficha de la dedicatoria
 prompt: |
   Escribe `leer_dedicatoria(ficha)`, que devuelve la frase que Hermelinda lee al aire: `Wilmer le dedica «Cholo soy» a la tía Chabuca`.
 
-  El practicante llena una ficha por llamada, con tres campos separados por `|`: `DE:`, `PARA:` y `CANCIÓN:`, **en cualquier orden** y con espacios de más alrededor. Recorre los campos, límpialos y reconoce cada uno por cómo empieza (`startswith`), quitándole la etiqueta con `removeprefix`.
+  El practicante llena una ficha por llamada, con tres campos separados por `|`: `DE:`, `PARA:` y `CANCIÓN:`, **en cualquier orden** y con espacios de más alrededor. Recorre los campos, límpialos y reconoce cada uno por cómo empieza (`startswith`), quitándole la etiqueta con `removeprefix` (`"DE: Ana".removeprefix("DE:")` da `" Ana"`: quita ese comienzo si está).
 visual:
   figure:
     title: Una ficha, campo por campo

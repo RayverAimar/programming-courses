@@ -2,9 +2,11 @@
 
 ## The job
 
-Callao, six in the morning, Muelle Sur. The *Mama Ocllo*, a container ship coming from Valparaíso, is already moored, and **Gladys Huamán**, the terminal's crane coordinator, has to decide which container comes down first. Each gantry crane's schedule is known by an old server in the control tower, which answers whenever it feels like it: sometimes in the blink of an eye, sometimes once the coffee has gone cold, and sometimes with a `503`.
+> **Last time:** types and `match` taught Quilla to recognise the shape of a message. Now the message takes a while to arrive, and standing still waiting for it lets the ship sail without its cargo.
 
-Maru sent Quilla over from Chucuito with its siren on and a warning: "If you ask the tower crane by crane and stand there waiting for every answer, the ship sails with the cargo still on board". Today Quilla learns to **ask for several things at once**, not to wait forever, and to insist patiently when the server fails.
+Callao, six in the morning, Muelle Sur. The *Mama Ocllo*, a container ship coming from Valparaíso, is already moored, and **Gladys Huamán**, crane coordinator, has to decide which container comes down first. Each gantry crane's schedule is known by an old server in the control tower, which answers whenever it feels like it: sometimes in the blink of an eye, sometimes once the coffee has gone cold, and sometimes with a `503`.
+
+Maru sent Quilla over with a warning: "If you ask the tower crane by crane and stand there waiting for every answer, the ship sails with the cargo still on board". Today Quilla learns to **ask for several things at once**, not to wait forever, and to insist patiently when the server fails.
 
 ```scene
 theme: barranco
@@ -28,11 +30,21 @@ program: |
 
 ## The minimum
 
+### Waiting without standing still
+
 Until now every line finished before the next one started. Asking a server something isn't like that: the answer **takes time**, and meanwhile the program could be doing something else, like asking for the next thing.
 
-- **`async def`** defines a **coroutine function**. Calling it doesn't run anything yet: it returns a **coroutine**, a recipe ready to run.
-- **`await coroutine`** runs it and waits for its result. While it waits, the **event loop** (the one that hands out turns among coroutines, one at a time) looks after others. You can only write `await` inside an `async def`.
-- **`asyncio.run(main())`** starts the event loop, runs the main coroutine to the end and closes it. It's the front door: you call it once, from normal code.
+### `async def`
+
+To mark a function that can wait without blocking the rest. **`async def`** defines a **coroutine function**. Calling it doesn't run anything yet: it returns a **coroutine**, a recipe ready to run.
+
+### `await`
+
+To say where the function waits for an answer. **`await coroutine`** runs it and waits for its result. While it waits, the **event loop** (the one that hands out turns among coroutines, one at a time) looks after others. You can only write `await` inside an `async def`.
+
+### `asyncio.run`
+
+To start everything from normal code. **`asyncio.run(main())`** starts the event loop, runs the main coroutine to the end and closes it. It's the front door: you call it once, from normal code.
 
 ```py run
 import asyncio
@@ -50,7 +62,9 @@ asyncio.run(main())
 
 In the exercises with a server, the tower is called `workshop`: `await workshop.request("STS-1")` fetches a resource and `workshop.now()` says how many milliseconds have gone by. If it fails, it raises `ServerError`, with the code in `error.status` (`503` if it didn't answer, `404` if it doesn't exist). Time is **simulated**: nothing really waits, but the delays and failures are the same every time you run. Without a server, `asyncio.get_running_loop().time()` gives the clock in seconds.
 
-**One after another or all at once.** Two `await`s in a row wait for the first to finish completely before asking for the second: the times add up. **`asyncio.gather(c1, c2, …)`** launches all the coroutines at once and returns their results **in the order you passed them**, not the order they arrived in.
+### One after another or all at once
+
+Two `await`s in a row wait for the first to finish completely before asking for the second: the times add up. **`asyncio.gather(c1, c2, …)`** launches all the coroutines at once and returns their results **in the order you passed them**, not the order they arrived in.
 
 Before the code, look at **who does what** when two requests are in the air. The **event loop** is the one that hands out turns: at any moment **one** coroutine runs, and when it says `await`, the loop gives the turn to another.
 
@@ -152,7 +166,9 @@ panes:
   - { label: "with gather: 310 ms", text: "        0   100  200  300  400  500\nSTS-1   ████████████████\nSTS-2   ███████████" }
 ```
 
-**Tasks.** `asyncio.create_task(coroutine)` sets it running **right away**, in the background, and gives you a task; later, `await task` collects its result. To launch several and wait for all of them, **`async with asyncio.TaskGroup() as group:`** is the modern way: you create the tasks with `group.create_task(…)` and, when you leave the block, they've all finished. If one fails, the group cancels the rest and hands you the error.
+### Tasks
+
+To start something and carry on with other work meanwhile. `asyncio.create_task(coroutine)` sets it running **right away**, in the background, and gives you a task; later, `await task` collects its result. To launch several and wait for all of them, **`async with asyncio.TaskGroup() as group:`** is the modern way: you create the tasks with `group.create_task(…)` and, when you leave the block, they've all finished. If one fails, the group cancels the rest and hands you the error.
 
 ```py run
 import asyncio
@@ -170,7 +186,9 @@ async def main():
 asyncio.run(main())
 ```
 
-**Deadlines.** `async with asyncio.timeout(seconds):` puts a limit on everything you wait for inside the block. If it runs out, it cancels whatever was waiting and raises `TimeoutError`, which you catch with `try`/`except` like any other error.
+### Deadlines
+
+So you do not wait forever for a server that does not answer. `async with asyncio.timeout(seconds):` puts a limit on everything you wait for inside the block. If it runs out, it cancels whatever was waiting and raises `TimeoutError`, which you catch with `try`/`except` like any other error.
 
 ```py run
 import asyncio
@@ -495,8 +513,10 @@ tests:
   - name: the two cranes share the five containers
     run: unloaded
     equals: ["STS-1 MSKU-1", "STS-2 CMAU-2", "STS-1 HLXU-3", "STS-2 TGHU-4", "STS-1 MRKU-5"]
+    msg: "Each crane takes with `get`, works and calls `task_done()`; the truck puts with `put`."
   - name: waits for the queue with join
     source: 'await\s+queue\.join\(\)'
+    msg: "The main program must wait with `await queue.join()`."
 ```
 
 ## The case

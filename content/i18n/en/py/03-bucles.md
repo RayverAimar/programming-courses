@@ -2,6 +2,8 @@
 
 ## The job
 
+> **Last time:** with `if`, Quilla can decide, but only once. In the mine it has to decide again and again until the rock says stop.
+
 In Cerro de Pasco, more than four thousand metres up, the cold cuts like a knife, and the San Expedito mine has just reopened a tunnel that had been shut for years. The forewoman, **Doña Eulalia Ticse**, called Maru: she needs someone to walk the galleries, pick up the quartz crystals the rock has been shedding and say how many there are. Nobody remembers how long the tunnels are.
 
 Maru bolted a **headlamp** onto Quilla and put it on the bus from Lima to Cerro. Darkness isn't the problem: the problem is that Quilla doesn't know how many steps to take. Today you teach it to **repeat** without counting by hand: "while there's no rock ahead, move and collect".
@@ -30,7 +32,7 @@ program: |
 A **loop** repeats a block of code. Python has two:
 
 - **`while condition:`** repeats *while* the condition is true. Use it when you don't know how many passes there will be: "while there's no wall".
-- **`for variable in …:`** makes one pass for each element of something you can walk through: a list, a string, or a `range`, which is a sequence of numbers.
+- **`for variable in …:`** makes one pass for each element of something you can walk through: a list (several values between square brackets, like `[40, 85, 120]`; you will see it in depth in session 5), a string, or a `range`, which is a sequence of numbers.
 
 ```py run
 for metres in range(0, 200, 50):
@@ -41,7 +43,11 @@ while lamp > 0:
     lamp -= 1
 ```
 
-`range(a, b, step)` counts from `a` **up to just before `b`**, `step` at a time: `range(0, 200, 50)` gives 0, 50, 100 and 150, but not 200. With a single number, `range(5)` is 0, 1, 2, 3, 4; and the step can be negative: `range(10, 0, -3)` is 10, 7, 4, 1.
+### `range`: counting without typing the numbers
+
+To repeat "10 times" or "every 5" you will not type the numbers by hand. `range(a, b, step)` counts from `a` **up to just before `b`**, `step` at a time: `range(0, 200, 50)` gives 0, 50, 100 and 150, but not 200. With a single number, `range(5)` is 0, 1, 2, 3, 4; and the step can be negative: `range(10, 0, -3)` is 10, 7, 4, 1.
+
+### When `while` checks its condition
 
 Press ▶ and watch how the `while` checks its condition **before** every pass:
 
@@ -61,12 +67,19 @@ notes:
   6: With 10 battery, 10 >= 15 is false and the loop is over.
 ```
 
-What you need for today:
+<!-- photo: py-patriot-scud -->
 
-- **Accumulators and counters.** A variable that starts at `0` before the loop and grows inside it: `total += vein` adds, `empty += 1` counts. Python has no `++`.
-- **`break`** leaves the loop right there; **`continue`** skips the rest of this pass and moves on to the next one.
-- **`for … else`.** A loop's `else` runs only if the loop finished **without** a `break`: "I searched and didn't find it".
-- **Nested loops.** A loop inside another: for every pass of the outer one, the inner one makes all of its passes.
+> **History:** On 25 February 1991, during the Gulf War, a Scud missile hit barracks in Dhahran, Saudi Arabia, and killed 28 American soldiers. The Patriot battery meant to intercept it had been running for 100 hours, counting time in tenths of a second; because those numbers were truncated to 24 bits, its clock had drifted by a third of a second, about 600 metres for a missile. Adding a tiny error on every turn, many times in a row, stops being tiny.
+
+<!-- /photo -->
+
+### Accumulators and counters
+
+Almost every loop exists to gather something: a total, a count. A variable that starts at `0` before the loop and grows inside it: `total += vein` adds, `empty += 1` counts. Python has no `++`.
+
+### `break` and `continue`
+
+You do not always have to make every pass: you can leave, or skip one. **`break`** leaves the loop right there; **`continue`** skips the rest of this pass and moves on to the next one.
 
 ```anim
 title: continue skips a pass, break ends the loop
@@ -86,6 +99,15 @@ notes:
   7: A sample over 12 is a different vein; break leaves the loop and the 4 is never looked at.
   8: "The accumulator: silver grows on every pass that gets this far."
 ```
+
+### `for … else`
+
+Sometimes the loop is searching and you need to know whether it found nothing at the end. A loop's `else` runs only if the loop finished **without** a `break`: "I searched and didn't find it".
+
+### Nested loops
+
+To walk tables or combine two things you need one loop inside another: for every pass of the outer one, the inner one makes all of its passes.
+
 
 > **Common trap:** the loop that never ends. If nothing inside the `while` changes its condition, it repeats forever: `while lamp > 0: print(lamp)` without the `lamp -= 1` never stops. The same happens if the line that changes the condition is left **unindented**, outside the block. The Workshop cuts it off after a few seconds (and Quilla after 3000 actions), but on your own computer the program just hangs.
 
@@ -447,7 +469,7 @@ hints:
 
 ## The judge
 
-Read the input with `input()` as in session 1. When a line has several numbers, `input().split()` gives you the list of their texts and you can walk it with a `for`; convert each text with `int(...)` before comparing.
+Read the input with `input()` as in session 1. When a line has several numbers, `input().split()` (*split*: to cut) gives you the list of their texts (you will see it properly in session 7) and you can walk it with a `for`; convert each text with `int(...)` before comparing.
 
 ```exercise
 id: py3-juez-racha

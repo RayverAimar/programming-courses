@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Chiclayo, siete de la mañana. El **Mercado Modelo** ya huele a culantro, a pato en olla y a las hierbas de los curanderos del pasaje del fondo. En el patio de comidas del segundo piso, cuatro puestos comparten una sola caja registradora: Catalina con sus King Kong, Wálter con su arroz con pato, Rocío con el cabrito y Hermes con la tortilla de raya. El administrador de la asociación, **don Segundo Puicón**, tiene mañana una revisión de boletas y una montaña de papeles, cuadernos y archivos que no cuadran.
+> **La vez pasada:** la asincronía le enseñó a Quilla a no esperar parado a un servidor. Todo lo que aprende se le olvida al terminar el programa: hace falta guardarlo en archivos.
 
-Maru mandó a Quilla en el bus de la noche, con su brazo de mozo. Hasta hoy, todo lo que Quilla sabía se le olvidaba al terminar el programa. Hoy aprende a **leer y escribir archivos**: el registro de la caja en CSV, la lista de precios en JSON, un cuaderno de texto. Y a partir su código en **módulos**, como un programa de verdad.
+Chiclayo, siete de la mañana. El **Mercado Modelo** ya huele a culantro y a pato en olla. En el patio de comidas del segundo piso, cuatro puestos comparten una sola caja registradora: el King Kong, el arroz con pato, el cabrito y la tortilla de raya. El administrador de la asociación, **don Segundo Puicón**, tiene mañana una revisión de boletas y una montaña de papeles que no cuadran.
+
+Maru mandó a Quilla en el bus de la noche. Hasta hoy, todo lo que Quilla sabía se le olvidaba al terminar el programa. Hoy aprende a **leer y escribir archivos**: el registro de la caja en CSV, la lista de precios en JSON, un cuaderno de texto. Y a partir su código en **módulos**, como un programa de verdad.
 
 ```escena
 theme: cocina
@@ -32,6 +34,8 @@ program: |
 
 ## Lo mínimo
 
+### Abrir y leer un archivo
+
 Un **archivo de texto** es texto guardado con un nombre. Se abre con `open(ruta, modo, encoding="utf-8")` dentro de un `with`, que lo **cierra solo** al salir del bloque, aunque haya un error en medio. El modo `"r"` (el de siempre) lee, `"w"` crea el archivo o lo **borra y reescribe**, y `"a"` agrega al final.
 
 ```py
@@ -52,7 +56,27 @@ print(len(nombre), len(datos))
 print(datos.decode("latin-1"))
 ```
 
-**`pathlib.Path`** es una ruta con métodos: `/` une partes, `.name`, `.stem` y `.suffix` la desarman, `.exists()` pregunta si existe, `.read_text()` y `.write_text()` leen y escriben de un tirón, y `.glob("*.csv")` lista los archivos de una carpeta.
+```steps
+# Qué le pasa a "Chapoñán" al escribirlo y leerlo mal
+## En tu programa es texto
+`"Chapoñán"` tiene **8 letras**. Para Python son caracteres, no bytes.
+## `encode("utf-8")` lo vuelve bytes
+Las letras sin tilde ocupan un byte; la `ñ` y la `á` ocupan **dos** cada una. En total son **10 bytes**: es lo que se guarda en el archivo.
+## Leerlo con la codificación correcta lo devuelve igual
+Con `decode("utf-8")` los dos bytes de la `ñ` se juntan otra vez en una sola letra.
+## Con otra codificación, salen garabatos
+`decode("latin-1")` lee cada byte como una letra aparte, y sale `ChapoÃ±Ã¡n`: por eso se escribe `encoding="utf-8"` al abrir.
+```
+
+<!-- photo: py-ascii-chart -->
+
+> **Historia:** La primera edición del estándar ASCII se publicó en 1963 y fijó 128 códigos: letras sin tilde, números, signos y caracteres de control. No había `ñ` ni `á`; otros alfabetos tuvieron que esperar a codificaciones nuevas. Los primeros 128 códigos de Unicode son los mismos de ASCII, y por eso `"Chapo"` ocupa lo mismo en cualquier codificación y `"Chapoñán"` no.
+
+<!-- /photo -->
+
+### `pathlib`: rutas con métodos
+
+ una ruta con métodos: `/` une partes, `.name`, `.stem` y `.suffix` la desarman, `.exists()` pregunta si existe, `.read_text()` y `.write_text()` leen y escriben de un tirón, y `.glob("*.csv")` lista los archivos de una carpeta.
 
 ```py run
 from pathlib import Path
@@ -61,6 +85,8 @@ print(ruta)
 print(ruta.name, ruta.stem, ruta.suffix)
 print(ruta.parent)
 ```
+
+### CSV: tablas en texto
 
 Un **CSV** es una tabla en texto: una fila por línea, columnas separadas por comas, y la primera fila es el encabezado. Si un valor lleva una coma, va entre comillas, y por eso nunca se parte con `split(",")`: el módulo **`csv`** lo hace bien. `csv.DictReader` te da cada fila como diccionario, con las claves del encabezado. Al abrir un CSV, pásale `newline=""`. Aquí, `io.StringIO(texto)` hace de archivo: funciona igual que lo que devuelve `open`.
 
@@ -93,7 +119,9 @@ notes:
   8: "Wálter suma 26 + 45; el orden es el de la primera aparición."
 ```
 
-**JSON** es el formato de los diccionarios y listas en texto. `json.loads(texto)` lo convierte en datos de Python y `json.dumps(datos)` hace lo contrario; con archivos, `json.load(archivo)` y `json.dump(datos, archivo)`. `true` se vuelve `True` y `null`, `None`. Sin `ensure_ascii=False`, las tildes salen como códigos:
+### JSON: diccionarios y listas en texto
+
+ el formato de los diccionarios y listas en texto. `json.loads(texto)` lo convierte en datos de Python y `json.dumps(datos)` hace lo contrario; con archivos, `json.load(archivo)` y `json.dump(datos, archivo)`. `true` se vuelve `True` y `null`, `None`. Sin `ensure_ascii=False`, las tildes salen como códigos:
 
 ```py run
 import json
@@ -102,6 +130,8 @@ print(datos["platos"][0], datos["abierto"])
 print(json.dumps(datos, ensure_ascii=False))
 print(json.dumps({"señora": "Ñique"}))
 ```
+
+### `Counter`, `defaultdict` y ordenar con varias claves
 
 Dos herramientas de `collections` y un orden con varias claves: `Counter` cuenta una lista de un golpe, `defaultdict(list)` agrupa sin `setdefault`, y una **tupla como `key`** ordena por varias cosas a la vez (el `-` pone los números de mayor a menor):
 
@@ -114,7 +144,9 @@ print(dict(por_mesa), por_mesa[7])
 print(sorted([("Rocío", 72.0), ("Wálter", 97.0), ("Hermes", 72.0)], key=lambda p: (-p[1], p[0])))
 ```
 
-**Módulos.** Todo archivo `.py` es un módulo: si junto a tu programa hay un `mercado.py`, `import mercado` lo ejecuta una vez y te da sus nombres como `mercado.con_igv`, y `from mercado import con_igv` trae uno directo. Igual que `import csv`. Dentro de un módulo, `__name__` vale su nombre (`"mercado"`), pero en el archivo que ejecutas vale `"__main__"`. Por eso el código de prueba de un módulo va así, y no corre cuando otro lo importa:
+### Módulos e `import`
+
+Para repartir un programa en archivos y reutilizarlos. Todo archivo `.py` es un módulo: si junto a tu programa hay un `mercado.py`, `import mercado` lo ejecuta una vez y te da sus nombres como `mercado.con_igv`, y `from mercado import con_igv` trae uno directo. Igual que `import csv`. Dentro de un módulo, `__name__` vale su nombre (`"mercado"`), pero en el archivo que ejecutas vale `"__main__"`. Por eso el código de prueba de un módulo va así, y no corre cuando otro lo importa:
 
 ```py
 def con_igv(monto):
@@ -278,12 +310,16 @@ hints:
 tests:
   - name: los tres días de Hermes, en orden
     expect: 'totales_por_dia("ventas") == {"2026-10-20": 82.5, "2026-10-21": 63.5, "2026-10-22": 0}'
+    msg: "Suma los montos de cada `.txt`; el archivo vacío suma 0 y `LEEME.md` no cuenta."
   - name: los días salen en el orden de sus nombres
     expect: 'list(totales_por_dia("ventas")) == ["2026-10-20", "2026-10-21", "2026-10-22"]'
+    msg: "Ordena las rutas con `sorted(...)` y usa `ruta.stem` como clave."
   - name: otra carpeta
     expect: 'totales_por_dia("feria") == {"sabado": 20.5}'
+    msg: "Funciona con cualquier carpeta: no escribas \"ventas\" a mano dentro de la función."
   - name: usa Path
     source: '\bPath\s*\('
+    msg: "Usa `Path(carpeta).glob(\"*.txt\")`."
 ```
 
 ```exercise
@@ -354,10 +390,13 @@ hints:
 tests:
   - name: suma los kilos de cada producto
     expect: 'dict(kilos) == {"limón": 5.5, "ají amarillo": 2.0, "cebolla roja": 4.0}'
+    msg: "Suma `float(fila[\"kilos\"])` por producto: los kilos llegan como texto."
   - name: el encabezado no es un producto
     expect: '"producto" not in kilos'
+    msg: "Con `DictReader` el encabezado no es una fila de datos: no debe aparecer como producto."
   - name: usa DictReader
     source: '\bDictReader\s*\('
+    msg: "Lee el archivo con `csv.DictReader(archivo)`."
 ```
 
 ```exercise

@@ -2,9 +2,11 @@
 
 ## The job
 
-Iquitos, March, the river at its highest. The Itaya has risen so much that in Belén Bajo the streets are canals: people get around by canoe, the houses float on their rafts and the only dry things left are the plank bridges the neighbours nail from house to house. **Delia Tapullima**, the nurse at the health post, is waiting for a cool box of vaccines that came on the launch from Yurimaguas and can't spend long out of the cold.
+> **Last time:** walking a grid square by square was enough to measure the water. Now it isn't enough to visit every square: you have to find the shortest path between two.
 
-Maru sent Quilla, which already has a siren to clear the way, but there's a problem: the bridges change every week (one rots, another gets nailed in new) and the battery is enough for **exactly** the shortest route. Trying planks at random won't do. Today Quilla learns to **search**: to explore the map in waves until it finds the shortest way, and to search fast in a sorted list.
+Iquitos, March, the river at its highest. The Itaya has risen so much that in Belén Bajo the streets are canals: people get around by canoe, the only dry things left are the plank bridges the neighbours nail. **Delia Tapullima**, the nurse at the health post, is waiting for a cool box of vaccines from Yurimaguas that can't spend long out of the cold.
+
+Maru sent Quilla, but there's a problem: the bridges change every week (one rots, another gets nailed in new) and the battery is enough for **exactly** the shortest route. Trying planks at random won't do. Today Quilla learns to **search**: to explore the map in waves until it finds the shortest way, and to search fast in a sorted list.
 
 ```scene
 theme: barranco
@@ -27,7 +29,9 @@ program: |
 
 ## The minimum
 
-**Breadth-first search** (BFS) explores like the ripples from a stone dropped in the river: first every tile 1 step away, then every one 2 away, then 3… The first time the wave touches the goal, it got there by the shortest way. It needs two pieces:
+### Breadth-first search (BFS)
+
+ (BFS) explores like the ripples from a stone dropped in the river: first every tile 1 step away, then every one 2 away, then 3… The first time the wave touches the goal, it got there by the shortest way. It needs two pieces:
 
 - a **queue**, `collections.deque`: you add at the end with `append` and take from the front with `popleft`. The first tile in is the first tile out;
 - a **set** of seen tiles, `visited`, with `(x, y)` tuples, so the same one never goes in twice.
@@ -82,6 +86,8 @@ steps:
   - {"line": 12, "vars": {"queue": [], "visited": ["0,0", "1,0", "2,0", "0,1", "2,1", "0,2", "1,2", "2,2"], "x": 2, "y": 2}, "reprs": {"queue": "deque([])", "visited": "{(0, 0), (1, 0), (2, 0), (0, 1), (2, 1), (0, 2), (1, 2), (2, 2)}", "x": "2", "y": "2"}, "note": "The wave covered all 8 free tiles.", "out": "8"}
 ```
 
+### The route: each tile's parent
+
 To know **the route**, and not just how far the wave reaches, each tile writes down in a dictionary which tile it came from: its **parent**. The start has parent `None`. That dictionary also works as "visited": if a tile already has a parent, it has already gone into the queue. At the end you walk back from the goal, from parent to parent, and turn the list around:
 
 ```anim
@@ -104,7 +110,11 @@ notes:
   7: "The start had parent None: the loop stops there. The list came out backwards and gets flipped."
 ```
 
+### Walking the route with the robot
+
 With the route in hand, **`robot.follow_path(route)`** walks it: it takes a list of neighbouring tiles `(x, y)` and turns only when it needs to (if the first one is the tile it's standing on, it skips it). `robot.mark(tiles)` paints tiles on the map without moving, so you can see what your search explored.
+
+### Binary search
 
 Today's other search is in a **sorted list**. To find a value you don't need to look at all of it: you look at the middle one and throw away the half where it can't be, again and again. That's **binary search**: in a thousand elements, about ten looks.
 
@@ -133,6 +143,8 @@ notes:
   11: "124 is less than 131: so is everything to its left. That half is thrown away."
   8: "It found it at position 5 looking at only 2 cells out of 8."
 ```
+
+### `bisect`: binary search, ready-made
 
 Python already ships binary search in the **`bisect`** module. `bisect_left(items, value)` returns the first position where `value` could go without unsorting the list (before the equal ones); `bisect_right`, the one after the equal ones. If the position is `len(items)`, the value is greater than all of them.
 
@@ -270,15 +282,19 @@ tests:
   - name: the route in the picture
     run: 'shortest_path(["..#", "#..", "..."], (0, 0), (2, 2))'
     equals: [[0, 0], [1, 0], [1, 1], [2, 1], [2, 2]]
+    msg: "The start has no parent: store `parent = {start: None}` so the backwards loop stops there."
   - name: starts at the start and ends at the goal
     run: 'shortest_path(["....", ".##.", "...."], (0, 2), (3, 0))[::5]'
     equals: [[0, 2], [3, 0]]
+    msg: "The route must start at the start and end at the goal; remember to reverse the list when rebuilding it."
   - name: the shortest has 6 tiles
     run: 'len(shortest_path(["....", ".##.", "...."], (0, 2), (3, 0)))'
     equals: 6
+    msg: "The shortest route has 6 tiles: check you do not add or drop one when rebuilding."
   - name: if start and goal are the same, one tile
     run: 'shortest_path(["..."], (1, 0), (1, 0))'
     equals: [[1, 0]]
+    msg: "If start and goal are the same, the route is that single tile, not an empty list."
 ```
 
 ```exercise
@@ -416,6 +432,7 @@ scenarios:
 tests:
   - name: uses a deque
     source: '\bdeque\b'
+    msg: "Use a `deque` for the breadth-first search queue."
 ```
 
 ## The case

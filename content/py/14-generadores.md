@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Samegua, Moquegua, en plena vendimia. La bodega **El Tinajón** de doña **Herminia Zapata** destila pisco desde que su abuelo trajo las tinajas de barro de Ilo en burro: quebranta, italia y un acholado que en la feria de Moquegua se acaba antes del mediodía. Este año Herminia compró una **faja transportadora** de segunda mano: las botellas salen de la llenadora, pasan por la encorchadora y llegan a la etiquetadora, una detrás de otra, todo el día.
+> **La vez pasada:** con `__len__` y `__iter__` una clase aprendió a comportarse como una colección. Una faja de botellas no termina nunca: no cabe en ninguna colección.
 
-Maru le mandó a Quilla, con su linterna de casco, para manejar la faja y bajar a la cava de las tinajas. El problema: la faja no termina nunca. No puedes hacer "la lista de todas las botellas del día" antes de empezar, porque todavía no existen. Hoy Quilla aprende a trabajar **una cosa a la vez**: iteradores, que dan el siguiente cuando se los pides, y generadores, funciones que se pausan después de entregar cada valor.
+Samegua, Moquegua, en plena vendimia. La bodega **El Tinajón** de doña **Herminia Zapata** destila pisco desde que su abuelo trajo las tinajas de barro de Ilo en burro. Este año Herminia compró una **faja transportadora** de segunda mano: las botellas salen de la llenadora, pasan por la encorchadora y llegan a la etiquetadora, una tras otra.
+
+Maru le mandó a Quilla para manejar la faja. El problema: la faja no termina nunca. No puedes hacer "la lista de todas las botellas del día" antes de empezar, porque todavía no existen. Hoy Quilla aprende a trabajar **una cosa a la vez**: iteradores, que dan el siguiente cuando se los pides, y generadores, funciones que se pausan después de entregar cada valor.
 
 ```escena
 theme: mina
@@ -30,6 +32,8 @@ program: |
 ```
 
 ## Lo mínimo
+
+### El protocolo del iterador
 
 Un `for` no recorre una lista directamente: primero le pide un **iterador** con `iter(lista)` y después le pide el siguiente valor con `next(...)`, una y otra vez, hasta que el iterador avisa que se acabó lanzando `StopIteration`. Ese es el **protocolo de iteración**, y puedes usarlo a mano:
 
@@ -64,6 +68,8 @@ class Faja:
 for botella in Faja(["Q-401", "I-210"]):
     print("pasa", botella)
 ```
+
+### Generadores con `yield`
 
 Escribir esa clase cada vez cansa. Un **generador** hace lo mismo con una función: basta con que tenga **`yield`**. Llamarla no ejecuta nada; devuelve un generador. Cada `next` corre el cuerpo hasta el siguiente `yield`, entrega ese valor y **se pausa ahí**, con sus variables intactas, hasta el próximo `next`.
 
@@ -108,6 +114,8 @@ steps:
   - { line: 8, vars: { botella: "italia", estado: "terminada" }, stack: [], out: "QUEBRANTA\nITALIA\nvacía", note: "La función termina: su marco desaparece y `next` devuelve el valor por defecto." }
 ```
 
+
+### Tuberías perezosas
 
 Como cada valor se fabrica recién cuando se pide, puedes encadenar generadores en una **tubería perezosa**: cada botella atraviesa todas las estaciones antes de que la siguiente entre a la faja. Nada se guarda en listas intermedias.
 
@@ -188,6 +196,8 @@ steps:
     show: { label: "Lo que imprime", text: "lleno Q-401\n  encorcho Q-401\n    sale Q-401\nlleno Q-402\n  encorcho Q-402\n    sale Q-402" }
 ```
 
+### Generadores infinitos
+
 Un generador puede ser **infinito**: un `while True` con un `yield` dentro no se cuelga, porque solo avanza cuando alguien pide. `itertools.count(101)` cuenta 101, 102, 103… para siempre, e `islice(iterable, n)` toma solo los primeros `n`.
 
 ```py run
@@ -200,6 +210,8 @@ def precintos():
 print(list(islice(precintos(), 3)))
 ```
 
+### `yield from`
+
 `yield from otro` entrega, uno por uno, todos los valores de otro iterable o generador. Es el `for` con `yield` adentro, en una línea:
 
 ```py run
@@ -210,6 +222,8 @@ def toda_la_faja(cajas):
 print(list(toda_la_faja([["Q-401", "Q-402"], [], ["I-210"]])))
 ```
 
+### Expresiones generadoras
+
 Una **expresión generadora** es una comprensión con paréntesis: `(ml for ml in medidas)`. No arma una lista; produce los valores a medida que `sum`, `max` o un `for` los piden. Dentro de una llamada basta con los paréntesis de la llamada:
 
 ```py run
@@ -217,6 +231,8 @@ litros = [0.5, 0.75, 0.5, 1.0]
 print(sum(int(litro * 1000) for litro in litros))
 print(max(len(variedad) for variedad in ["italia", "quebranta"]))
 ```
+
+### `itertools`
 
 Y `itertools` trae piezas perezosas listas para armar recorridos:
 
@@ -322,16 +338,21 @@ tests:
   - name: entrega el lote completo
     run: list(Lote("Q", 7, 10))
     equals: ["Q-7", "Q-8", "Q-9", "Q-10"]
+    msg: "`__next__` debe devolver `\"Q-7\"`, `\"Q-8\"`… hasta el último y luego lanzar `StopIteration`."
   - name: imprime la lista
     output: "['Q-7', 'Q-8', 'Q-9', 'Q-10']"
+    msg: "Revisa la lista impresa: debe ir de `Q-7` a `Q-10`, ambos incluidos."
   - name: un lote de una botella
     run: list(Lote("A", 3, 3))
     equals: ["A-3"]
+    msg: "Si primero y último coinciden, entrega una sola botella."
   - name: un lote vacío no entrega nada
     run: list(Lote("I", 5, 4))
     equals: []
+    msg: "Si `primero` ya pasó a `ultimo`, lanza `StopIteration` de inmediato."
   - name: next funciona a mano
     expect: 'next(Lote("I", 20, 25)) == "I-20"'
+    msg: "`__iter__` debe devolver `self`, para que `next(...)` funcione a mano."
 ```
 
 ```exercise
@@ -376,11 +397,14 @@ hints:
 tests:
   - name: imprime las dos etiquetas
     output: "Q-401 · 42°\nQ-403 · 41°"
+    msg: "Cambia `return` por `yield` y recorre con un `for` afuera para imprimir una etiqueta por línea."
   - name: etiquetas es un generador
     source: '\byield\b'
+    msg: "Una función con `yield` es un generador: debe usar `yield`, no `return`."
   - name: funciona con otro lote
     run: 'list(etiquetas([("A-150", 40), ("A-151", 39), ("I-210", 36)], 39))'
     equals: ["A-150 · 40°", "A-151 · 39°"]
+    msg: "Prueba con otro lote: solo pasan las botellas con grado mayor o igual al mínimo."
 ```
 
 ```exercise
@@ -422,15 +446,20 @@ tests:
   - name: los tres primeros
     run: list(islice(precintos("MOQ"), 3))
     equals: ["MOQ-0001", "MOQ-0002", "MOQ-0003"]
+    msg: "Entrega `prefijo-0001`, `prefijo-0002`…; el número lleva 4 cifras con `:04d`."
   - name: desde otro inicio, pasando de 999
     run: list(islice(precintos("MOQ", 998), 4))
     equals: ["MOQ-0998", "MOQ-0999", "MOQ-1000", "MOQ-1001"]
+    msg: "Pasando de 999 el número ya tiene 4 cifras: `MOQ-1000`, sin cortar."
   - name: no se acaba
     expect: 'list(islice(precintos("ILO"), 5000))[-1] == "ILO-5000"'
+    msg: "No lo limites con un `range`: debe poder entregar miles. Usa `count(inicio)`."
   - name: es un generador
     expect: 'next(precintos("Q", 7)) == "Q-0007"'
+    msg: "`inicio` es opcional y parte de 1; revisa que el primer precinto use ese número."
   - name: usa yield
     source: '\byield\b'
+    msg: "La función debe usar `yield`."
 ```
 
 ```exercise

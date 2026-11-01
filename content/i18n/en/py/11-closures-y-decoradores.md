@@ -2,9 +2,11 @@
 
 ## The job
 
-Ayacucho, the Santa Ana neighbourhood, three weeks before Holy Week. In master **Teodora Huamaní**'s workshop they make retablos: cedar-wood boxes with two or three floors, and inside, little heads of potato paste and plaster, modelled one by one, dried on the shelf and painted by hand. Teodora pays per little head, so each artisan keeps their own count on a tablet.
+> **Last time:** Quilla learned to find the shortest path, but every function it has written forgets everything when it ends. Counting little heads means remembering from one call to the next.
 
-The trouble came with the first fortnight: the counts don't add up, the hygrometer in the drying room sometimes gives no reading and nobody knows who checked the gallery at night. Maru sent Quilla, with its siren, to sort all that out. Today Quilla learns that a function is also a **value**: you can store it, pass it, return it, it **remembers** things between calls and it can wrap another function to keep an eye on it.
+Ayacucho, the Santa Ana neighbourhood, three weeks before Holy Week. In master **Teodora Huamaní**'s workshop they make retablos: cedar boxes with two or three floors, and inside, little heads of potato paste and plaster, modelled one by one and painted by hand. Teodora pays per little head, so each artisan counts on a tablet.
+
+The trouble came with the first fortnight: the counts don't add up, the drying-room hygrometer gives no reading and nobody knows who checked the gallery at night. Maru sent Quilla to sort all that out. Today Quilla learns that a function is also a **value**: you can store it, pass it, return it, it **remembers** things between calls and it can wrap another function to keep an eye on it.
 
 ```scene
 theme: museo
@@ -29,6 +31,8 @@ program: |
 
 ## The minimum
 
+### Functions as values
+
 In Python a function is a value like any other: a name that points to it. Without parentheses you **don't call it**, you name it; that way you can store it in a variable, in a list, or hand it to another function.
 
 ```py run
@@ -39,6 +43,8 @@ task = sand                       # no (): the function itself
 print(task("bull"))
 print([step("llama") for step in [sand, str.upper]])
 ```
+
+### Closures: functions that remember
 
 A function can **create another function and return it**. The inner one takes along the variables of the place where it was born and keeps using them even after the outer one has finished: that's a **closure**. To **reassign** one of those variables from inside, declare it with `nonlocal`.
 
@@ -113,9 +119,17 @@ steps:
           - { id: c2, name: "make_counter(), call 2", gone: true, on: true, vars: { count: 1 } }
 ```
 
-- **Factory**: a function that returns functions. Each call creates new variables, so each function it hands out has **its own memory**.
-- **`nonlocal count`**: without that line, `count += 1` would create a local variable and Python would complain that you read it before giving it a value (`UnboundLocalError`). To **read** it, or to change a list from the inside (`.append`), you don't need it.
-- **`lambda`**: a one-expression function with no name. `lambda x: x * factor` is handy for returning short functions from a factory.
+### Factory
+
+To make many similar functions, each with its own memory. A **factory** is a function that returns functions. Each call creates new variables, so each function it hands out has **its own memory**.
+
+### `nonlocal`
+
+To change from inside a number that lives in the outer function. With `nonlocal count` you declare that the variable is the outer one; without that line, `count += 1` would create a local variable and Python would complain that you read it before giving it a value (`UnboundLocalError`). To **read** it, or to change a list from the inside (`.append`), you don't need it.
+
+### `lambda`
+
+To write a tiny function right where you need it. A `lambda` is a one-expression function with no name. `lambda x: x * factor` is handy for returning short functions from a factory.
 
 ```py run
 def per_figure(rate):
@@ -127,6 +141,8 @@ print(paint(10), model(10))
 ```
 
 <!-- legacy: nonlocal -->
+
+### Decorators
 
 A **decorator** is a function that takes a function and returns another one that **wraps** it: it does something before or after and calls the original. `@logbook` on top of a `def` is the same as writing `carve = logbook(carve)` afterwards.
 
@@ -186,9 +202,17 @@ steps:
     note: "When you call `carve(5)` you enter the wrapper without knowing it: it prints \"Starting\", calls the original through `func` and prints \"Done\"."
 ```
 
-- **`*args, **kwargs`** in the wrapper gather any arguments, and `func(*args, **kwargs)` passes them on as they are: that way the decorator works for any function.
-- **`@functools.wraps(func)`** on top of the wrapper copies the original's name and docstring onto it. Without it, all your decorated functions are called `wrapper`.
-- **Decorator with arguments**: `@repeat(3)` first calls `repeat(3)`, which **returns** the decorator. That's three functions, one inside the other:
+### `*args, **kwargs` in the wrapper
+
+So the same decorator works with functions of any shape. `*args, **kwargs` in the wrapper gather any arguments, and `func(*args, **kwargs)` passes them on as they are: that way the decorator works for any function.
+
+### `@functools.wraps`
+
+So the decorated function does not lose its name or docstring. `@functools.wraps(func)` on top of the wrapper copies the original's name and docstring onto it. Without it, all your decorated functions are called `wrapper`.
+
+### Decorator with arguments
+
+To decorate with a value, such as how many times to repeat. With `@repeat(3)`, Python first calls `repeat(3)`, which **returns** the decorator. That's three functions, one inside the other:
 
 ```py
 def repeat(times):
@@ -233,6 +257,8 @@ steps:
 ```
 
 <!-- legacy: functools-wraps -->
+
+### `partial` and `cache`
 
 `functools` brings two ready-made tools. **`partial`** fixes some of a function's arguments and gives you a shorter one; **`@cache`** keeps each result by its arguments and doesn't compute it again.
 
@@ -327,16 +353,21 @@ tests:
   - name: paint_cost(4) is 8 soles
     run: paint_cost(4)
     equals: 8
+    msg: "`paint_cost` is a `lambda` that multiplies the figures by 2."
   - name: a cash box remembers what was spent and never overdraws
     run: '(lambda c: [c(5), c(30), c(10)])(open_petty_cash(20))'
     equals: [15, 15, 5]
+    msg: "If the amount is not enough, the box does not deduct and returns the same balance; if it is, it subtracts and returns the new one."
   - name: each cash box has its own balance
     run: '(lambda a, b: [a(3), b(4), a(3)])(open_petty_cash(10), open_petty_cash(10))'
     equals: [7, 6, 4]
+    msg: "Each call to `open_petty_cash` must create its own `balance` inside the function, not a global one."
   - name: the console
     output: "34 20 24"
+    msg: "Check what the console prints: each box starts with its own fund."
   - name: uses nonlocal
     source: '\bnonlocal\s+balance\b'
+    msg: "To change `balance` from the inner function you need `nonlocal balance`."
 ```
 
 ```exercise
@@ -462,16 +493,21 @@ tests:
   - name: sand still returns the same
     run: 'sand("retablo", minutes=12)'
     equals: retablo sanded in 12 min
+    msg: "The wrapper must return the same as the original function: `return func(*args, **kwargs)`."
   - name: counts the calls
     run: '(lambda f: [f(2), f(3), f.calls])(count_calls(lambda x: x * x))'
     equals: [4, 9, 2]
+    msg: "Add 1 to `wrapper.calls` on every call, before or after calling the original."
   - name: each decorated function counts its own
     run: '(lambda a, b: [a(), a(), b(), a.calls, b.calls])(count_calls(lambda: 1), count_calls(lambda: 2))'
     equals: [1, 1, 2, 2, 1]
+    msg: "Create `wrapper.calls = 0` inside the decorator, not outside: that way each decorated function counts its own."
   - name: keeps the name
     expect: sand.__name__ == "sand"
+    msg: "Put `@functools.wraps(func)` above the wrapper so it keeps the name."
   - name: the console
     output: "bull sanded in 5 min\nllama sanded in 8 min\n2"
+    msg: "Check the console: the function returns the text and `sand.calls` has the final count."
 ```
 
 ```exercise
@@ -1200,7 +1236,7 @@ solution: |
   print([drying(n) for n in [1, 2, 1, 3, 2]], drying.computations)
 hints:
   - "Three nested functions, and the memory (a dictionary) lives in `decorator`, so that each decorated function gets its own."
-  - "To refresh a key: `memory[args] = memory.pop(args)`. The oldest one is `next(iter(memory))`."
+  - "To refresh a key: `memory[args] = memory.pop(args)`. The oldest one is `next(iter(memory))` (the first item of a dictionary; `iter` and `next` are explained in session 14)."
 tests:
   - name: forgets the least recently used, not the first one in
     run: '(lambda f: [[f(1), f(2), f(1), f(3), f(2)], f.computations])(with_memory(2)(lambda x: x * 10))'

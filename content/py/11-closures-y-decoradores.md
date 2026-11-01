@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Ayacucho, barrio de Santa Ana, a tres semanas de Semana Santa. En el taller de la maestra **Teodora Huamaní** se hacen retablos: cajones de madera de cedro con dos o tres pisos, y dentro, cabecitas de pasta de papa y yeso que se modelan una por una, se secan en la repisa y se pintan a mano. Teodora paga por cabecita, así que cada artesano lleva su cuenta en una tableta.
+> **La vez pasada:** Quilla aprendió a buscar el camino más corto, pero cada función que escribió olvida todo al terminar. Contar cabecitas exige recordar entre una llamada y la siguiente.
 
-El problema llegó con la primera quincena: las cuentas no cuadran, el higrómetro del cuarto de secado a veces no da lectura y nadie sabe quién revisó la galería de noche. Maru mandó a Quilla, con su sirena, a ordenar todo eso. Hoy Quilla aprende que una función también es un **valor**: se guarda, se pasa, se devuelve, **recuerda** cosas entre llamadas y puede envolver a otra función para vigilarla.
+Ayacucho, barrio de Santa Ana, a tres semanas de Semana Santa. En el taller de la maestra **Teodora Huamaní** se hacen retablos: cajones de cedro con dos o tres pisos, y dentro, cabecitas de pasta de papa y yeso que se modelan una por una y se pintan a mano. Teodora paga por cabecita, así que cada artesano lleva su cuenta en una tableta.
+
+El problema llegó con la primera quincena: las cuentas no cuadran, el higrómetro del cuarto de secado no da lectura y nadie sabe quién revisó la galería de noche. Maru mandó a Quilla a ordenar todo eso. Hoy Quilla aprende que una función también es un **valor**: se guarda, se pasa, se devuelve, **recuerda** cosas entre llamadas y puede envolver a otra función para vigilarla.
 
 ```escena
 theme: museo
@@ -29,6 +31,8 @@ program: |
 
 ## Lo mínimo
 
+### Funciones como valores
+
 En Python una función es un valor como cualquier otro: un nombre que apunta a ella. Sin paréntesis **no la llamas**, la nombras; así puedes guardarla en una variable, en una lista o pasársela a otra función.
 
 ```py run
@@ -39,6 +43,8 @@ tarea = lijar                     # sin (): la función misma
 print(tarea("toro"))
 print([paso("llama") for paso in [lijar, str.upper]])
 ```
+
+### Closures: funciones que recuerdan
 
 Una función puede **crear otra función y devolverla**. La de adentro se lleva las variables del lugar donde nació y las sigue usando aunque la de afuera ya terminó: eso es un **closure**. Para **reasignar** una de esas variables desde adentro, decláralo con `nonlocal`.
 
@@ -113,9 +119,17 @@ steps:
           - { id: c2, name: "crear_contador(), llamada 2", gone: true, on: true, vars: { cuenta: 1 } }
 ```
 
-- **Fábrica**: una función que devuelve funciones. Cada llamada crea variables nuevas, así que cada función que entrega tiene **su propia memoria**.
-- **`nonlocal cuenta`**: sin esa línea, `cuenta += 1` crearía una variable local y Python se quejaría de que la lees antes de darle valor (`UnboundLocalError`). Para **leerla** o para cambiar una lista por dentro (`.append`) no hace falta.
-- **`lambda`**: una función de una sola expresión, sin nombre. `lambda x: x * factor` sirve para devolver funciones cortas desde una fábrica.
+### Fábrica
+
+Para fabricar muchas funciones parecidas, cada una con su propia memoria. Una **fábrica** es una función que devuelve funciones. Cada llamada crea variables nuevas, así que cada función que entrega tiene **su propia memoria**.
+
+### `nonlocal`
+
+Para cambiar desde adentro un número que vive en la función de afuera. Con `nonlocal cuenta` declaras que esa variable es la de afuera; sin esa línea, `cuenta += 1` crearía una variable local y Python se quejaría de que la lees antes de darle valor (`UnboundLocalError`). Para **leerla** o para cambiar una lista por dentro (`.append`) no hace falta.
+
+### `lambda`
+
+Para escribir una función cortita justo donde la necesitas. Una `lambda` es una función de una sola expresión, sin nombre. `lambda x: x * factor` sirve para devolver funciones cortas desde una fábrica.
 
 ```py run
 def por_figura(soles):
@@ -127,6 +141,8 @@ print(pintar(10), modelar(10))
 ```
 
 <!-- legacy: nonlocal -->
+
+### Decoradores
 
 Un **decorador** es una función que recibe una función y devuelve otra que la **envuelve**: hace algo antes o después y llama a la original. `@bitacora` encima de un `def` es lo mismo que escribir `tallar = bitacora(tallar)` después.
 
@@ -186,9 +202,17 @@ steps:
     note: "Cuando llamas a `tallar(5)` entras, sin saberlo, a la envoltura: imprime «Empieza», llama a la original por `funcion` e imprime «Termina»."
 ```
 
-- **`*args, **kwargs`** en la envoltura recogen cualquier argumento, y `funcion(*args, **kwargs)` se los pasa tal cual: así el decorador sirve para cualquier función.
-- **`@functools.wraps(funcion)`** encima de la envoltura le copia el nombre y el docstring de la original. Sin eso, todas tus funciones decoradas se llaman `envoltura`.
-- **Decorador con argumentos**: `@repetir(3)` primero llama a `repetir(3)`, que **devuelve** el decorador. Son tres funciones, una dentro de otra:
+### `*args, **kwargs` en la envoltura
+
+Para que un mismo decorador sirva con funciones de cualquier forma. `*args, **kwargs` en la envoltura recogen cualquier argumento, y `funcion(*args, **kwargs)` se los pasa tal cual: así el decorador sirve para cualquier función.
+
+### `@functools.wraps`
+
+Para que la función decorada no pierda su nombre ni su docstring. `@functools.wraps(funcion)` encima de la envoltura le copia el nombre y el docstring de la original. Sin eso, todas tus funciones decoradas se llaman `envoltura`.
+
+### Decorador con argumentos
+
+Para decorar con un dato, como cuántas veces repetir. Con `@repetir(3)`, Python primero llama a `repetir(3)`, que **devuelve** el decorador. Son tres funciones, una dentro de otra:
 
 ```py
 def repetir(veces):
@@ -233,6 +257,8 @@ steps:
 ```
 
 <!-- legacy: functools-wraps -->
+
+### `partial` y `cache`
 
 `functools` trae dos herramientas listas. **`partial`** fija algunos argumentos de una función y te da otra más corta; **`@cache`** guarda cada resultado según sus argumentos y no lo vuelve a calcular.
 
@@ -327,16 +353,21 @@ tests:
   - name: pintura(4) son 8 soles
     run: pintura(4)
     equals: 8
+    msg: "`pintura` es una `lambda` que multiplica las figuras por 2."
   - name: una caja recuerda lo gastado y no se sobregira
     run: '(lambda c: [c(5), c(30), c(10)])(abrir_caja(20))'
     equals: [15, 15, 5]
+    msg: "Si el monto no alcanza, la caja no descuenta y devuelve el mismo saldo; si alcanza, resta y devuelve el nuevo."
   - name: cada caja tiene su propio saldo
     run: '(lambda a, b: [a(3), b(4), a(3)])(abrir_caja(10), abrir_caja(10))'
     equals: [7, 6, 4]
+    msg: "Cada llamada a `abrir_caja` debe crear su propio `saldo` dentro de la función, no uno global."
   - name: la consola
     output: "34 20 24"
+    msg: "Revisa lo que imprime la consola: cada caja arranca con su fondo."
   - name: usa nonlocal
     source: '\bnonlocal\s+saldo\b'
+    msg: "Para cambiar `saldo` desde `gastar` hace falta `nonlocal saldo`."
 ```
 
 ```exercise
@@ -462,16 +493,21 @@ tests:
   - name: lijar sigue devolviendo lo mismo
     run: 'lijar("retablo", minutos=12)'
     equals: retablo lijado en 12 min
+    msg: "La envoltura debe devolver lo mismo que la función original: `return funcion(*args, **kwargs)`."
   - name: cuenta las llamadas
     run: '(lambda f: [f(2), f(3), f.llamadas])(contar_llamadas(lambda x: x * x))'
     equals: [4, 9, 2]
+    msg: "Suma 1 a `envoltura.llamadas` en cada llamada, antes o después de llamar a la original."
   - name: cada función decorada cuenta lo suyo
     run: '(lambda a, b: [a(), a(), b(), a.llamadas, b.llamadas])(contar_llamadas(lambda: 1), contar_llamadas(lambda: 2))'
     equals: [1, 1, 2, 2, 1]
+    msg: "Crea `envoltura.llamadas = 0` dentro del decorador, no fuera: así cada función decorada cuenta lo suyo."
   - name: conserva el nombre
     expect: lijar.__name__ == "lijar"
+    msg: "Pon `@functools.wraps(funcion)` encima de la envoltura para que conserve el nombre."
   - name: la consola
     output: "toro lijado en 5 min\nllama lijado en 8 min\n2"
+    msg: "Revisa la consola: la función devuelve el texto y `lijar.llamadas` la cuenta final."
 ```
 
 ```exercise
@@ -1193,7 +1229,7 @@ solution: |
   print([secado(n) for n in [1, 2, 1, 3, 2]], secado.calculos)
 hints:
   - "Tres funciones anidadas, y la memoria (un diccionario) vive en `decorador`, para que cada función decorada tenga la suya."
-  - "Para refrescar una clave: `memoria[args] = memoria.pop(args)`. La más vieja es `next(iter(memoria))`."
+  - "Para refrescar una clave: `memoria[args] = memoria.pop(args)`. La más vieja es `next(iter(memoria))` (el primer elemento de un diccionario; `iter` y `next` se explican en la sesión 14)."
 tests:
   - name: olvida la menos usada, no la primera que entró
     run: '(lambda f: [[f(1), f(2), f(1), f(3), f(2)], f.calculos])(con_memoria(2)(lambda x: x * 10))'

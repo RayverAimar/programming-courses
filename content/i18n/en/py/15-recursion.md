@@ -2,7 +2,9 @@
 
 ## The job
 
-Chachapoyas, Amazonas. Three hours of bends above the Utcubamba and then the cable car up to Cerro Barreta, where **Kuélap** stands: the fortress of the Chachapoyas people, with twenty-metre walls, four hundred round houses and diamond friezes in the stone. The archaeologist **Elvira Zuta Culqui** runs the restoration of its terraces, and she has three problems: staircases nobody has counted, boxes of finds packed inside other boxes, and a cave under the hill that nobody dares to walk through without a plan.
+> **Last time:** generators hand over one value at a time, from a row that never ends. Now the shape of the problem repeats inside itself: staircases within staircases, boxes within boxes.
+
+Chachapoyas, Amazonas. On Cerro Barreta stands **Kuélap**: the fortress of the Chachapoyas people, with twenty-metre walls and four hundred round houses. The archaeologist **Elvira Zuta Culqui** runs the restoration of its terraces, and she has three problems: staircases nobody has counted, boxes of finds packed inside other boxes, and a cave that nobody dares to walk through without a plan.
 
 Maru sent Quilla over with its **headlamp**. The three problems have the same shape: a big thing made of the same things, only smaller. A staircase is one step plus a staircase; a box is pieces plus boxes; a cave is one tile plus the caves that branch off it. Today Quilla learns to solve a problem by **calling itself** with a smaller problem: **recursion**.
 
@@ -33,6 +35,8 @@ program: |
 
 ## The minimum
 
+### Base case and recursive case
+
 A **recursive** function calls itself. It always has two parts:
 
 - the **base case**: a problem so small that the answer is known without thinking, and that's where it stops;
@@ -48,6 +52,8 @@ def go_down(terrace):
 
 go_down(3)
 ```
+
+### The call stack
 
 Every call that hasn't finished yet waits on the **call stack**, with its own parameters. The stack grows until it reaches the base case and then it unwinds: each box gets what the box above returned, adds its own part and hands it to the box below.
 
@@ -68,9 +74,13 @@ notes:
   7: "Each box added its part on the way back: 10, then 30, then 60."
 ```
 
+### `RecursionError`
+
 If the base case never comes, the stack grows forever. Python cuts it off at about a thousand calls with a **`RecursionError`**: *maximum recursion depth exceeded*. It's almost always a missing base case, or a call that doesn't make the problem smaller (`go_down(terrace)` instead of `go_down(terrace - 1)`), or one that skips over the base (`n - 2` from an odd number never reaches 0).
 
-Recursion shines with **nested** data, which has the same shape inside: a list that holds lists, a dictionary with dictionaries. A loop doesn't know how many levels there are; the recursive function enters each level by calling itself again.
+### Nested data
+
+Recursion shines with **nested** data, which has the same shape inside: a list that holds lists, a dictionary with dictionaries. A loop doesn't know how many levels there are; the recursive function enters each level by calling itself again. To know whether an element is another list, `isinstance(thing, list)` answers `True` or `False`.
 
 ```py run
 def count(box):
@@ -81,6 +91,8 @@ def count(box):
 
 print(count(["pot", ["tupu", ["bead", "bead"]], "spindle"]))
 ```
+
+### Memoization with `@cache`
 
 Some recursions repeat work: `ways(n - 1)` and `ways(n - 2)` ask for the same values again and again, and the number of calls doubles with every `n`. **`@cache`** (from `functools`, you saw it in session 11) stores each result by its arguments: the second time it's asked, it answers from memory. That's **memoization**. Its arguments have to be hashable: numbers, strings, tuples.
 
@@ -98,7 +110,9 @@ print(ways(90))
 
 Without `@cache`, `ways(90)` would take centuries. With it, it's 91 calls.
 
-**Backtracking** is recursion for trying every option: **choose** something, **explore** what follows with that choice and **undo** it to try the next one. That's how you get every subset, every possible order or every path through a maze.
+### Backtracking
+
+*Backtracking* is recursion for trying every option: **choose** something, **explore** what follows with that choice and **undo** it to try the next one. That's how you get every subset, every possible order or every path through a maze.
 
 ```py run
 def choose(items, i, chosen):
@@ -241,19 +255,25 @@ tests:
   - name: jumps(8) is 4
     run: jumps(8)
     equals: 4
+    msg: "With 8 steps it is 4 jumps: check the base case."
   - name: jumps(7) is 4
     run: jumps(7)
     equals: 4
+    msg: "With 7 it crashes because the count never hits 0: change the base case to `steps <= 0`."
   - name: jumps(1) is 1
     run: jumps(1)
     equals: 1
+    msg: "With 1 loose step it is one jump: 1 + `jumps(-1)` must stop at 0."
   - name: jumps(0) is 0
     run: jumps(0)
     equals: 0
+    msg: "With 0 steps there are no jumps: return 0."
   - name: prints 4 and 4
     output: "4\n4"
+    msg: "The console must print 4 and 4."
   - name: still recursive
     source: 'return\s+1\s*\+\s*jumps\('
+    msg: "Keep the recursion: the function still returns `1 + jumps(steps - 2)`."
 ```
 
 ```exercise
@@ -296,14 +316,18 @@ tests:
   - name: the example in the picture
     run: 'flatten(["spondylus", ["stone", ["bone"]], "copper"])'
     equals: ["spondylus", "stone", "bone", "copper"]
+    msg: "If the thing is a list, flatten it with a recursive call and `extend`; otherwise add it with `append`."
   - name: empty pouches
     run: 'flatten([[], [[]], "copper"])'
     equals: ["copper"]
+    msg: "An empty bag adds no beads: the recursive call returns `[]`."
   - name: deeply nested
     run: 'flatten([[[["gold"]]], "silver"])'
     equals: ["gold", "silver"]
+    msg: "The recursion must go down to any depth: call `flatten(thing)`."
   - name: prints the list
     output: "['spondylus', 'stone', 'bone', 'copper']"
+    msg: "The console must show the flat list in the original order."
 ```
 
 ```exercise
@@ -394,16 +418,21 @@ tests:
   - name: three chullpas
     run: 'visit_orders(["A", "B", "C"])'
     equals: [["A", "B", "C"], ["A", "C", "B"], ["B", "A", "C"], ["B", "C", "A"], ["C", "A", "B"], ["C", "B", "A"]]
+    msg: "Each order starts with one chullpa and continues with an order of the rest."
   - name: just one
     run: 'visit_orders(["Pueblo Alto"])'
     equals: [["Pueblo Alto"]]
+    msg: "With one chullpa there is one order: `[[\"Pueblo Alto\"]]`."
   - name: none
     run: visit_orders([])
     equals: [[]]
+    msg: "With no chullpas there is one order, the empty one: `[[]]`."
   - name: five chullpas give 120 different orders
     expect: 'len({tuple(o) for o in visit_orders([1, 2, 3, 4, 5])}) == 120'
+    msg: "With five chullpas you must get 120 distinct orders: check the rest you pass to the call."
   - name: without itertools
     sourceNot: '\bitertools\b|\bpermutations\b'
+    msg: "Do it with recursion, without `itertools` or `permutations`."
 ```
 
 ## The case

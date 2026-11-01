@@ -2,9 +2,11 @@
 
 ## The job
 
-Maru sent Quilla up north, to Huanchaco, where fishermen still go out to sea on **caballitos de totora**, little reed boats, just like two thousand years ago. Don Nicanor Ucañán's cooperative has a modern problem: every morning ten, fifteen reed boats come in with their catch, and nobody knows in what order they arrived, how much each one brought or who gets the next box of ice.
+> **Last time:** functions gave Quilla named routines, but each one takes loose values. A line of reed boats doesn't fit in one variable per boat.
 
-Doña Felícita, the treasurer, writes everything down in a notebook with soggy pages. Quilla already knows how to keep one value in a variable; today it learns to keep **many in a row**: the list of boxes, the line of boats on the sand, the pairs of kilos and fisherman. And it learns something doña Felícita learned the hard way: two names can point to the same notebook.
+Maru sent Quilla up north, to Huanchaco, where fishermen still go out to sea on **caballitos de totora**, little reed boats, like two thousand years ago. Don Nicanor Ucañán's cooperative has a modern problem: every morning ten, fifteen reed boats come in with their catch, and nobody knows in what order they arrived, how much each one brought or who gets the next box of ice.
+
+Doña Felícita, the treasurer, writes everything down in a soggy notebook. Quilla can keep one value in a variable; today it learns to keep **many in a row**: the list of boxes, the line of boats, the pairs of kilos and fisherman. And it learns something doña Felícita learned the hard way: two names can point to the same notebook.
 
 ```scene
 theme: barranco
@@ -27,6 +29,8 @@ program: |
 ```
 
 ## The minimum
+
+### Lists, positions and slices
 
 A **list** keeps several values in order, between square brackets. Each one has a **position** (its index) that starts at **0**. **Negative** indexes count from the end: `-1` is the last one. And a **slice** (`items[a:b]`) copies the stretch from `a` up to **just before** `b`; a third number, `items[a:b:step]`, skips several at a time.
 
@@ -59,6 +63,8 @@ notes:
   7: "With step 2 it takes every other one, starting at 0."
 ```
 
+### Changing a list
+
 A list **changes**: things get added to it and taken out.
 
 - `append(x)` adds at the end; `insert(i, x)` puts `x` at position `i` and shifts the rest.
@@ -76,6 +82,8 @@ print(sorted(kilos), kilos, sum(kilos), min(kilos), max(kilos))
 ```
 
 > **Common trap:** `kilos = kilos.sort()` leaves `kilos` as `None`. `sort()` sorts the list in place and returns `None`, and that line stores exactly that `None`. Write `kilos.sort()` on its own, or `in_order = sorted(kilos)` if you want to keep the original.
+
+### A name, not a box: aliases and copies
 
 Now the most important thing today, and it's what you saw in session 1: a name is a label, not a box. With a list you can tell: the variable doesn't **contain** the list, it **points to** it. If you write `other = notebook`, you don't make a photocopy; you stick a second name on the same notebook. To have a separate list, copy it with `.copy()`.
 
@@ -98,6 +106,8 @@ notes:
   4: "Something is added through other… and notebook changes too, because it's the same list."
   6: "is asks whether two names point to the same object: True for other, False for duplicate."
 ```
+
+### Tuples and unpacking
 
 A **tuple** is like a list that doesn't change: it goes between parentheses (or just with commas) and is for data that travels together, like `(kilos, fisherman)`. Tuples and lists can be **unpacked**: each value goes to its name, and a name with `*` takes whatever is left over. That's also how you swap two variables, without a helper.
 
@@ -227,10 +237,13 @@ hints:
 tests:
   - name: Moncho was served
     expect: 'served == "Moncho"'
+    msg: "`pop()` with no number takes the last one; to serve the first you need position 0."
   - name: the queue ends as Tato, Lucho, Chalo
     expect: 'queue == ["Tato", "Lucho", "Chalo"]'
+    msg: "Check the order: Chalo at the end with `append`, Moncho at the start with `insert(0, …)` and Pepe out with `remove`."
   - name: prints who was served and the queue
     output: "Moncho ['Tato', 'Lucho', 'Chalo']"
+    msg: "Print with `print(served, queue)` after the four steps, without touching the last line."
 ```
 
 ```exercise
@@ -552,7 +565,7 @@ solution: |
 hints:
   - "Keep a finger on each list (`i` and `j`). Compare the kilos of the two weighings they point to, add the smaller one and move that finger along."
   - "In a tie the morning wins: use `<=`. When one list runs out, what's left of the other goes in as is: `morning[i:]`."
-  - "A valid shortcut: `sorted(morning + afternoon, key=lambda pair: pair[0])` keeps the order of ties. Without `key`, it would also sort by name."
+  - "A valid shortcut (with `lambda`, which you will see in session 8): `sorted(morning + afternoon, key=lambda pair: pair[0])` keeps the order of ties. Without `key`, it would also sort by name."
 samples:
   - args: [[[5, "Tato"], [9, "Nico"], [9, "Beto"]], [[4, "Pepe"], [9, "Ana"], [12, "Lucho"]]]
     returns: [[4, "Pepe"], [5, "Tato"], [9, "Nico"], [9, "Beto"], [9, "Ana"], [12, "Lucho"]]

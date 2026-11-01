@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Iquitos, marzo, plena creciente. El río Itaya subió tanto que en Belén Bajo las calles son canales: la gente va en canoa, las casas flotan sobre sus balsas y lo que queda en seco son los puentes de tablas que los vecinos clavan de casa en casa. La licenciada **Delia Tapullima**, enfermera del puesto de salud, espera una conservadora con vacunas que llegó en la lancha de Yurimaguas y que no puede pasar mucho rato fuera del frío.
+> **La vez pasada:** recorrer una cuadrícula casilla por casilla bastó para medir el agua. Ahora no basta con pasar por todas: hay que encontrar el camino más corto entre dos.
 
-Maru mandó a Quilla, que ya tiene sirena para abrirse paso, pero hay un problema: los puentes cambian cada semana (uno se pudre, otro lo clavan nuevo) y la batería alcanza **justo** para la ruta más corta. Probar tablas al azar no sirve. Hoy Quilla aprende a **buscar**: explorar el plano en ondas hasta dar con el camino más corto, y a buscar rápido en una lista ordenada.
+Iquitos, marzo, plena creciente. El río Itaya subió tanto que en Belén Bajo las calles son canales: la gente va en canoa, lo que queda en seco son los puentes de tablas que los vecinos clavan . La licenciada **Delia Tapullima**, enfermera del puesto de salud, espera una conservadora con vacunas que llegó en la lancha de Yurimaguas y que no puede pasar mucho rato fuera del frío.
+
+Maru mandó a Quilla, pero hay un problema: los puentes cambian cada semana (uno se pudre, otro lo clavan nuevo) y la batería alcanza **justo** para la ruta más corta. Probar tablas al azar no sirve. Hoy Quilla aprende a **buscar**: explorar el plano en ondas hasta dar con el camino más corto, y a buscar rápido en una lista ordenada.
 
 ```escena
 theme: barranco
@@ -26,6 +28,8 @@ program: |
 ```
 
 ## Lo mínimo
+
+### Búsqueda en anchura (BFS)
 
 La **búsqueda en anchura** (BFS, *breadth-first search*) explora como la onda de una piedra en el río: primero todas las casillas a 1 paso, luego todas las que están a 2, luego a 3… La primera vez que la onda toca la meta, llegó por el camino más corto. Necesita dos piezas:
 
@@ -82,6 +86,8 @@ steps:
   - {"line": 12, "vars": {"cola": [], "vistos": ["0,0", "1,0", "2,0", "0,1", "2,1", "0,2", "1,2", "2,2"], "x": 2, "y": 2}, "reprs": {"cola": "deque([])", "vistos": "{(0, 0), (1, 0), (2, 0), (0, 1), (2, 1), (0, 2), (1, 2), (2, 2)}", "x": "2", "y": "2"}, "note": "La onda cubrió las 8 casillas libres.", "out": "8"}
 ```
 
+### La ruta: el padre de cada casilla
+
 Para saber **la ruta**, y no solo hasta dónde llega la onda, cada casilla anota en un diccionario de qué casilla vino: su **padre**. El inicio tiene padre `None`. Ese diccionario hace también de "vistos": si una casilla ya tiene padre, ya entró a la cola. Al final se camina de la meta hacia atrás, de padre en padre, y se da la vuelta a la lista:
 
 ```anima
@@ -104,7 +110,11 @@ notes:
   7: "El inicio tenía padre None: ahí para el bucle. La lista quedó al revés y se voltea."
 ```
 
+### Recorrer la ruta con el robot
+
 Con la ruta en la mano, **`robot.seguir_ruta(ruta)`** la recorre: recibe una lista de casillas vecinas `(x, y)` y gira solo cuando hace falta (si la primera es la casilla donde está, se la salta). `robot.marcar(casillas)` pinta casillas en el mapa sin moverse, para ver lo que exploró tu búsqueda.
+
+### Búsqueda binaria
 
 La otra búsqueda de hoy es en una **lista ordenada**. Para encontrar un valor no hace falta mirarla entera: miras el del medio y descartas la mitad donde no puede estar, otra vez y otra vez. Es la **búsqueda binaria**: en mil elementos, unas diez miradas.
 
@@ -133,6 +143,8 @@ notes:
   11: "124 es menor que 131: todo lo de la izquierda también. Se descarta esa mitad."
   8: "Lo encontró en la posición 5 mirando solo 2 casillas de 8."
 ```
+
+### `bisect`: la búsqueda binaria ya hecha
 
 Python ya trae la búsqueda binaria en el módulo **`bisect`**. `bisect_left(lista, valor)` devuelve la primera posición donde podría ir `valor` sin desordenar la lista (antes de los iguales); `bisect_right`, la que va después de los iguales. Si la posición es `len(lista)`, el valor es mayor que todos.
 
@@ -270,15 +282,19 @@ tests:
   - name: la ruta del dibujo
     run: 'ruta_mas_corta(["..#", "#..", "..."], (0, 0), (2, 2))'
     equals: [[0, 0], [1, 0], [1, 1], [2, 1], [2, 2]]
+    msg: "El inicio no tiene padre: guarda `padre = {inicio: None}` para que el bucle de atrás pare ahí."
   - name: empieza en el inicio y termina en la meta
     run: 'ruta_mas_corta(["....", ".##.", "...."], (0, 2), (3, 0))[::5]'
     equals: [[0, 2], [3, 0]]
+    msg: "La ruta debe empezar en el inicio y terminar en la meta; recuerda dar vuelta la lista al reconstruirla."
   - name: la más corta tiene 6 casillas
     run: 'len(ruta_mas_corta(["....", ".##.", "...."], (0, 2), (3, 0)))'
     equals: 6
+    msg: "Una ruta más corta tiene 6 casillas: revisa que no agregues ni quites una al reconstruir."
   - name: si inicio y meta son la misma, una casilla
     run: 'ruta_mas_corta(["..."], (1, 0), (1, 0))'
     equals: [[1, 0]]
+    msg: "Si inicio y meta coinciden, la ruta es esa única casilla, no una lista vacía."
 ```
 
 ```exercise
@@ -416,6 +432,7 @@ scenarios:
 tests:
   - name: usa una deque
     source: '\bdeque\b'
+    msg: "Usa una `deque` para la cola de la búsqueda en anchura."
 ```
 
 ## El caso

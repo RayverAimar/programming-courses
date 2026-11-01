@@ -2,9 +2,11 @@
 
 ## The job
 
-San Pedro Market, Cusco, seven in the morning. At the back, past the juice stalls and the pan chuta stands, is **doña Paulina Quispe**'s eatery: a wood-fired kitchen, four long tables and a blackboard with the menu of the day. By eight there are already porters ordering caldo de gallina, and by one there isn't a single fried trout left.
+> **Last time:** Quilla learned to clean and slice text with one loop after another. Sorting out a day at an eatery is the same work, written in one line.
 
-Doña Paulina asked Maru for a helper who wouldn't get tired going up and down from the kitchen, and Maru sent Quilla on the Cruz del Sur bus with its **serving arm** well tightened. But in San Pedro the hard part isn't carrying plates: it's **sorting out the day**. The cancelled orders have to come off the list of tickets, the sales have to be added up per dish, someone has to see which one is the spiciest, the report has to be numbered. Quilla can already do all of that with a `for` and an `append`… in six lines. Today it learns to say it in **one**.
+San Pedro Market, Cusco, seven in the morning. At the back, past the juice stalls, is **doña Paulina Quispe**'s eatery: a wood-fired kitchen and a blackboard with the menu of the day. By eight the porters are ordering caldo de gallina; by one, the fried trout is gone.
+
+Maru sent Quilla on the bus with its **serving arm** well tightened. But in San Pedro the hard part isn't carrying plates: it's **sorting out the day**. Cancelled orders have to come off the list, the sales have to be added up per dish, the report has to be numbered. Quilla can already do all of that with a `for` and an `append`… in six lines. Today it learns to say it in **one**.
 
 ```scene
 theme: cocina
@@ -29,6 +31,8 @@ program: |
 ```
 
 ## The minimum
+
+### List comprehensions
 
 A **comprehension** builds a new list in one line: *what* you want from each element, *where* it comes from and, if needed, *which ones* get in. It reads almost like a sentence: "the price with IGV (the sales tax), for each price on the menu, if the price is over 10".
 
@@ -61,6 +65,8 @@ notes:
   7: "Both lists are equal: [14, 25, 18]."
 ```
 
+### Dictionaries, sets and generator expressions
+
 With curly braces you build **dictionaries** (`{key: value for …}`) and **sets** (`{value for …}`). And with parentheses, or straight inside a function like `sum`, you get a **generator expression**: it doesn't build any list, it hands the values one at a time to whoever asks for them. For adding up or counting, it's just right.
 
 ```py run
@@ -70,6 +76,8 @@ letters = {dish[0] for dish in menu}
 print(discounted, sorted(letters))
 print(sum(price for price in menu.values()))
 ```
+
+### `enumerate` and `zip`
 
 To walk through several things at once there are two helpers:
 
@@ -90,7 +98,9 @@ notes:
   4: "Each pass brings the three values already unpacked."
 ```
 
-To **sort, or find the largest or the smallest** by something that isn't the value itself, `sorted`, `min` and `max` take **`key=`**: a function that says *what* to compare by. The shortest one is a **`lambda`**, a nameless function of a single expression. `reverse=True` flips the order. And **`any`** and **`all`** answer whether *some* or *all* of them meet a condition.
+### Sorting with `key=` and `lambda`
+
+To **sort, or find the largest or the smallest** by something that isn't the value itself, `sorted`, `min` and `max` take **`key=`**: a function that says *what* to compare by. The shortest one is a **`lambda`**, a nameless function of a single expression. `reverse=True` flips the order.
 
 ```py run
 dishes = [("adobo", 3), ("caldo", 1), ("rocoto relleno", 5), ("chiriuchu", 2)]
@@ -98,6 +108,24 @@ print(max(dishes, key=lambda dish: dish[1]))
 print(sorted(dishes, key=lambda dish: dish[1], reverse=True)[:2])
 print(any(heat > 4 for _, heat in dishes), all(heat > 0 for _, heat in dishes))
 ```
+
+```steps
+# How `sorted(dishes, key=lambda dish: dish[1], reverse=True)` works
+## It starts from the list of dishes
+Each dish is a tuple `(name, heat)`: `("adobo", 3)`, `("caldo", 1)`, `("rocoto relleno", 5)` and `("chiriuchu", 2)`.
+## `key` is called once per dish
+The `lambda` receives each dish and returns `dish[1]`, the heat: 3, 1, 5 and 2. Those are the keys used to compare.
+## It sorts by the keys, not by the dishes
+With the keys 5, 3, 2, 1 (from largest to smallest, because of `reverse=True`), the dishes end up as: rocoto relleno, adobo, chiriuchu, caldo.
+## `[:2]` keeps the first two
+The result is `[("rocoto relleno", 5), ("adobo", 3)]`.
+```
+
+### `any` and `all`
+
+To ask "any of them?" or "all of them?" without writing a loop. **`any`** answers whether *some* meet a condition and **`all`** whether *all* do: `any(heat > 4 for _, heat in dishes)` is `True` if there is a very spicy dish.
+
+### `map` and `filter`
 
 In other people's code you'll also see **`map(function, list)`** and **`filter(function, list)`**. They do the same as a comprehension, but with one `lambda` inside another, and they return an iterator, not a list. The comprehension almost always reads better:
 

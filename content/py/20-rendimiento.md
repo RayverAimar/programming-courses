@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Gamarra, La Victoria, 20 de diciembre. Faltan cinco días para Navidad y el emporio textil no duerme: las galerías abren a las cinco de la mañana, los triciclos cargados de rollos de tela se abren paso entre la gente y en cada taller las remalladoras suenan como lluvia. **Doña Felícita Mamani**, de *Confecciones El Hilo de Oro*, tiene un pedido de cuarenta mil polos para una cadena de tiendas y un sistema de pedidos que alguien le escribió en Python.
+> **La vez pasada:** Quilla lee y escribe archivos y parte su código en módulos. Con cuarenta mil pedidos el programa ya funciona, pero tarda casi una hora: la pregunta es cuánto trabajo hace.
 
-El sistema funciona. El problema es que el reporte de cada noche, con todos los pedidos de la campaña, **tarda casi una hora**, y a esa hora doña Felícita ya debería estar cortando tela. Maru le mandó a Quilla, con su sirena para abrirse paso en el Jirón Gamarra, y una sola instrucción: "No adivines qué está lento. **Mídelo**". Hoy Quilla aprende a contar cuánto trabajo hace un programa cuando los datos crecen, y a cambiar el paso que crece mal.
+Gamarra, La Victoria, 20 de diciembre. Faltan cinco días para Navidad y el emporio textil no duerme: las galerías abren a las cinco y en cada taller las remalladoras suenan como lluvia. **Doña Felícita Mamani**, de *Confecciones El Hilo de Oro*, tiene un pedido de cuarenta mil polos para una cadena de tiendas y un sistema de pedidos que alguien le escribió en Python.
+
+El sistema funciona. El problema es que el reporte de cada noche, **tarda casi una hora**, y a esa hora doña Felícita ya debería estar cortando tela. Maru le mandó a Quilla, y una sola instrucción: "No adivines qué está lento. **Mídelo**". Hoy Quilla aprende a contar cuánto trabajo hace un programa cuando los datos crecen, y a cambiar el paso que crece mal.
 
 ```escena
 theme: barranco
@@ -35,6 +37,8 @@ program: |
 
 ## Lo mínimo
 
+### Complejidad: cómo crece el trabajo
+
 Un programa correcto puede ser inútil si tarda demasiado. Lo que importa no es cuánto tarda con diez pedidos, sino **cómo crece su trabajo** cuando los pedidos crecen. A eso se le llama su **complejidad**, y se escribe con la notación *O grande*: `O(n)` crece igual que los datos, `O(n²)` crece con el cuadrado.
 
 ```figura
@@ -51,7 +55,9 @@ panes:
 caption: "Diez mil millones de pasos son minutos u horas. Duplicar los datos duplica el trabajo de un `O(n)`, pero lo **cuadruplica** en un `O(n²)`."
 ```
 
-**Medir.** `time.perf_counter()` es un cronómetro de alta precisión: lo lees antes y después, y la resta son segundos. Mide con datos de dos tamaños; si al duplicar los datos el tiempo se multiplica por cuatro, hay un paso cuadrático.
+### Medir
+
+Para saber cuánto tarda de verdad, y no adivinar. `time.perf_counter()` es un cronómetro de alta precisión: lo lees antes y después, y la resta son segundos. Mide con datos de dos tamaños; si al duplicar los datos el tiempo se multiplica por cuatro, hay un paso cuadrático.
 
 ```py
 import time
@@ -61,7 +67,9 @@ reporte = armar_reporte(pedidos)
 print(f"{(time.perf_counter() - inicio) * 1000:.1f} ms")   # por ejemplo: 431.7 ms
 ```
 
-**`in` en una lista o en un set.** `x in lista` recorre la lista hasta encontrarlo: `O(n)`. `x in conjunto` salta directo, como `d[clave]` en un diccionario: `O(1)`. Dentro de un bucle, la diferencia es la de la tabla de arriba. Este ejemplo lo mide (no imprime los tiempos, porque cambian en cada máquina, sino la comparación):
+### `in` en una lista o en un set
+
+Preguntar si algo está cuesta muy distinto según dónde lo guardes. `x in lista` recorre la lista hasta encontrarlo: `O(n)`. `x in conjunto` salta directo, como `d[clave]` en un diccionario: `O(1)`. Dentro de un bucle, la diferencia es la de la tabla de arriba. Este ejemplo lo mide (no imprime los tiempos, porque cambian en cada máquina, sino la comparación):
 
 ```py run
 import time
@@ -78,7 +86,9 @@ en_set = medir(lambda: [-1 in vistos for _ in range(20)])
 print(en_lista > 50 * en_set)
 ```
 
-**Colas: `pop(0)` o `popleft()`.** `lista.pop(0)` saca el primero, pero luego corre todos los demás un lugar a la izquierda: `O(n)` cada vez. Una `collections.deque` (la de la sesión 10) saca por los dos extremos en `O(1)`:
+### Colas: `pop(0)` o `popleft()`
+
+Sacar del principio parece igual en las dos, pero no lo es. `lista.pop(0)` saca el primero, pero luego corre todos los demás un lugar a la izquierda: `O(n)` cada vez. Una `collections.deque` (la de la sesión 10) saca por los dos extremos en `O(1)`:
 
 ```py
 from collections import deque
@@ -88,7 +98,15 @@ while cola:
     pedido = cola.popleft()     # no cola.pop(0) sobre una lista
 ```
 
-**`heapq`: siempre el menor, sin ordenar todo.** Un *heap* es una lista que Python mantiene a medio ordenar: el menor está siempre en la posición 0. `heappush` y `heappop` cuestan `O(log n)`. Sirve para dos cosas: los **k mejores** de una lista enorme y las **colas de prioridad**, donde siempre atiendes primero lo más urgente o lo más cercano (así funciona Dijkstra, el BFS para caminos con costos distintos: saca siempre la casilla más barata pendiente).
+<!-- photo: py-dijkstra-1994 -->
+
+> **Historia:** Edsger Dijkstra contó que diseñó su algoritmo del camino más corto en unos veinte minutos, sentado con su prometida en la terraza de un café de Ámsterdam. Se preguntaba cómo viajar de Rotterdam a Groningen por el camino más corto. Lo concibió en 1956 y lo publicó en 1959.
+
+<!-- /photo -->
+
+### `heapq`: siempre el menor, sin ordenar todo
+
+Para quedarte con los mejores sin ordenar todo. Un *heap* es una lista que Python mantiene a medio ordenar: el menor está siempre en la posición 0. `heappush` y `heappop` cuestan `O(log n)`. Sirve para dos cosas: los **k mejores** de una lista enorme y las **colas de prioridad**, donde siempre atiendes primero lo más urgente o lo más cercano (así funciona Dijkstra, el BFS para caminos con costos distintos: saca siempre la casilla más barata pendiente).
 
 ```py run
 import heapq
@@ -102,15 +120,31 @@ heapq.heappush(pendientes, (8, "Parque Cánepa"))
 print(heapq.heappop(pendientes))
 ```
 
+```steps
+# Una cola de prioridad con `heapq`
+## Empiezas con una lista vacía
+`pendientes = []`. Un heap es una lista común que `heapq` mantiene a medio ordenar.
+## `heappush` mete cada pendiente con su prioridad
+Entran `(5, "Galería Guizado")`, `(2, "Jirón Gamarra")` y `(8, "Parque Cánepa")`. La prioridad va primero en la tupla, porque el heap compara el primer elemento.
+## El menor queda siempre al frente
+Después de los tres `heappush`, el `(2, "Jirón Gamarra")` está en la posición 0, aunque entró segundo.
+## `heappop` saca el más urgente
+Devuelve `(2, "Jirón Gamarra")` y el heap se reacomoda para que el siguiente menor, el 5, pase al frente. Cada `heappush` y `heappop` cuesta `O(log n)`.
+```
+
 Con tuplas, el heap compara primero el primer elemento: la prioridad va adelante.
 
-**Textos: `join`, no `+=`.** Los textos son inmutables: `informe += linea` puede crear un texto nuevo y copiar todo lo anterior en cada vuelta. Junta las líneas en una lista y únelas al final con `"\n".join(lineas)`.
+### Textos: `join`, no `+=`
+
+Armar un texto largo pegando trozos puede salir caro. Los textos son inmutables: `informe += linea` puede crear un texto nuevo y copiar todo lo anterior en cada vuelta. Junta las líneas en una lista y únelas al final con `"\n".join(lineas)`.
 
 <!-- legacy: perf-counter -->
 
 <!-- legacy: str-join -->
 
-**Sumas por tramos: el prefijo.** Si te preguntan muchas veces "¿cuánto se vendió entre el minuto `a` y el `b`?", sumar el tramo cada vez es `O(n)` por pregunta. Mejor arma una vez la lista de **sumas acumuladas**, con un `0` adelante: `prefijo[i]` es lo vendido antes del minuto `i`. Cada pregunta es una resta.
+### Sumas por tramos: el prefijo
+
+Para responder muchas preguntas de "cuánto entre aquí y allá" sin recorrer cada vez. Si te preguntan muchas veces "¿cuánto se vendió entre el minuto `a` y el `b`?", sumar el tramo cada vez es `O(n)` por pregunta. Mejor arma una vez la lista de **sumas acumuladas**, con un `0` adelante: `prefijo[i]` es lo vendido antes del minuto `i`. Cada pregunta es una resta.
 
 ```anima
 title: Sumas acumuladas, y un tramo con una resta
@@ -128,7 +162,9 @@ notes:
   6: "Del minuto 1 al 3: lo vendido antes del 4 menos lo vendido antes del 1. 13 − 4 = 9."
 ```
 
-**Dos punteros.** En una lista **ordenada**, para buscar un par que sume justo un monto no hacen falta dos bucles: un índice empieza a la izquierda y otro a la derecha. Si la suma se pasa, el de la derecha retrocede; si no llega, el de la izquierda avanza. Cada paso descarta un elemento: `O(n)`.
+### Dos punteros
+
+Para recorrer una lista ordenada desde los dos extremos a la vez. En una lista **ordenada**, para buscar un par que sume justo un monto no hacen falta dos bucles: un índice empieza a la izquierda y otro a la derecha. Si la suma se pasa, el de la derecha retrocede; si no llega, el de la izquierda avanza. Cada paso descarta un elemento: `O(n)`.
 
 ```anima
 title: Dos punteros buscan un par que sume 25
@@ -360,15 +396,20 @@ tests:
   - name: dos pedidos
     run: 'guia([["Tiendas Sol", 40], ["Bazar Lucy", 12]])'
     equals: "GUÍA: 2 pedidos\nTiendas Sol: 40 doc.\nBazar Lucy: 12 doc."
+    msg: "La primera línea es `GUÍA: n pedidos` y luego una línea por pedido, unidas con `\"\\n\".join(...)`."
   - name: sin pedidos, solo el título
     run: guia([])
     equals: "GUÍA: 0 pedidos"
+    msg: "Sin pedidos queda solo el título, sin salto de línea al final."
   - name: diez mil pedidos de una vez
     expect: 'guia([["C", 1]] * 10_000).count("\n") == 10_000'
+    msg: "Junta las líneas en una lista y une todo una vez: con `+=` diez mil pedidos serían lentos."
   - name: sin += en el texto
     sourceNot: '\+='
+    msg: "No uses `+=` para armar el texto: junta las líneas con `join`."
   - name: usa join
     source: '\.join\('
+    msg: "Une con `\"\\n\".join(lineas)`."
 ```
 
 ```exercise

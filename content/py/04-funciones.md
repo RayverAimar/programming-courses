@@ -2,6 +2,8 @@
 
 ## El encargo
 
+> **La vez pasada:** con `while` y `for` Quilla repite un trabajo sin contar a mano. Ahora el problema es otro: las mismas siete instrucciones, copiadas cincuenta veces.
+
 Domingo, mediodía, en el malecón de Chorrillos. **El Bote de Tito** es una cevichería de seis mesas pegada al muelle de pescadores: el pescado llega a las once, a las doce ya hay cola y a la una ya no queda jalea. Tito Panta cocina, su hija Yesenia cobra y el mozo renunció el viernes para irse a correr olas a Punta Hermosa.
 
 Maru le atornilló a Quilla un **brazo con bandeja** y lo mandó en combi. El problema: llevar un plato a una mesa son seis o siete instrucciones, y un domingo salen cincuenta platos. Copiar y pegar 300 líneas no es programar. Hoy Quilla aprende a **ponerle nombre a una rutina**, darle datos y recibir un resultado.
@@ -71,14 +73,31 @@ notes:
   9: "total guarda lo que devolvió cuenta."
 ```
 
-Lo que necesitas para hoy:
+### Sin `return`, la función devuelve `None`
 
-- **Sin `return`, la función devuelve `None`.** `print` muestra algo en la consola, pero no se lo entrega al programa: para usar un resultado, devuélvelo.
-- **Valores por defecto**: `cantidad=1` se usa cuando no te pasan ese argumento. Van al final de la lista de parámetros.
-- **Argumentos con nombre**: `subtotal(cantidad=3, precio=9)`. Con nombre, el orden da igual y la llamada se lee sola.
-- **`*args` y `**kwargs`**: un parámetro con `*` recoge en una **tupla** los argumentos sueltos que sobran; uno con `**` recoge en un **diccionario** los que vienen con nombre.
-- **Docstring**: el texto entre `"""` justo debajo del `def` explica qué hace la función. `help(subtotal)` lo muestra.
-- **Variables locales**: lo que asignas dentro de una función vive solo ahí y desaparece al terminar. Puedes **leer** una variable de afuera (global), pero si le asignas algo dentro, Python la trata como local en toda la función.
+La función que "muestra" un resultado y la que lo "entrega" no son lo mismo. `print` muestra algo en la consola, pero no se lo entrega al programa: para usar un resultado, devuélvelo.
+
+<!-- photo: js-tony-hoare -->
+
+> **Historia:** En 1965, Tony Hoare diseñaba el sistema de tipos de las referencias del lenguaje ALGOL W y, según contó años después, no pudo resistir la tentación de añadir la referencia nula, simplemente porque era muy fácil de implementar. La llamó su "error de mil millones de dólares" por los innumerables fallos que causó. `None` es pariente de ese invento: una función sin `return` te lo entrega sin avisar, y si lo usas como un número, Python se queja recién ahí.
+
+<!-- /photo -->
+
+### Valores por defecto
+
+Para que quien llama no tenga que repetir siempre el mismo dato. `cantidad=1` se usa cuando no te pasan ese argumento. Van al final de la lista de parámetros.
+
+### Argumentos con nombre
+
+Cuando una función recibe varios datos, el nombre evita confundir el orden. `subtotal(cantidad=3, precio=9)`. Con nombre, el orden da igual y la llamada se lee sola.
+
+### Docstring
+
+Quien lea tu función (tú mismo, en un mes) querrá saber qué hace sin leer todo su código. El texto entre `"""` justo debajo del `def` explica qué hace la función. `help(subtotal)` lo muestra.
+
+### `*args` y `**kwargs`
+
+Para funciones que reciben una cantidad de datos que no se sabe de antemano. Un parámetro con `*` recoge en una **tupla** (varios valores juntos, como `("ceviche", "jalea")`; sesión 5) los argumentos sueltos que sobran; uno con `**` recoge en un **diccionario** (pares `clave: valor`; sesión 6) los que vienen con nombre.
 
 ```py run
 def anotar(mesa, *platos, **extras):
@@ -87,6 +106,22 @@ def anotar(mesa, *platos, **extras):
 anotar(4, "ceviche", "chicha", sin_cebolla=True)
 anotar(6)
 ```
+
+```steps
+# Cómo reparte Python los argumentos de `anotar(4, "ceviche", "chicha", sin_cebolla=True)`
+## Primero, los parámetros con nombre propio
+`mesa` es el primer parámetro, así que recibe el primer argumento: `mesa = 4`.
+## Después, lo suelto que sobra
+`*platos` recoge en una **tupla** los argumentos sin nombre que quedan: `platos = ("ceviche", "chicha")`.
+## Al final, lo que viene con nombre
+`**extras` recoge en un **diccionario** los argumentos con nombre que ningún parámetro esperaba: `extras = {"sin_cebolla": True}`.
+## Y si no sobra nada
+En `anotar(6)` solo se llena `mesa`: `platos` es una tupla vacía `()` y `extras` un diccionario vacío `{}`.
+```
+
+### Variables locales
+
+Para saber qué nombres ve cada función y cuáles desaparecen al terminar. Lo que asignas dentro de una función vive solo ahí y desaparece al terminar. Puedes **leer** una variable de afuera (global), pero si le asignas algo dentro, Python la trata como local en toda la función.
 
 ```py run
 propina = 0.1  # global: se ve desde todas partes
@@ -206,7 +241,7 @@ id: py4-predice-comanda
 type: predict
 title: La comanda que se repite
 prompt: |
-  Esta función arma la comanda de cada mesa. La mesa 1 pide ceviche y la mesa 2 pide jalea. ¿Qué imprime?
+  Esta función arma la comanda de cada mesa. La mesa 1 pide ceviche y la mesa 2 pide jalea. (`append` agrega un elemento al final de una lista; las listas las verás en la sesión 5.) ¿Qué imprime?
 code: |
   def nueva_comanda(plato, comanda=[]):
       comanda.append(plato)
@@ -231,7 +266,7 @@ id: py4-completa-anotar
 type: complete
 title: La libreta de Yesenia
 prompt: |
-  `anotar_pedido` recibe la mesa, **cualquier cantidad de platos** y **cualquier cantidad de pedidos especiales con nombre** (`sin_cebolla=True`, `para_llevar=True`…). Completa los `___` para que `platos` junte los platos en una tupla y `extras` junte los pedidos especiales en un diccionario.
+  `anotar_pedido` recibe la mesa, **cualquier cantidad de platos** y **cualquier cantidad de pedidos especiales con nombre** (`sin_cebolla=True`, `para_llevar=True`…). Completa los `___` para que `platos` junte los platos en una tupla y `extras` junte los pedidos especiales en un diccionario. (`len(platos)` cuenta cuántos elementos tiene `platos`.)
 starter: |
   def anotar_pedido(mesa, ___platos, ___extras):
       """Devuelve la línea de la libreta para una mesa."""
@@ -252,14 +287,18 @@ tests:
   - name: tres platos y un extra
     run: anotar_pedido(7, "ceviche", "jalea", "chicha", sin_cebolla=True)
     equals: "Mesa 7, platos: 3, extras: {'sin_cebolla': True}"
+    msg: "Un asterisco en `*platos` junta los platos sueltos en una tupla y dos en `**extras` junta los pedidos con nombre en un diccionario."
   - name: una mesa sin nada
     run: anotar_pedido(2)
     equals: "Mesa 2, platos: 0, extras: {}"
+    msg: "Sin platos ni extras, `platos` debe quedar como tupla vacía y `extras` como diccionario vacío; revisa los asteriscos de la firma."
   - name: dos extras con nombre
     run: anotar_pedido(5, "sudado", para_llevar=True, cubiertos=2)
     equals: "Mesa 5, platos: 1, extras: {'para_llevar': True, 'cubiertos': 2}"
+    msg: "Los pedidos con nombre (`para_llevar=True`) van al diccionario `extras`; ¿pusiste dos asteriscos delante de `extras`?"
   - name: la consola muestra las dos líneas
     output: "Mesa 7, platos: 3, extras: {'sin_cebolla': True}\nMesa 2, platos: 0, extras: {}"
+    msg: "Compara cada línea impresa con la esperada: el texto de `anotar_pedido` debe quedar tal cual."
 ```
 
 ```exercise
@@ -386,6 +425,8 @@ prompt: |
   Cinco exalumnos del colegio de Chorrillos celebraron en El Bote de Tito. Acordaron que cada uno paga **lo suyo más el 10 % de propina**, menos **Renzo, que cumple años y no paga propina** (llámala con `propina=0`). Al cerrar la caja, Yesenia contó y faltaba plata: alguien pagó de menos.
 
   Imprime una línea por persona que empiece con su nombre, con la cuota redondeada a dos decimales al final: `print("Kiara:", round(cuota(platos_kiara), 2))`. El tablero la compara con lo que pagó.
+
+  Los platos de cada uno ya vienen en una lista, como `[36, 9]` (las listas se estudian en la sesión 5), y `sum(lista)` suma sus números.
 visual:
   board:
     for: py4-caso-propina
@@ -475,7 +516,7 @@ title: La cuenta de la mesa
 prompt: |
   **Escribe `cuenta_mesa(platos, propina=0.1, personas=1)`, que devuelve cuánto paga cada persona de una mesa, y sus dos ayudantes `subtotal` y `con_propina`.**
 
-  Yesenia quiere que Quilla cobre. Cada mesa llega como una lista de pares `[precio, cantidad]`: `[[36, 2], [9, 3]]` son dos platos de 36 soles y tres de 9. Escribe tres funciones; el juez prueba las tres:
+  Yesenia quiere que Quilla cobre. Cada mesa llega como una lista de pares `[precio, cantidad]`: `[[36, 2], [9, 3]]` son dos platos de 36 soles y tres de 9 (las listas se estudian en la sesión 5; aquí solo las recorres con `for`). Escribe tres funciones; el juez prueba las tres:
 
   - `subtotal(platos)`: la suma de `precio × cantidad` de todos los pares. `for precio, cantidad in platos:` saca los dos números de cada par.
   - `con_propina(monto, propina=0.1)`: el monto más la propina, que es una **fracción** del monto (`0.1` es el 10 %). Si no te la pasan, es 0.1.
@@ -813,8 +854,8 @@ solution: |
 
   print(comanda(4, "ceviche", "jalea", sin_cebolla="ceviche"))
 hints:
-  - "Junta las líneas en una lista y al final únelas con `\"\\n\".join(lineas)`."
-  - "`notas.items()` te da cada par `(clave, valor)`, y `clave.replace(\"_\", \" \")` cambia los guiones bajos."
+  - "Ve agregando cada línea a una lista con `lineas.append(...)` y al final únelas con `\"\\n\".join(lineas)`, que pega los textos de la lista con un salto de línea en medio (lo verás a fondo en las sesiones 5 y 7)."
+  - "`notas.items()` te da cada par `(clave, valor)` del diccionario de notas (diccionarios: sesión 6), y `clave.replace(\"_\", \" \")` cambia los guiones bajos."
 tests:
   - name: dos platos y una nota
     run: 'comanda(4, "ceviche", "jalea", sin_cebolla="ceviche")'

@@ -2,9 +2,11 @@
 
 ## The job
 
-Samegua, Moquegua, in the middle of the grape harvest. Doña **Herminia Zapata**'s winery, **El Tinajón**, has been distilling pisco ever since her grandfather brought the clay jars up from Ilo by donkey: quebranta, italia and an acholado that sells out at the Moquegua fair before noon. This year Herminia bought a second-hand **conveyor belt**: the bottles leave the filler, go through the corker and reach the labeller, one after another, all day long.
+> **Last time:** with `__len__` and `__iter__`, a class learned to behave like a collection. A conveyor belt never ends: it doesn't fit in any collection.
 
-Maru sent her Quilla, with its helmet headlamp, to run the belt and go down to the jar cellar. The problem: the belt never ends. You can't make "the list of all the day's bottles" before you start, because they don't exist yet. Today Quilla learns to work **one thing at a time**: iterators, which give you the next one when you ask, and generators, functions that pause after handing over each value.
+Samegua, Moquegua, in the middle of the grape harvest. Doña **Herminia Zapata**'s winery, **El Tinajón**, has been distilling pisco ever since her grandfather brought the clay jars up from Ilo by donkey. This year Herminia bought a second-hand **conveyor belt**: the bottles leave the filler, go through the corker and reach the labeller, one after another.
+
+Maru sent her Quilla to run the belt. The problem: the belt never ends. You can't make "the list of all the day's bottles" before you start, because they don't exist yet. Today Quilla learns to work **one thing at a time**: iterators, which give you the next one when you ask, and generators, functions that pause after handing over each value.
 
 ```scene
 theme: mina
@@ -30,6 +32,8 @@ program: |
 ```
 
 ## The minimum
+
+### The iterator protocol
 
 A `for` doesn't walk a list directly: first it asks it for an **iterator** with `iter(list)` and then it asks for the next value with `next(...)`, again and again, until the iterator says it's done by raising `StopIteration`. That's the **iteration protocol**, and you can use it by hand:
 
@@ -64,6 +68,8 @@ class Belt:
 for bottle in Belt(["Q-401", "I-210"]):
     print("passes", bottle)
 ```
+
+### Generators with `yield`
 
 Writing that class every time gets tiring. A **generator** does the same thing with a function: all it needs is a **`yield`**. Calling it runs nothing; it returns a generator. Each `next` runs the body up to the next `yield`, hands over that value and **pauses there**, with its variables intact, until the next `next`.
 
@@ -108,6 +114,8 @@ steps:
   - { line: 8, vars: { bottle: "italia", state: "finished" }, stack: [], out: "QUEBRANTA\nITALIA\nempty", note: "The function ends: its frame disappears and `next` returns the default value." }
 ```
 
+
+### Lazy pipelines
 
 Since each value is made only when it's asked for, you can chain generators into a **lazy pipeline**: each bottle goes through every station before the next one gets on the belt. Nothing is kept in intermediate lists.
 
@@ -188,6 +196,8 @@ steps:
     show: { label: "What it prints", text: "fill Q-401\n  cork Q-401\n    out Q-401\nfill Q-402\n  cork Q-402\n    out Q-402" }
 ```
 
+### Infinite generators
+
 A generator can be **infinite**: a `while True` with a `yield` inside doesn't hang, because it only moves forward when someone asks. `itertools.count(101)` counts 101, 102, 103… forever, and `islice(iterable, n)` takes only the first `n`.
 
 ```py run
@@ -200,6 +210,8 @@ def seals():
 print(list(islice(seals(), 3)))
 ```
 
+### `yield from`
+
 `yield from other` hands over, one by one, all the values of another iterable or generator. It's the `for` with a `yield` inside, in one line:
 
 ```py run
@@ -210,6 +222,8 @@ def whole_belt(boxes):
 print(list(whole_belt([["Q-401", "Q-402"], [], ["I-210"]])))
 ```
 
+### Generator expressions
+
 A **generator expression** is a comprehension in parentheses: `(ml for ml in measures)`. It doesn't build a list; it produces the values as `sum`, `max` or a `for` ask for them. Inside a call, the call's own parentheses are enough:
 
 ```py run
@@ -217,6 +231,8 @@ liters = [0.5, 0.75, 0.5, 1.0]
 print(sum(int(liter * 1000) for liter in liters))
 print(max(len(variety) for variety in ["italia", "quebranta"]))
 ```
+
+### `itertools`
 
 And `itertools` brings lazy pieces ready to build walks with:
 
@@ -322,16 +338,21 @@ tests:
   - name: hands over the whole batch
     run: list(Batch("Q", 7, 10))
     equals: ["Q-7", "Q-8", "Q-9", "Q-10"]
+    msg: "`__next__` must return `\"Q-7\"`, `\"Q-8\"`… up to the last and then raise `StopIteration`."
   - name: prints the list
     output: "['Q-7', 'Q-8', 'Q-9', 'Q-10']"
+    msg: "Check the printed list: it must go from `Q-7` to `Q-10`, both included."
   - name: a one-bottle batch
     run: list(Batch("A", 3, 3))
     equals: ["A-3"]
+    msg: "If first and last are equal, hand out a single bottle."
   - name: an empty batch hands over nothing
     run: list(Batch("I", 5, 4))
     equals: []
+    msg: "If `first` is already past `last`, raise `StopIteration` at once."
   - name: next works by hand
     expect: 'next(Batch("I", 20, 25)) == "I-20"'
+    msg: "`__iter__` must return `self`, so `next(...)` works by hand."
 ```
 
 ```exercise
@@ -376,11 +397,14 @@ hints:
 tests:
   - name: prints both labels
     output: "Q-401 · 42°\nQ-403 · 41°"
+    msg: "Change `return` to `yield` and loop outside with a `for` to print one label per line."
   - name: labels is a generator
     source: '\byield\b'
+    msg: "A function with `yield` is a generator: it must use `yield`, not `return`."
   - name: works with another batch
     run: 'list(labels([("A-150", 40), ("A-151", 39), ("I-210", 36)], 39))'
     equals: ["A-150 · 40°", "A-151 · 39°"]
+    msg: "Try another batch: only bottles with grade at or above the minimum pass."
 ```
 
 ```exercise
@@ -422,15 +446,20 @@ tests:
   - name: the first three
     run: list(islice(seals("MOQ"), 3))
     equals: ["MOQ-0001", "MOQ-0002", "MOQ-0003"]
+    msg: "Hand out `prefix-0001`, `prefix-0002`…; the number has 4 digits with `:04d`."
   - name: from another start, going past 999
     run: list(islice(seals("MOQ", 998), 4))
     equals: ["MOQ-0998", "MOQ-0999", "MOQ-1000", "MOQ-1001"]
+    msg: "Past 999 the number already has 4 digits: `MOQ-1000`, not cut."
   - name: never runs out
     expect: 'list(islice(seals("ILO"), 5000))[-1] == "ILO-5000"'
+    msg: "Do not limit it with a `range`: it must be able to hand out thousands. Use `count(start)`."
   - name: is a generator
     expect: 'next(seals("Q", 7)) == "Q-0007"'
+    msg: "`start` is optional and begins at 1; check the first seal uses that number."
   - name: uses yield
     source: '\byield\b'
+    msg: "The function must use `yield`."
 ```
 
 ```exercise

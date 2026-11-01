@@ -2,9 +2,11 @@
 
 ## The job
 
-Jirón de la Unión, half a block from Plaza San Martín. Between a shoe shop and a school-uniform store there's a narrow arcade, and at the back of it, **Numismática y Filatelia Valdivieso**: three display cases of Peruvian coins, a stamp counter with a bronze magnifying glass and, behind an iron gate, the vaults of the old house where doña **Hortensia Valdivieso** keeps what she won't sell, not even to her nephew.
+> **Last time:** classes keep data and rules in one place, but `sorted`, `==` and `len` don't know what to do with them. Today we teach them Python's language.
 
-Hortensia has already moved her inventory to Python, with a `Coin` class and a `Stamp` class. The problem is that her objects don't behave like Python's own: `sorted` can't sort them, two identical coins aren't "equal", a `set` won't take them and `len` of an album is an error. Maru sent her Quilla, who already carries a headlamp for the vaults, with one task: teach those classes to speak Python's language, the one of `==`, `<`, `len`, `in`, `for`, `+` and `with`.
+Jirón de la Unión, half a block from Plaza San Martín. There's a narrow arcade, and at the back of it, **Numismática y Filatelia Valdivieso**: three display cases of Peruvian coins, a stamp counter and the vaults where doña **Hortensia Valdivieso** keeps what she won't sell, not even to her nephew.
+
+Hortensia has already moved her inventory to Python, with a `Coin` class and a `Stamp` class. But her objects don't behave like Python's own: `sorted` can't sort them, two identical coins aren't "equal", a `set` won't take them and `len` of an album is an error. Maru sent her Quilla with one task: teach those classes to speak Python's language, the one of `==`, `<`, `len`, `in`, `for`, `+` and `with`.
 
 ```scene
 theme: barranco
@@ -30,6 +32,8 @@ program: |
 
 ## The minimum
 
+### Dunder methods: what Python calls for you
+
 When you write `a < b`, Python knows nothing about coins: it calls a method of `a` with a special name, `a.__lt__(b)`. Those methods with two underscores on each side are called **dunder methods** (*double underscore*), and they are Python's **data model**: if your class defines them, your objects work with the usual operators and functions.
 
 | you write | Python calls |
@@ -40,7 +44,9 @@ When you write `a < b`, Python knows nothing about coins: it calls a method of `
 | `for x in a`, `x in a` | `a.__iter__()`, `a.__contains__(x)` |
 | `a + b`, `if a:` | `a.__add__(b)`, `a.__bool__()` |
 
-**Comparing.** Without `__eq__`, `==` is only `True` if both names point to **the same object**. With `__eq__` you decide what "equal" means. To sort, `__lt__` is enough (`sorted`, `min` and `max` only use `<`), and if you also want `<=`, `>` and `>=`, the `functools.total_ordering` decorator builds them from `__eq__` and `__lt__`.
+### Comparing
+
+So your objects compare and sort like numbers do. Without `__eq__`, `==` is only `True` if both names point to **the same object**. With `__eq__` you decide what "equal" means. To sort, `__lt__` is enough (`sorted`, `min` and `max` only use `<`), and if you also want `<=`, `>` and `>=`, the `functools.total_ordering` decorator builds them from `__eq__` and `__lt__`.
 
 ```py run
 from functools import total_ordering
@@ -82,7 +88,9 @@ notes:
   6: "print uses __repr__ to show each coin."
 ```
 
-**Hashing.** A `set` or a dictionary stores each object by its `hash`, and requires two equal objects to have the same hash. That's why, **if you define `__eq__`, Python removes the inherited `__hash__`** and your objects no longer fit in a `set`: you have to write `__hash__` with the same data `__eq__` uses.
+### Hashing
+
+So you can use your objects in sets and as keys. A `set` or a dictionary stores each object by its `hash`, and requires two equal objects to have the same hash. That's why, **if you define `__eq__`, Python removes the inherited `__hash__`** and your objects no longer fit in a `set`: you have to write `__hash__` with the same data `__eq__` uses.
 
 ```py run
 class Stamp:
@@ -97,7 +105,9 @@ lot = {Stamp("llama", 1866), Stamp("llama", 1866), Stamp("coat of arms", 1858)}
 print(len(lot), Stamp("llama", 1866) in lot)
 ```
 
-**Being a collection.** With `__len__`, `len` works; with `__getitem__`, square brackets (with negative indexes and slices, if you pass them on to a list); with `__iter__`, `for`; with `__contains__`, `in`; with `__add__`, `+`; and with `__bool__`, `if`. Without `__bool__`, Python looks at `__len__`: an empty collection is false.
+### Being a collection
+
+So your object answers to `len`, `[]`, `for`, `in` and `+`. With `__len__`, `len` works; with `__getitem__`, square brackets (with negative indexes and slices, if you pass them on to a list); with `__iter__`, `for`; with `__contains__`, `in`; with `__add__`, `+`; and with `__bool__`, `if`. Without `__bool__`, Python looks at `__len__`: an empty collection is false.
 
 ```py run
 class Album:
@@ -120,9 +130,15 @@ album = Album(["Llama 1866", "Coat of arms 1858"]) + Album(["Paita 1857"])
 print(len(album), album[-1], "llama 1866" in album, bool(Album([])))
 ```
 
-**Duck typing.** Python doesn't care what class an object is, only what it can do: "if it walks like a duck and quacks like a duck, it's a duck". `def size(collection): return len(collection)` works just the same for a list, a string or an `Album`, because all three have `__len__`. Nobody had to inherit from anything.
+### Duck typing
 
-**Opening and closing.** The `with` you use with `open` is also data model: `with something as x:` calls `something.__enter__()` on the way in (what it returns goes to `x`) and `something.__exit__(kind, error, trace)` on the way out, **even if the block ends with an error**. That way a display case is never left open. Writing it as a class is the classic way; `contextlib.contextmanager` does it with a function: what goes before the `yield` opens, what comes out of the `yield` goes to the `as`, and what goes in the `finally` closes no matter what.
+To write functions that work with any object, without forcing it to inherit from anything. Python doesn't care what class an object is, only what it can do: "if it walks like a duck and quacks like a duck, it's a duck". `def size(collection): return len(collection)` works just the same for a list, a string or an `Album`, because all three have `__len__`. Nobody had to inherit from anything.
+
+### Opening and closing: `with`
+
+So that something that opens (a display case, a file) always closes, even if there is an error. `with something as x:` calls `something.__enter__()` on the way in (what it returns goes to `x`) and `something.__exit__(kind, error, trace)` on the way out, **even if the block ends with an error**. (In session 19 you will see it with `open`.)
+
+Writing it as a class is the classic way; `contextlib.contextmanager` does it with a function: what goes before the `yield` opens (`yield` hands out a value and pauses the function; session 14), what comes out of the `yield` goes to the `as`, and what goes in the `finally` always closes (`try`/`finally`: session 16).
 
 ```py run
 from contextlib import contextmanager
@@ -139,7 +155,21 @@ with showcase(4) as n:
     print("takes the peseta out of showcase", n)
 ```
 
-**Writing the duck down.** `typing.Protocol` puts *duck typing* in writing: it describes which methods something must have, and any class that has them fits, without inheriting. Python doesn't check it when running; the editor and type checkers use it to warn you beforehand.
+```steps
+# The order of a `with showcase(4) as n:`
+## Before the `yield`: it opens
+On entering the `with`, Python runs the function up to the `yield`: it prints `opens showcase 4`.
+## The `yield` hands the value to the `as`
+`n` receives what came out of the `yield`: the 4. The function stays paused there.
+## Your block runs
+The body of the `with` does its job: it prints `takes the peseta out of showcase 4`.
+## The `finally` closes no matter what
+When the block ends (with an error or without one), the function wakes up and runs the `finally`: `closes showcase 4`.
+```
+
+### Writing the duck down
+
+To put in writing which methods a function expects. `typing.Protocol` puts *duck typing* in writing: it describes which methods something must have, and any class that has them fits, without inheriting. Python doesn't check it when running; the editor and type checkers use it to warn you beforehand.
 
 ```py run
 from typing import Protocol
@@ -264,16 +294,22 @@ hints:
 tests:
   - name: sorts from oldest to newest
     output: "[dinero (1863), peseta (1880), sol (1914)]\nTrue"
+    msg: "`sorted` only uses `<`: the order comes from `__lt__`, which compares the years."
   - name: max gives the newest
     expect: max(coins).year == 1914
+    msg: "`max` also uses `<`: comparing by `year` gives the newest."
   - name: ">= works"
     expect: Coin("sol", 1866) >= Coin("medio sol", 1864)
+    msg: "For `>=` to work, add `@functools.total_ordering` and define `__eq__` and `__lt__`."
   - name: "<= with the same year"
     expect: Coin("sol", 1900) <= Coin("peseta", 1900)
+    msg: "Two coins from the same year must be equal: `__eq__` compares only the year."
   - name: "> works"
     expect: not (Coin("sol", 1864) > Coin("peseta", 1880))
+    msg: "`>` is derived from `__lt__` and `__eq__` with `total_ordering`; check both methods."
   - name: uses total_ordering
     source: '@functools\.total_ordering'
+    msg: "Put the `@functools.total_ordering` decorator on the class."
 ```
 
 ```exercise
@@ -511,11 +547,14 @@ tests:
   - name: without an error, logs going out and coming back
     run: try_out(loan, False)
     equals: ["out 1863 sol", "looks at 1863 sol", "all good", "back 1863 sol"]
+    msg: "Before the `yield` write `\"leaves <piece>\"`; after it, `\"returns <piece>\"`; and `yield piece`."
   - name: with an error, the piece comes back anyway
     run: try_out(loan, True)
     equals: ["out 1863 sol", "looks at 1863 sol", "back 1863 sol", "error"]
+    msg: "If the block fails, the return must still be logged: put it in a `finally`."
   - name: uses try and finally
     source: '\btry\s*:[\s\S]*\byield\b[\s\S]*\bfinally\s*:'
+    msg: "Wrap the `yield` in `try:` and put the return logging in `finally:`."
 ```
 
 ```exercise

@@ -2,9 +2,11 @@
 
 ## El encargo
 
-Mercado de San Pedro, Cusco, siete de la mañana. Al fondo, pasando las juguerías y los puestos de pan chuta, está el comedor de **doña Paulina Quispe**: una cocina de leña, cuatro mesas largas y una pizarra con el menú del día. A las ocho ya hay cargadores pidiendo caldo de gallina, y a la una no queda ni una trucha frita.
+> **La vez pasada:** Quilla aprendió a limpiar y cortar texto con un bucle detrás de otro. Ordenar el día de un comedor pide el mismo trabajo, pero escrito en una línea.
 
-Doña Paulina le pidió a Maru un ayudante que no se canse subiendo y bajando de la cocina, y Maru mandó a Quilla en el bus de Cruz del Sur con el **brazo con bandeja** bien ajustado. Pero en San Pedro lo difícil no es cargar platos: es **ordenar el día**. Hay que sacar de la lista de comandas las que se anularon, juntar las ventas por plato, ver cuál es el más picante, numerar el reporte. Todo eso Quilla ya lo sabe hacer con un `for` y un `append`… en seis líneas. Hoy aprende a decirlo en **una**.
+Mercado de San Pedro, Cusco, siete de la mañana. Al fondo, pasando las juguerías, está el comedor de **doña Paulina Quispe**: una cocina de leña y una pizarra con el menú del día. A las ocho ya hay cargadores pidiendo caldo de gallina, y a la una no queda ni una trucha frita.
+
+Maru mandó a Quilla en bus con el **brazo con bandeja** bien ajustado. Pero en San Pedro lo difícil no es cargar platos: es **ordenar el día**. Hay que sacar las comandas anuladas, juntar las ventas por plato, numerar el reporte. Todo eso Quilla ya lo sabe hacer con un `for` y un `append`… en seis líneas. Hoy aprende a decirlo en **una**.
 
 ```escena
 theme: cocina
@@ -29,6 +31,8 @@ program: |
 ```
 
 ## Lo mínimo
+
+### Comprensiones de lista
 
 Una **comprensión** arma una lista nueva en una línea: *qué* quieres de cada elemento, *de dónde* sale y, si hace falta, *cuáles* entran. Se lee casi como una frase: «el precio con IGV, por cada precio de la carta, si el precio pasa de 10».
 
@@ -61,6 +65,8 @@ notes:
   7: "Las dos listas son iguales: [14, 25, 18]."
 ```
 
+### Diccionarios, sets y expresiones generadoras
+
 Con llaves se arman **diccionarios** (`{clave: valor for …}`) y **sets** (`{valor for …}`). Y con paréntesis, o directamente dentro de una función como `sum`, sale una **expresión generadora**: no arma ninguna lista, entrega los valores de a uno a quien los pide. Para sumar o contar es lo justo.
 
 ```py run
@@ -70,6 +76,8 @@ letras = {plato[0] for plato in carta}
 print(con_descuento, sorted(letras))
 print(sum(precio for precio in carta.values()))
 ```
+
+### `enumerate` y `zip`
 
 Para recorrer varias cosas a la vez hay dos ayudantes:
 
@@ -90,7 +98,9 @@ notes:
   4: "Cada vuelta trae los tres datos ya desempaquetados."
 ```
 
-Para **ordenar, buscar el mayor o el menor** según algo que no es el valor mismo, `sorted`, `min` y `max` aceptan **`key=`**: una función que dice *por qué* comparar. Lo más corto es una **`lambda`**, una función sin nombre de una sola expresión. `reverse=True` invierte el orden. Y **`any`** y **`all`** responden si *alguno* o *todos* cumplen algo.
+### Ordenar con `key=` y `lambda`
+
+Para **ordenar, buscar el mayor o el menor** según algo que no es el valor mismo, `sorted`, `min` y `max` aceptan **`key=`**: una función que dice *por qué* comparar. Lo más corto es una **`lambda`**, una función sin nombre de una sola expresión. `reverse=True` invierte el orden.
 
 ```py run
 platos = [("adobo", 3), ("caldo", 1), ("rocoto relleno", 5), ("chiriuchu", 2)]
@@ -98,6 +108,24 @@ print(max(platos, key=lambda plato: plato[1]))
 print(sorted(platos, key=lambda plato: plato[1], reverse=True)[:2])
 print(any(picante > 4 for _, picante in platos), all(picante > 0 for _, picante in platos))
 ```
+
+```steps
+# Cómo trabaja `sorted(platos, key=lambda plato: plato[1], reverse=True)`
+## Partes de la lista de platos
+Cada plato es una tupla `(nombre, picante)`: `("adobo", 3)`, `("caldo", 1)`, `("rocoto relleno", 5)` y `("chiriuchu", 2)`.
+## `key` se llama una vez por plato
+La `lambda` recibe cada plato y devuelve `plato[1]`, el picante: 3, 1, 5 y 2. Esas son las claves con las que se compara.
+## Se ordena por las claves, no por los platos
+Con las claves 5, 3, 2, 1 (de mayor a menor, por `reverse=True`), los platos quedan: rocoto relleno, adobo, chiriuchu, caldo.
+## `[:2]` se queda con los dos primeros
+El resultado es `[("rocoto relleno", 5), ("adobo", 3)]`.
+```
+
+### `any` y `all`
+
+Para preguntar "¿alguno?" o "¿todos?" sin escribir un bucle. **`any`** responde si *alguno* cumple algo y **`all`** si *todos* lo cumplen: `any(picante > 4 for _, picante in platos)` es `True` si hay un plato muy picante.
+
+### `map` y `filter`
 
 En código ajeno verás también **`map(funcion, lista)`** y **`filter(funcion, lista)`**. Hacen lo mismo que una comprensión, pero con una `lambda` dentro de otra, y devuelven un iterador, no una lista. Casi siempre la comprensión se lee mejor:
 
