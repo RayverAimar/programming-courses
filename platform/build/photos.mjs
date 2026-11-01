@@ -12,7 +12,8 @@
 // The caption (what, where, when) and a credit line sit under the image, inside the float.
 // content/img/photos.json holds each photo: { file, w, h, sw, alt: {es, en}, caption: {es, en},
 // credit: { author, license, source, url } } (author and license may be { es, en }), with
-// <file>.webp (long side ~1600) and <file>-sm.webp (~800) next to it. A portrait photo floats
+// <file>.webp (long side ~1600) and <file>-sm.webp (~800) next to it; an animated one (a GIF made
+// into WebP by photo.ts) has anim: true and carries a "GIF" tag. A portrait photo floats
 // narrower. The lightbox is web/core/photos.js.
 import { readFileSync, existsSync, mkdirSync, copyFileSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -29,6 +30,7 @@ export function loadPhotos(contentDir) {
   for (const [id, p] of Object.entries(photos)) {
     for (const f of [`${p.file}.webp`, `${p.file}-sm.webp`]) if (!existsSync(join(contentDir, "img", f))) throw new Error(`photo ${id}: missing content/img/${f}`);
     for (const k of ["alt", "caption"]) if (!p[k] || !p[k].es || !p[k].en) throw new Error(`photo ${id}: ${k} needs es and en`);
+    for (const k of ["alt", "caption"]) if (/^TODO$/.test(p[k].es) || /^TODO$/.test(p[k].en)) throw new Error(`photo ${id}: write its ${k} (es, en); it still says TODO`);
     if (!p.w || !p.h || !p.credit || !p.credit.url) throw new Error(`photo ${id}: needs w, h and credit.url`);
   }
   return photos;
@@ -42,8 +44,8 @@ export function photoFigure(p, { lang, root, zoom }) {
   const loc = (v) => (v && typeof v === "object" ? v[lang] : v);
   const credit = [loc(c.author), loc(c.license)].filter(Boolean).map(esc).join(" · ");
   return (
-    `<figure class="photo${p.h > p.w * 1.1 ? " photo-tall" : ""}"><button type="button" class="photo-zoom" data-full="${big}" aria-label="${esc(zoom)}: ${esc(p.alt[lang])}">` +
-    `<img src="${small}" srcset="${small} ${p.sw || 800}w, ${big} ${p.w}w" sizes="(min-width: 1100px) 352px, (min-width: 700px) 720px, 100vw" width="${p.w}" height="${p.h}" alt="${esc(p.alt[lang])}" loading="lazy" decoding="async"></button>` +
+    `<figure class="photo${p.h > p.w * 1.1 ? " photo-tall" : ""}${p.anim ? " photo-anim" : ""}"><button type="button" class="photo-zoom" data-full="${big}" aria-label="${esc(zoom)}: ${esc(p.alt[lang])}">` +
+    `<img src="${small}" srcset="${small} ${p.sw || 800}w, ${big} ${p.w}w" sizes="(min-width: 1100px) 352px, (min-width: 700px) 720px, 100vw" width="${p.w}" height="${p.h}" alt="${esc(p.alt[lang])}" loading="lazy" decoding="async">${p.anim ? '<span class="photo-gif" aria-hidden="true">GIF</span>' : ""}</button>` +
     `<figcaption><span class="photo-cap">${p.caption[lang]}</span> <span class="photo-credit">${credit}${credit ? " · " : ""}<a href="${esc(c.url)}">${esc(c.source || "Wikimedia Commons")}</a></span></figcaption></figure>`
   );
 }
